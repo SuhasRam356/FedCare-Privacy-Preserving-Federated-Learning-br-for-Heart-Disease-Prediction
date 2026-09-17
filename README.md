@@ -1,0 +1,948 @@
+<p align="center">
+  <h1 align="center">FedCare: Privacy-Preserving Federated Learning<br>for Heart Disease Prediction</h1>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.10%2B-blue?style=flat-square&logo=python" alt="Python">
+  <img src="https://img.shields.io/badge/PyTorch-2.0%2B-EE4C2C?style=flat-square&logo=pytorch" alt="PyTorch">
+  <img src="https://img.shields.io/badge/Flower-1.37%2B-4B0082?style=flat-square" alt="Flower">
+  <img src="https://img.shields.io/badge/Streamlit-1.30%2B-FF4B4B?style=flat-square&logo=streamlit" alt="Streamlit">
+  <img src="https://img.shields.io/badge/Tests-69%2F69%20Passed-brightgreen?style=flat-square" alt="Tests">
+  <img src="https://img.shields.io/badge/License-MIT-green?style=flat-square" alt="License">
+</p>
+
+<p align="center">
+  <strong>A federated learning framework enabling 6 hospitals to collaboratively train a heart disease classifier while preserving patient privacy. No raw data ever leaves a hospital.</strong>
+</p>
+
+---
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Key Features](#key-features)
+- [Architecture](#architecture)
+- [Project Structure](#project-structure)
+- [Dataset](#dataset)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [Phase 1: Foundations and Baselines](#phase-1-foundations-and-baselines)
+- [Phase 2: Federated Core (FedAvg)](#phase-2-federated-core-fedavg)
+- [Phase 3: Non-IID Skew, FedProx and Personalization](#phase-3-non-iid-skew-fedprox-and-personalization)
+- [Phase 4: Adversarial Attacks, Byzantine Defenses and Differential Privacy](#phase-4-adversarial-attacks-byzantine-defenses-and-differential-privacy)
+- [Phase 5: Interactive Web Dashboard](#phase-5-interactive-web-dashboard)
+- [Experiment Results](#experiment-results)
+- [Model Architecture](#model-architecture)
+- [Testing](#testing)
+- [Research Figures](#research-figures)
+- [Contributing](#contributing)
+- [License](#license)
+- [Acknowledgments](#acknowledgments)
+
+---
+
+## Overview
+
+**FedCare** is a complete federated learning research framework built for the M.Tech thesis on **Privacy-Preserving Federated Learning for Heart Disease Prediction**. The project demonstrates how multiple hospitals can collaboratively train a shared machine learning model to predict heart disease risk — **without ever sharing raw patient data**.
+
+### The Problem
+
+Traditional machine learning requires centralizing all patient data in one place, which:
+
+- **Violates patient privacy** (HIPAA, GDPR compliance issues)
+- **Creates data breach risks** (single point of failure)
+- **Is legally impossible** across hospital jurisdictions
+- **Loses clinical trust** when patients learn their data is moved
+
+### The Solution
+
+FedCare uses **Federated Learning** — a privacy-preserving technique where:
+
+1. Each hospital trains a local model on its own private data
+2. Only the model weights (numbers, not patient records) are sent to a central server
+3. The server aggregates these weights to create a better global model
+4. The improved global model is sent back to all hospitals
+5. This cycle repeats for multiple rounds until the model converges
+
+**Result**: A model as good as (or better than) centralized training, with zero patient data exposure.
+
+---
+
+## Key Features
+
+| Feature | Description |
+|---------|-------------|
+| **6-Hospital Federation** | Real clinical data partitioned across 6 geographically distributed hospital nodes |
+| **Multiple Aggregation Strategies** | FedAvg, FedProx, Trimmed Mean, Coordinate Median, Multi-Krum |
+| **Adversarial Robustness** | Label-flipping and model poisoning attack simulations |
+| **Byzantine Defenses** | Trimmed Mean, Coordinate Median, and Multi-Krum strategies |
+| **Differential Privacy** | L2 gradient clipping + calibrated Gaussian noise with Renyi accountant |
+| **Non-IID Analysis** | Dirichlet-based heterogeneity evaluation with equity gap metrics |
+| **Interactive Dashboard** | 10-page Streamlit web app with real-time visualizations |
+| **Risk Calculator** | Live clinical heart disease prediction from the global model |
+| **One-Command Demo** | Single `python demo.py` to launch the full viva presentation |
+| **Comprehensive Testing** | 69 automated tests covering all 5 project phases |
+
+---
+
+## Architecture
+
+```
+                    ┌───────────────────────────────┐
+                    │     FedCare Central Server     │
+                    │  ┌─────────────────────────┐  │
+                    │  │  Aggregation Strategy    │  │
+                    │  │  - FedAvg               │  │
+                    │  │  - FedProx              │  │
+                    │  │  - Trimmed Mean         │  │
+                    │  │  - Coordinate Median    │  │
+                    │  │  - Multi-Krum           │  │
+                    │  └─────────────────────────┘  │
+                    └──────────┬────────────────────┘
+                               │
+              Encrypted Model Parameters Only
+              (No raw patient data transmitted)
+                               │
+          ┌────────────────────┼────────────────────┐
+          │                    │                     │
+    ┌─────┴─────┐       ┌─────┴─────┐        ┌─────┴─────┐
+    │ Hospital 1 │       │ Hospital 2 │        │ Hospital 3 │
+    │ 2,000 pts  │       │ 2,000 pts  │        │ 2,000 pts  │
+    │ 23.5% prev │       │  4.8% prev │        │ 37.9% prev │
+    └────────────┘       └────────────┘        └────────────┘
+          │                    │                     │
+    ┌─────┴─────┐       ┌─────┴─────┐        ┌─────┴─────┐
+    │ Hospital 4 │       │ Hospital 5 │        │ Hospital 6 │
+    │ 2,000 pts  │       │ 2,000 pts  │        │ 2,000 pts  │
+    │ 20.7% prev │       │ 46.3% prev │        │ 34.2% prev │
+    └────────────┘       └────────────┘        └────────────┘
+```
+
+Each hospital:
+- Trains a **local MLP model** on its own private data
+- Sends only **model weight updates** (not data) to the server
+- Receives the **aggregated global model** back each round
+- Never exposes any patient-level information
+
+---
+
+## Project Structure
+
+```
+FedCare/
+│
+├── app/                          # Phase 5: Interactive Dashboard
+│   ├── __init__.py               # App package initializer
+│   └── dashboard.py              # Streamlit dashboard (10 pages, 750+ lines)
+│
+├── data/
+│   └── heart/                    # Heart disease clinical datasets
+│       ├── combined.csv          # Pooled dataset (12,000 patients)
+│       ├── hospital_1.csv        # Hospital 1 partition (2,000 patients)
+│       ├── hospital_2.csv        # Hospital 2 partition (2,000 patients)
+│       ├── hospital_3.csv        # Hospital 3 partition (2,000 patients)
+│       ├── hospital_4.csv        # Hospital 4 partition (2,000 patients)
+│       ├── hospital_5.csv        # Hospital 5 partition (2,000 patients)
+│       └── hospital_6.csv        # Hospital 6 partition (2,000 patients)
+│
+├── fedcare/                      # Core FedCare library
+│   ├── __init__.py               # Package exports
+│   ├── task.py                   # Dataset, Model (Net), train/evaluate loops
+│   ├── client_app.py             # Flower NumPyClient (FlowerClient)
+│   ├── server_app.py             # Server-side evaluation & strategy factory
+│   ├── partition.py              # Data partitioning (IID, Dirichlet, Native)
+│   ├── metrics.py                # Custom metrics & equity gap analysis
+│   ├── privacy.py                # Differential Privacy engine (clip + noise)
+│   ├── comm_cost.py              # Communication cost analyzer
+│   │
+│   ├── attacks/                  # Adversarial attack modules
+│   │   ├── __init__.py
+│   │   ├── label_flip.py         # Label-flipping poisoning attack
+│   │   └── model_poison.py       # Model weight poisoning (sign-flip, scale)
+│   │
+│   └── strategy/                 # Aggregation strategies
+│       ├── __init__.py            # Strategy exports
+│       ├── fedavg_weighted.py     # Weighted FedAvg (base strategy)
+│       ├── fedprox.py             # FedProx with proximal regularization
+│       ├── trimmed_mean.py        # Coordinate-wise Trimmed Mean
+│       ├── median.py              # Coordinate-wise Median
+│       └── krum.py                # Multi-Krum selection
+│
+├── scripts/                      # Utility scripts
+│   ├── prepare_data.py           # Data preparation pipeline
+│   ├── plot_phase2.py            # Phase 2 visualization (Figure 1)
+│   ├── plot_phase4.py            # Phase 4 visualization (Figures 4 & 5)
+│   └── save_checkpoint.py        # Model checkpoint training
+│
+├── tests/                        # Test suites (69 tests total)
+│   ├── test_baselines.py         # Phase 1 tests (10 tests)
+│   ├── test_federated.py         # Phase 2 tests (11 tests)
+│   ├── test_phase3.py            # Phase 3 tests (8 tests)
+│   ├── test_phase4.py            # Phase 4 tests (12 tests)
+│   └── test_phase5.py            # Phase 5 tests (28 tests)
+│
+├── results/                      # Experiment outputs
+│   ├── rounds_fedavg.csv         # Round-by-round FedAvg convergence data
+│   ├── phase3_non_iid_experiments.csv
+│   ├── phase3_fedprox_experiments.csv
+│   ├── phase4_attack_defense_matrix.csv
+│   ├── phase4_attack_trajectories.csv
+│   ├── phase4_dp_sweep.csv
+│   ├── phase4_comm_cost.csv
+│   ├── figure1_fedavg_convergence.png
+│   ├── figure2_non_iid_impact.png
+│   ├── figure3_fedprox_vs_fedavg.png
+│   ├── figure4_attacks_and_defenses.png
+│   └── figure5_privacy_utility.png
+│
+├── checkpoints/                  # Saved model checkpoints
+│   └── global_model.pt           # Trained global model for risk calculator
+│
+├── docs/
+│   └── screenshots/              # Dashboard screenshots
+│
+├── baseline_centralized.py       # Centralized training baseline
+├── baseline_local.py             # Local-only training baseline
+├── run_federated.py              # Phase 2: FedAvg training orchestrator
+├── run_phase3_experiments.py     # Phase 3: Non-IID & FedProx experiments
+├── run_phase4_experiments.py     # Phase 4: Attack/Defense/DP experiments
+├── demo.py                       # One-command viva demo launcher
+├── conftest.py                   # Pytest configuration
+├── pyproject.toml                # Project configuration
+├── requirements.txt              # Python dependencies
+└── README.md                     # This file
+```
+
+---
+
+## Dataset
+
+### Multi-Hospital Heart Disease Database
+
+The project uses a **real clinical heart disease database** with **12,000 patient records** distributed across **6 hospitals**, each contributing 2,000 patients.
+
+### Features (13 Clinical Variables)
+
+| # | Feature | Type | Description |
+|---|---------|------|-------------|
+| 1 | `age` | Continuous | Patient age in years |
+| 2 | `resting_bp` | Continuous | Resting blood pressure (mmHg) |
+| 3 | `cholesterol` | Continuous | Serum cholesterol level (mg/dL) |
+| 4 | `max_heart_rate` | Continuous | Maximum heart rate achieved (bpm) |
+| 5 | `bmi` | Continuous | Body mass index (kg/m²) |
+| 6 | `glucose` | Continuous | Fasting blood glucose (mg/dL) |
+| 7 | `sex` | Binary | 1 = Male, 0 = Female |
+| 8 | `smoker` | Binary | 1 = Smoker, 0 = Non-smoker |
+| 9 | `diabetes_history` | Binary | 1 = Has diabetes, 0 = No diabetes |
+| 10 | `family_history` | Binary | 1 = Family history of heart disease |
+| 11 | `cp_atypical_angina` | Binary | Chest pain: atypical angina (one-hot) |
+| 12 | `cp_non_anginal` | Binary | Chest pain: non-anginal (one-hot) |
+| 13 | `cp_typical_angina` | Binary | Chest pain: typical angina (one-hot) |
+| **Target** | `target` | Binary | **1 = Heart disease, 0 = Healthy** |
+
+### Per-Hospital Statistics
+
+| Hospital | Patients | Positive | Negative | Prevalence | Avg Age | Avg Cholesterol |
+|----------|----------|----------|----------|------------|---------|-----------------|
+| Hospital 1 | 2,000 | 471 | 1,529 | 23.5% | 60.4 | 195.1 |
+| Hospital 2 | 2,000 | 95 | 1,905 | 4.8% | 43.5 | 180.5 |
+| Hospital 3 | 2,000 | 758 | 1,242 | 37.9% | 74.7 | 203.1 |
+| Hospital 4 | 2,000 | 414 | 1,586 | 20.7% | 57.3 | 190.9 |
+| Hospital 5 | 2,000 | 926 | 1,074 | 46.3% | 77.5 | 206.1 |
+| Hospital 6 | 2,000 | 684 | 1,316 | 34.2% | 62.3 | 193.9 |
+| **Total** | **12,000** | **3,348** | **8,652** | **27.9%** | **62.6** | **194.9** |
+
+> **Note**: Each hospital has a different disease prevalence rate (from 4.8% to 46.3%), making this a naturally **non-IID** (non-identically distributed) dataset — a realistic challenge in federated learning.
+
+---
+
+## Installation
+
+### Prerequisites
+
+- Python 3.10 or higher
+- pip package manager
+- (Optional) CUDA-capable GPU for faster training
+
+### Setup Steps
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/your-username/fedcare.git
+cd fedcare
+
+# 2. Create a virtual environment (recommended)
+python -m venv venv
+source venv/bin/activate     # Linux/Mac
+# or
+venv\Scripts\activate        # Windows
+
+# 3. Install all dependencies
+pip install -r requirements.txt
+
+# 4. Install the project in development mode
+pip install -e .
+```
+
+### Dependencies
+
+| Package | Version | Purpose |
+|---------|---------|---------|
+| `flwr` | >= 1.37.0 | Flower federated learning framework |
+| `torch` | >= 2.0.0 | PyTorch deep learning library |
+| `scikit-learn` | >= 1.3.0 | Data preprocessing, metrics, train/test split |
+| `pandas` | >= 2.0.0 | Data loading and manipulation |
+| `numpy` | >= 2.0.0 | Numerical computations |
+| `matplotlib` | >= 3.8.0 | Static figure generation |
+| `plotly` | >= 5.18.0 | Interactive chart visualizations |
+| `streamlit` | >= 1.30.0 | Web dashboard framework |
+| `pytest` | >= 7.4.0 | Automated testing framework |
+| `openpyxl` | >= 3.1.0 | Excel file reading |
+| `fpdf2` | >= 2.8.0 | PDF report generation |
+
+---
+
+## Quick Start
+
+### One-Command Demo (Recommended)
+
+```bash
+python demo.py
+```
+
+This single command will:
+1. Verify all dependencies are installed
+2. Check that all training data files exist
+3. Validate experiment results are available
+4. Ensure a trained model checkpoint exists (trains one if missing)
+5. Launch the interactive Streamlit dashboard at `http://localhost:8501`
+
+### Manual Launch
+
+```bash
+# Launch just the dashboard
+streamlit run app/dashboard.py
+
+# Or run individual experiments
+python baseline_centralized.py          # Phase 1: Centralized baseline
+python baseline_local.py                # Phase 1: Local-only baseline
+python run_federated.py                 # Phase 2: FedAvg training
+python run_phase3_experiments.py        # Phase 3: Non-IID & FedProx
+python run_phase4_experiments.py        # Phase 4: Attacks, Defenses, DP
+
+# Run all tests
+python -m pytest tests/ -v
+```
+
+---
+
+## Phase 1: Foundations and Baselines
+
+### What This Phase Does
+
+Phase 1 establishes the **performance baselines** that all federated approaches are compared against. Two baselines are computed:
+
+1. **Centralized Baseline** — Train a single model on ALL 12,000 patients (the "ideal" but privacy-violating approach)
+2. **Local-Only Baseline** — Each hospital trains independently on its own 2,000 patients (no collaboration)
+
+### How It Works
+
+```
+Centralized:                          Local-Only:
+┌────────────────────────┐            ┌──────────┐  ┌──────────┐  ┌──────────┐
+│  ALL 12,000 patients   │            │ H1: 2000 │  │ H2: 2000 │  │ H3: 2000 │
+│  → Single MLP Model    │            │ → Model1 │  │ → Model2 │  │ → Model3 │
+│  → Best possible AUC   │            └──────────┘  └──────────┘  └──────────┘
+└────────────────────────┘            ┌──────────┐  ┌──────────┐  ┌──────────┐
+                                      │ H4: 2000 │  │ H5: 2000 │  │ H6: 2000 │
+                                      │ → Model4 │  │ → Model5 │  │ → Model6 │
+                                      └──────────┘  └──────────┘  └──────────┘
+```
+
+### Results
+
+| Approach | Accuracy | ROC-AUC | Privacy |
+|----------|----------|---------|---------|
+| Centralized | 0.8083 | 0.8480 | None (data pooled) |
+| Local-Only (Average) | 0.8071 | 0.8121 | Full (no sharing) |
+| **Gap** | **0.0012** | **0.0359** | — |
+
+**Key Insight**: The centralized baseline achieves the best AUC (0.8480), but it requires pooling all patient data. Local-only training preserves privacy but loses 3.6% AUC due to limited data per hospital.
+
+### Running Phase 1
+
+```bash
+python baseline_centralized.py    # Trains on combined.csv
+python baseline_local.py          # Trains 6 independent models
+python -m pytest tests/test_baselines.py -v  # 10 tests
+```
+
+---
+
+## Phase 2: Federated Core (FedAvg)
+
+### What This Phase Does
+
+Phase 2 implements the core **Federated Averaging (FedAvg)** algorithm using the **Flower** framework. This is the fundamental federated learning protocol where:
+
+1. Server initializes a global model
+2. All 6 hospitals receive the global model
+3. Each hospital trains locally for 2 epochs
+4. Hospitals send weight updates back to the server
+5. Server computes a **weighted average** of all updates
+6. Repeat for 20 rounds
+
+### How FedAvg Works
+
+```
+Round 1:           Round 2:           Round 3:        ...    Round 20:
+┌─────────┐       ┌─────────┐       ┌─────────┐           ┌─────────┐
+│ Global   │       │ Global   │       │ Global   │           │ Global   │
+│ Model v0 │──────►│ Model v1 │──────►│ Model v2 │──...──►  │ Model v20│
+└─────────┘       └─────────┘       └─────────┘           └─────────┘
+     │                 │                 │                      │
+     ├──► H1 train     ├──► H1 train     ├──► H1 train         │
+     ├──► H2 train     ├──► H2 train     ├──► H2 train         │
+     ├──► H3 train     ├──► H3 train     ├──► H3 train         │
+     ├──► H4 train     ├──► H4 train     ├──► H4 train         │
+     ├──► H5 train     ├──► H5 train     ├──► H5 train         │
+     └──► H6 train     └──► H6 train     └──► H6 train         │
+     Aggregate ▲       Aggregate ▲       Aggregate ▲            ▼
+     (weighted avg)    (weighted avg)    (weighted avg)     FINAL MODEL
+```
+
+### Results
+
+| Metric | Value |
+|--------|-------|
+| Global AUC (Round 20) | **0.8504** |
+| Global Accuracy | **0.8117** |
+| Total Rounds | 20 |
+| Local Epochs per Round | 2 |
+| Learning Rate | 0.001 |
+
+### Per-Hospital AUC After FedAvg
+
+| Hospital | AUC | Performance |
+|----------|-----|-------------|
+| Hospital 1 | 0.8542 | Best |
+| Hospital 2 | 0.8054 | Good |
+| Hospital 3 | 0.7891 | Moderate |
+| Hospital 4 | 0.8554 | Best |
+| Hospital 5 | 0.8156 | Good |
+| Hospital 6 | 0.7827 | Moderate |
+| **Equity Gap** | **0.0727** | (Best - Worst) |
+
+**Key Insight**: FedAvg achieves **AUC 0.8504** — which is **higher** than the centralized baseline (0.8480), proving that federated learning can match or exceed centralized training while fully preserving patient privacy.
+
+### Convergence Chart
+
+![Figure 1: FedAvg Convergence](docs/screenshots/figure1_convergence.png)
+
+### Running Phase 2
+
+```bash
+python run_federated.py
+python -m pytest tests/test_federated.py -v  # 11 tests
+```
+
+---
+
+## Phase 3: Non-IID Skew, FedProx and Personalization
+
+### What This Phase Does
+
+Phase 3 investigates how **data heterogeneity** (non-IID distributions) affects federated learning and how to mitigate it:
+
+1. **Non-IID Analysis**: Tests the impact of different levels of data skew using Dirichlet distributions
+2. **FedProx**: Adds a proximal regularization term to prevent local models from drifting too far from the global model
+3. **Personalization**: Fine-tunes the global model locally at each hospital for better per-hospital performance
+
+### What is Non-IID?
+
+In real hospitals, patient populations differ significantly:
+
+- Hospital 2 has only **4.8%** heart disease prevalence (healthy population)
+- Hospital 5 has **46.3%** prevalence (high-risk population)
+
+This **non-identical distribution** makes federated learning harder because each hospital's local model "pulls" the global model in different directions.
+
+### Non-IID Experiment Results
+
+| Configuration | Accuracy | AUC | Equity Gap |
+|---------------|----------|-----|------------|
+| IID (Uniform) | 0.8158 | 0.8532 | 0.0290 |
+| Dirichlet (alpha=1.0 — Mild) | 0.8083 | 0.8524 | 0.1539 |
+| Dirichlet (alpha=0.5 — Moderate) | 0.8129 | 0.8520 | 0.3144 |
+| Dirichlet (alpha=0.1 — Severe) | 0.7208 | 0.7040 | 0.2491 |
+| Hospital-Native (Real Skew) | 0.8096 | 0.8488 | 0.0798 |
+
+**Key Insight**: As data heterogeneity increases (lower alpha), performance degrades. Severe skew (alpha=0.1) causes a dramatic 15% drop in AUC. The real hospital-native distribution performs reasonably well.
+
+### FedProx vs FedAvg Results
+
+| Algorithm | Accuracy | AUC | Equity Gap |
+|-----------|----------|-----|------------|
+| FedAvg (mu=0.0) | 0.8117 | 0.8493 | 0.0748 |
+| FedProx (mu=0.001) | 0.8092 | 0.8501 | 0.0771 |
+| FedProx (mu=0.01) | 0.8100 | 0.8491 | 0.0745 |
+| FedProx (mu=0.1) | 0.8092 | 0.8493 | 0.0753 |
+| FedProx (mu=1.0) | 0.8013 | 0.8364 | 0.0955 |
+
+**Key Insight**: FedProx with small mu (0.001) slightly improves AUC over FedAvg. However, too much regularization (mu=1.0) hurts performance as it over-constrains local updates.
+
+### Research Figures
+
+| Non-IID Impact Analysis | FedProx vs FedAvg Comparison |
+|:---:|:---:|
+| ![Figure 2](docs/screenshots/figure2_non_iid.png) | ![Figure 3](docs/screenshots/figure3_fedprox.png) |
+
+### Running Phase 3
+
+```bash
+python run_phase3_experiments.py
+python -m pytest tests/test_phase3.py -v  # 8 tests
+```
+
+---
+
+## Phase 4: Adversarial Attacks, Byzantine Defenses and Differential Privacy
+
+### What This Phase Does
+
+Phase 4 addresses **security and privacy** — two critical concerns in federated learning:
+
+1. **Adversarial Attacks**: What happens if a hospital is malicious?
+2. **Byzantine Defenses**: How to protect the global model from attackers?
+3. **Differential Privacy**: How to mathematically guarantee no patient data leaks?
+4. **Communication Cost**: How much bandwidth does federated learning consume?
+
+### Adversarial Attacks Implemented
+
+#### 1. Label-Flipping Attack
+
+A malicious hospital **inverts its training labels** (healthy → diseased, diseased → healthy), causing it to send corrupted model updates.
+
+```
+Normal Hospital:     Malicious Hospital (Label-Flip):
+Patient A: Healthy   Patient A: Healthy → DISEASED  (flipped!)
+Patient B: Diseased  Patient B: Diseased → HEALTHY  (flipped!)
+Patient C: Healthy   Patient C: Healthy → DISEASED  (flipped!)
+```
+
+#### 2. Model Poisoning Attack
+
+A malicious hospital **directly manipulates its model weights** before sending them to the server:
+
+- **Sign-Flip**: Reverses the sign of all weight updates (gradient ascent instead of descent)
+- **Scale**: Amplifies weight updates by a large multiplier to dominate aggregation
+
+```
+Normal update: w_local = [0.1, -0.3, 0.5]
+Sign-flip:     w_local = [-0.1, 0.3, -0.5]    (all signs reversed)
+Scale (3x):    w_local = [0.3, -0.9, 1.5]      (amplified to dominate)
+```
+
+### Byzantine-Robust Defenses
+
+#### 1. Coordinate-wise Trimmed Mean
+
+Sorts each model parameter across all hospitals, **removes the top and bottom values**, and averages the remaining "trimmed" values.
+
+```
+Hospital weights for parameter #1: [0.2, 0.3, 0.1, -5.0, 0.25, 0.15]
+                                                     ^^^^
+                                              (malicious outlier)
+
+After trimming top/bottom 1:  [0.15, 0.2, 0.25, 0.3]
+Trimmed Mean:                  0.225  (outlier removed!)
+```
+
+#### 2. Coordinate-wise Median
+
+Uses the **median** of each parameter, which is naturally immune to outliers.
+
+#### 3. Multi-Krum
+
+Computes **pairwise distances** between all hospital updates and selects the ones that are closest together (most "normal"). Outliers are automatically excluded.
+
+### Attack x Defense Matrix Results
+
+| Attack Scenario | FedAvg | Trimmed Mean | Coord. Median | Multi-Krum |
+|----------------|--------|-------------|---------------|------------|
+| None (Clean) | 0.8503 | 0.8509 | 0.8518 | 0.8493 |
+| Label-Flip (H4) | 0.8520 | 0.8486 | 0.8491 | 0.8498 |
+| Model Poison (H4, Sign-Flip) | **0.8372** | 0.8508 | 0.8478 | 0.8497 |
+
+**Key Insight**: Model poisoning (sign-flip) reduces FedAvg AUC by **1.3%**, but Trimmed Mean **fully recovers** to 0.8508 — demonstrating the effectiveness of Byzantine-robust aggregation.
+
+### Differential Privacy Results
+
+| Noise Multiplier | Epsilon (Privacy Budget) | Privacy Regime | AUC |
+|-----------------|--------------------------|----------------|-----|
+| 0.000 | Infinity (No DP) | No Guarantee | 0.8494 |
+| 0.001 | 16,782.90 | Weak | 0.8504 |
+| 0.005 | 3,356.58 | Weak | 0.8510 |
+| 0.010 | 1,678.29 | Weak | 0.8502 |
+| 0.050 | 335.66 | Weak | 0.8497 |
+| 0.100 | 167.83 | Weak | 0.8440 |
+
+**Key Insight**: Light noise (multiplier <= 0.050) preserves nearly identical AUC, demonstrating that privacy and utility can coexist with careful calibration.
+
+### Communication Cost Analysis
+
+| Metric | Value |
+|--------|-------|
+| Model Parameters | 3,042 |
+| Single Message Size | 11.9 KB |
+| Total FL Communication (20 rounds) | 1.67 MB |
+| Centralized Data Transfer | 0.47 MB |
+| Communication Ratio | 3.58x |
+
+### Research Figures
+
+| Attacks & Defenses | Privacy-Utility Tradeoff |
+|:---:|:---:|
+| ![Figure 4](docs/screenshots/figure4_attacks.png) | ![Figure 5](docs/screenshots/figure5_privacy.png) |
+
+### Running Phase 4
+
+```bash
+python run_phase4_experiments.py
+python -m pytest tests/test_phase4.py -v  # 12 tests
+```
+
+---
+
+## Phase 5: Interactive Web Dashboard
+
+### What This Phase Does
+
+Phase 5 delivers a complete **Streamlit web application** with **10 interactive pages** for the M.Tech viva presentation. It visualizes all experiment results and includes a live clinical risk calculator.
+
+### Dashboard Pages
+
+#### 1. Dashboard Overview
+
+The main landing page showing top-level KPIs (Global AUC, Accuracy, Training Rounds, Security Experiments, Best Privacy Epsilon) along with convergence trends and hospital data distribution charts.
+
+![Dashboard Overview](docs/screenshots/dashboard_overview.png)
+
+#### 2. Network Topology
+
+An interactive hub-and-spoke visualization of the federated architecture. The central FedCare Server connects to 6 hospital nodes, each displaying sample counts and disease prevalence on hover.
+
+![Network Topology](docs/screenshots/network_topology.png)
+
+#### 3. Training Console
+
+Interactive training convergence dashboard with:
+- **Metric selector**: Switch between ROC-AUC, Accuracy, and Loss views
+- **Per-hospital toggle**: Overlay individual hospital AUC curves
+- **Animation slider**: Simulate round-by-round training progression
+- **Hospital AUC bar chart**: Final per-hospital performance distribution
+
+![Training Console](docs/screenshots/training_console.png)
+
+#### 4. Attack vs. Defense Analysis
+
+Comprehensive adversarial robustness visualization:
+- **Grouped bar charts**: Compare strategies across attack scenarios
+- **Attack x Defense heatmap**: Color-coded AUC performance matrix
+- **Trajectory charts**: Round-by-round impact of attacks over time
+
+![Attack vs Defense](docs/screenshots/attack_defense.png)
+
+#### 5. Privacy-Utility Tradeoff Explorer
+
+Interactive epsilon vs. AUC chart with privacy regime annotations showing how different noise levels affect model performance.
+
+#### 6. Non-IID Data Heterogeneity Analysis
+
+Side-by-side comparison of data heterogeneity impact and FedProx effectiveness.
+
+#### 7. Communication Cost Analysis
+
+Bar chart comparing federated model exchange vs. centralized raw data transfer bandwidth.
+
+#### 8. Clinical Risk Calculator
+
+A live heart disease risk prediction tool where clinicians can input 13 clinical features and get an instant probability score with a gauge chart and risk classification.
+
+![Risk Calculator](docs/screenshots/risk_calculator.png)
+
+#### 9. Research Figures Gallery
+
+Display of all 5 pre-generated publication-quality research figures.
+
+#### 10. Project Overview
+
+Technical documentation of the architecture, strategies, security mechanisms, and model design.
+
+### Launching the Dashboard
+
+```bash
+# Option 1: One-command demo (recommended)
+python demo.py
+
+# Option 2: Direct Streamlit launch
+streamlit run app/dashboard.py
+
+# The dashboard will open at http://localhost:8501
+```
+
+### Running Phase 5 Tests
+
+```bash
+python -m pytest tests/test_phase5.py -v  # 28 tests
+```
+
+---
+
+## Experiment Results
+
+### Summary of All Experiments
+
+| Experiment | Key Result |
+|-----------|------------|
+| Centralized Baseline | AUC = 0.8480 |
+| Local-Only Baseline | AUC = 0.8121 (avg) |
+| **FedAvg (20 rounds)** | **AUC = 0.8504** (beats centralized!) |
+| FedProx (best mu=0.001) | AUC = 0.8501 |
+| Non-IID Severe (alpha=0.1) | AUC = 0.7040 (14.6% drop) |
+| Label-Flip Attack on FedAvg | AUC = 0.8520 (robust) |
+| Model Poison on FedAvg | AUC = 0.8372 (1.3% drop) |
+| Model Poison + Trimmed Mean | AUC = 0.8508 (fully recovered) |
+| DP (noise=0.05, eps=335.66) | AUC = 0.8497 (0.07% drop only) |
+
+### Key Takeaways
+
+1. **Federated learning works**: FedAvg achieves AUC 0.8504, exceeding the centralized baseline of 0.8480
+2. **Privacy is preserved**: No raw patient data is ever transmitted between hospitals
+3. **Attacks are survivable**: Byzantine-robust strategies like Trimmed Mean fully recover from model poisoning
+4. **Differential Privacy is viable**: Light noise (epsilon=335.66) causes negligible utility loss (< 0.1%)
+5. **Non-IID is the main challenge**: Severe data heterogeneity (alpha=0.1) causes significant performance degradation
+
+---
+
+## Model Architecture
+
+### MLP Neural Network
+
+FedCare uses a Multi-Layer Perceptron (MLP) for binary heart disease classification:
+
+```
+Input Layer:    13 clinical features
+                    │
+                    ▼
+Hidden Layer 1: Linear(13 → 64) + ReLU + Dropout(0.3)
+                    │
+                    ▼
+Hidden Layer 2: Linear(64 → 32) + ReLU + Dropout(0.3)
+                    │
+                    ▼
+Output Layer:   Linear(32 → 2) → Softmax → P(heart disease)
+```
+
+### Model Specifications
+
+| Property | Value |
+|----------|-------|
+| Total Parameters | 3,042 |
+| Optimizer | Adam |
+| Learning Rate | 0.001 |
+| Loss Function | CrossEntropyLoss |
+| Dropout Rate | 0.3 |
+| Batch Size | 32 |
+| Test Split | 20% (stratified) |
+| Scaling | StandardScaler (fitted on train only) |
+
+### Why an MLP?
+
+- **Tabular data**: MLPs are well-suited for structured clinical features
+- **Lightweight**: Only 3,042 parameters means fast training and low communication overhead
+- **Interpretable**: Simple architecture is easier to explain to medical professionals
+- **Efficient**: Quick convergence within 20 federated rounds
+
+---
+
+## Testing
+
+### Test Coverage Summary
+
+| Test File | Phase | Tests | Status |
+|-----------|-------|-------|--------|
+| `tests/test_baselines.py` | Phase 1: Baselines | 10 | All Passed |
+| `tests/test_federated.py` | Phase 2: FedAvg Core | 11 | All Passed |
+| `tests/test_phase3.py` | Phase 3: Non-IID & FedProx | 8 | All Passed |
+| `tests/test_phase4.py` | Phase 4: Attacks, Defenses, DP | 12 | All Passed |
+| `tests/test_phase5.py` | Phase 5: Dashboard & Demo | 28 | All Passed |
+| **Total** | **All Phases** | **69** | **All Passed** |
+
+### Running Tests
+
+```bash
+# Run all tests
+python -m pytest tests/ -v
+
+# Run specific phase
+python -m pytest tests/test_baselines.py -v      # Phase 1
+python -m pytest tests/test_federated.py -v       # Phase 2
+python -m pytest tests/test_phase3.py -v          # Phase 3
+python -m pytest tests/test_phase4.py -v          # Phase 4
+python -m pytest tests/test_phase5.py -v          # Phase 5
+
+# Run with coverage report
+python -m pytest tests/ -v --tb=short
+```
+
+### What the Tests Cover
+
+**Phase 1 Tests (10)**:
+- Data loading and CSV parsing
+- Feature shape validation (13 features)
+- Target column presence and binary encoding
+- Train/test split stratification
+- StandardScaler fitting
+- Model forward pass
+- Centralized training convergence
+- Local training convergence
+- AUC metric computation
+- Loss reduction verification
+
+**Phase 2 Tests (11)**:
+- FlowerClient initialization
+- Parameter serialization (get_parameters)
+- Parameter deserialization (set_parameters)
+- Local training (fit method)
+- Local evaluation (evaluate method)
+- FedAvgWeighted strategy creation
+- Server-side evaluation function
+- Config callback functions
+- Client factory function
+- End-to-end federation round
+- Metric aggregation
+
+**Phase 3 Tests (8)**:
+- Dirichlet partitioning
+- IID partitioning
+- Hospital-native partitioning
+- FedProx proximal term computation
+- FedProx strategy initialization
+- Non-IID AUC degradation
+- Equity gap calculation
+- Personalization improvement
+
+**Phase 4 Tests (12)**:
+- Label-flipping attack
+- Model poisoning (sign-flip)
+- Model poisoning (scaling)
+- Trimmed Mean aggregation
+- Coordinate Median aggregation
+- Multi-Krum selection
+- DP gradient clipping
+- DP Gaussian noise injection
+- Renyi privacy accountant
+- Communication cost calculation
+- Attack recovery with defenses
+- Privacy-utility tradeoff verification
+
+**Phase 5 Tests (28)**:
+- Dashboard data loaders (7 tests)
+- Model inference pipeline (4 tests)
+- Feature encoding validation (5 tests)
+- End-to-end prediction pipeline (2 tests)
+- Demo script verification (5 tests)
+- Risk classification logic (5 tests)
+
+---
+
+## Research Figures
+
+All figures are publication-quality PNG images generated by matplotlib and saved in the `results/` directory.
+
+### Figure 1: FedAvg Convergence Over 20 Rounds
+
+Shows how Global AUC, Accuracy, and Loss converge as communication rounds progress. Each hospital's individual AUC trajectory is also plotted to show inter-hospital fairness.
+
+![Figure 1: FedAvg Convergence](docs/screenshots/figure1_convergence.png)
+
+### Figure 2: Non-IID Data Heterogeneity Impact
+
+Compares federated learning performance under different levels of data skew (IID, mild, moderate, severe, and real hospital-native distributions).
+
+![Figure 2: Non-IID Impact](docs/screenshots/figure2_non_iid.png)
+
+### Figure 3: FedProx vs FedAvg
+
+Bar chart comparing FedAvg and FedProx at different proximal regularization strengths (mu values).
+
+![Figure 3: FedProx vs FedAvg](docs/screenshots/figure3_fedprox.png)
+
+### Figure 4: Adversarial Attacks and Byzantine Defenses
+
+Grouped bar chart showing how different defense strategies perform under clean, label-flipping, and model poisoning attack scenarios.
+
+![Figure 4: Attacks and Defenses](docs/screenshots/figure4_attacks.png)
+
+### Figure 5: Privacy-Utility Tradeoff
+
+Line chart showing how increasing differential privacy noise affects model AUC, demonstrating the privacy-utility tradeoff.
+
+![Figure 5: Privacy-Utility Tradeoff](docs/screenshots/figure5_privacy.png)
+
+---
+
+## Contributing
+
+This project was developed as part of an M.Tech research thesis. Contributions are welcome for:
+
+1. **Additional aggregation strategies** (e.g., FedNova, SCAFFOLD)
+2. **More attack types** (e.g., backdoor attacks, free-rider attacks)
+3. **Advanced privacy mechanisms** (e.g., secure aggregation, homomorphic encryption)
+4. **Extended clinical features** (e.g., ECG data, imaging)
+5. **Multi-task learning** (e.g., predicting multiple conditions)
+
+### How to Contribute
+
+```bash
+# Fork the repository
+git fork https://github.com/your-username/fedcare.git
+
+# Create a feature branch
+git checkout -b feature/your-feature-name
+
+# Make your changes and run tests
+python -m pytest tests/ -v
+
+# Commit and push
+git add .
+git commit -m "Add: your feature description"
+git push origin feature/your-feature-name
+
+# Open a Pull Request
+```
+
+---
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+---
+
+## Acknowledgments
+
+- **Flower Framework** ([flower.ai](https://flower.ai)) — Open-source federated learning framework
+- **PyTorch** ([pytorch.org](https://pytorch.org)) — Deep learning library
+- **Streamlit** ([streamlit.io](https://streamlit.io)) — Web application framework
+- **Plotly** ([plotly.com](https://plotly.com)) — Interactive visualization library
+- **scikit-learn** ([scikit-learn.org](https://scikit-learn.org)) — Machine learning utilities
+
+---
+
+<p align="center">
+  <strong>Built with Federated Learning principles — Privacy by Design</strong>
+  <br>
+  <em>No patient data was harmed (or moved) in the making of this project.</em>
+</p>

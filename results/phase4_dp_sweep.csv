@@ -1,0 +1,7 @@
+Noise_Multiplier,Clip_Norm,Epsilon,Delta,Privacy_Regime,Final_Accuracy,Final_AUC,Worst_Hospital_AUC
+0.0,1.0,inf,1e-05,No Privacy Guarantee (eps = inf),0.8075,0.8494,0.7822
+0.001,1.0,16782.898,1e-05,Weak Privacy (eps = 16782.90),0.8079,0.8504,0.7866
+0.005,1.0,3356.58,1e-05,Weak Privacy (eps = 3356.58),0.8113,0.851,0.7832
+0.01,1.0,1678.29,1e-05,Weak Privacy (eps = 1678.29),0.8067,0.8502,0.7866
+0.05,1.0,335.658,1e-05,Weak Privacy (eps = 335.66),0.81,0.8497,0.7845
+0.1,1.0,167.829,1e-05,Weak Privacy (eps = 167.83),0.7942,0.844,0.7801
