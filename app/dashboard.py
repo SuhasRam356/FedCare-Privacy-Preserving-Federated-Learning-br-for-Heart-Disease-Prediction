@@ -83,6 +83,46 @@ def inject_custom_css():
         html, body, [class*="st-"] {
             font-family: 'Inter', sans-serif !important;
         }
+        
+        /* Fix Material Icons font for sidebar expand/collapse button */
+        i, .material-icons, .material-symbols-rounded, [class^="stIcon"], [class*="icon"] {
+            font-family: 'Material Symbols Rounded', 'Material Icons', sans-serif !important;
+        }
+
+        /* Professional Sidebar Navigation Style */
+        /* Hide the radio button circles */
+        section[data-testid="stSidebar"] .stRadio div[role="radiogroup"] label[data-baseweb="radio"] div:first-child {
+            display: none !important;
+        }
+        
+        /* Style the radio labels to look like professional buttons */
+        section[data-testid="stSidebar"] .stRadio div[role="radiogroup"] label[data-baseweb="radio"] {
+            padding: 10px 16px;
+            border-radius: 8px;
+            background: transparent;
+            margin-bottom: 4px;
+            border: 1px solid transparent;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            width: 100%;
+        }
+        
+        /* Hover effect */
+        section[data-testid="stSidebar"] .stRadio div[role="radiogroup"] label[data-baseweb="radio"]:hover {
+            background-color: rgba(99, 102, 241, 0.1);
+        }
+        
+        /* Selected state */
+        section[data-testid="stSidebar"] .stRadio div[role="radiogroup"] label[data-baseweb="radio"][aria-checked="true"] {
+            background: linear-gradient(90deg, rgba(99, 102, 241, 0.15) 0%, transparent 100%);
+            border-left: 4px solid var(--primary);
+        }
+        
+        /* Make text inside selected item pop out */
+        section[data-testid="stSidebar"] .stRadio div[role="radiogroup"] label[data-baseweb="radio"][aria-checked="true"] p {
+            color: var(--primary-light) !important;
+            font-weight: 700;
+        }
 
         /* Main background */
         .stApp {
