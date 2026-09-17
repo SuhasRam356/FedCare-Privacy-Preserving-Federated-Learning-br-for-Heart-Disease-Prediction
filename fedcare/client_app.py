@@ -231,6 +231,17 @@ class FlowerClient(NumPyClient):
         # 1. Update local model with global weights
         set_parameters(self.net, parameters)
 
+        # [NEW] Server Defense: Verify the global model before training
+        verify_server = config.get("verify_server", False)
+        if verify_server:
+            metrics_before = evaluate(self.net, self.test_loader, device=self.device)
+            # A completely scrambled model usually gets ~0.50 (random guessing). 
+            # If accuracy and AUC are both poor, it's a poisoned model.
+            if metrics_before["accuracy"] < 0.55 and metrics_before["auc"] < 0.55:
+                logger.error(f"Hospital {self.partition_id}: SECURITY ALERT! Received poisoned global model from server (Accuracy: {metrics_before['accuracy']:.2f}, AUC: {metrics_before['auc']:.2f}). Aborting training.")
+                # Raise exception to abort the malicious update
+                raise RuntimeError("Server Compromise Detected. Training Aborted.")
+
         # 2. Extract hyperparameters from config
         local_epochs = int(config.get("local_epochs", 2))
         learning_rate = float(config.get("lr", 0.001))
