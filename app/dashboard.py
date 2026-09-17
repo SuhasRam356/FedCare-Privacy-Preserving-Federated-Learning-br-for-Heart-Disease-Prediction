@@ -33,6 +33,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import streamlit as st
+from streamlit_option_menu import option_menu
 import torch
 
 # ── Path Setup ────────────────────────────────────────────────────────
@@ -80,48 +81,8 @@ def inject_custom_css():
         }
 
         /* Global font */
-        html, body, [class*="st-"] {
+        html, body {
             font-family: 'Inter', sans-serif !important;
-        }
-        
-        /* Fix Material Icons font for sidebar expand/collapse button */
-        i, .material-icons, .material-symbols-rounded, [class^="stIcon"], [class*="icon"] {
-            font-family: 'Material Symbols Rounded', 'Material Icons', sans-serif !important;
-        }
-
-        /* Professional Sidebar Navigation Style */
-        /* Hide the radio button circles */
-        section[data-testid="stSidebar"] .stRadio div[role="radiogroup"] label[data-baseweb="radio"] div:first-child {
-            display: none !important;
-        }
-        
-        /* Style the radio labels to look like professional buttons */
-        section[data-testid="stSidebar"] .stRadio div[role="radiogroup"] label[data-baseweb="radio"] {
-            padding: 10px 16px;
-            border-radius: 8px;
-            background: transparent;
-            margin-bottom: 4px;
-            border: 1px solid transparent;
-            transition: all 0.2s ease;
-            cursor: pointer;
-            width: 100%;
-        }
-        
-        /* Hover effect */
-        section[data-testid="stSidebar"] .stRadio div[role="radiogroup"] label[data-baseweb="radio"]:hover {
-            background-color: rgba(99, 102, 241, 0.1);
-        }
-        
-        /* Selected state */
-        section[data-testid="stSidebar"] .stRadio div[role="radiogroup"] label[data-baseweb="radio"][aria-checked="true"] {
-            background: linear-gradient(90deg, rgba(99, 102, 241, 0.15) 0%, transparent 100%);
-            border-left: 4px solid var(--primary);
-        }
-        
-        /* Make text inside selected item pop out */
-        section[data-testid="stSidebar"] .stRadio div[role="radiogroup"] label[data-baseweb="radio"][aria-checked="true"] p {
-            color: var(--primary-light) !important;
-            font-weight: 700;
         }
 
         /* Main background */
@@ -1365,9 +1326,9 @@ def render_sidebar():
 
         st.markdown("---")
 
-        page = st.radio(
-            "Navigation",
-            [
+        page = option_menu(
+            menu_title=None,
+            options=[
                 "Dashboard Overview",
                 "Network Topology",
                 "Training Console",
@@ -1379,8 +1340,26 @@ def render_sidebar():
                 "Research Figures",
                 "Project Overview",
             ],
-            index=0,
-            key="nav",
+            icons=[
+                "speedometer2", 
+                "diagram-3", 
+                "terminal", 
+                "shield-shaded", 
+                "lock", 
+                "bar-chart-steps", 
+                "wifi", 
+                "calculator", 
+                "image", 
+                "info-circle"
+            ],
+            menu_icon="cast",
+            default_index=0,
+            styles={
+                "container": {"padding": "0!important", "background-color": "transparent"},
+                "icon": {"color": "#6366f1", "font-size": "18px"}, 
+                "nav-link": {"font-size": "15px", "text-align": "left", "margin":"0px", "border-radius": "8px", "--hover-color": "rgba(99, 102, 241, 0.1)", "color": "#f1f5f9"},
+                "nav-link-selected": {"background-color": "rgba(99, 102, 241, 0.15)", "color": "#818cf8", "font-weight": "700", "border-left": "4px solid #6366f1"},
+            }
         )
 
         st.markdown("---")
