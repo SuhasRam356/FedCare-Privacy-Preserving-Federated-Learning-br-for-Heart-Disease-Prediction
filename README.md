@@ -72,7 +72,7 @@ FedCare uses **Federated Learning** — a privacy-preserving technique where:
 
 | Feature | Description |
 |---------|-------------|
-| **6-Hospital Federation** | Real clinical data partitioned across 6 geographically distributed hospital nodes |
+| **6-Hospital Federation** | Highly realistic synthetic clinical data partitioned across 6 geographically distributed hospital nodes |
 | **Multiple Aggregation Strategies** | FedAvg, FedProx, Trimmed Mean, Coordinate Median, Multi-Krum |
 | **Adversarial Robustness** | Label-flipping and model poisoning attack simulations |
 | **Byzantine Defenses** | Trimmed Mean, Coordinate Median, and Multi-Krum strategies |
@@ -219,7 +219,7 @@ FedCare/
 
 ### Multi-Hospital Heart Disease Database
 
-The project uses a **real clinical heart disease database** with **12,000 patient records** distributed across **6 hospitals**, each contributing 2,000 patients.
+The project uses a **highly realistic synthetic clinical heart disease database** with **12,000 patient records** distributed across **6 hospitals**, each contributing 2,000 patients. The synthetic data is meticulously designed to mimic true clinical distributions, including realistic non-IID covariate shifts and varying disease prevalence across hospitals.
 
 ### Features (13 Clinical Variables)
 
