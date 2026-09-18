@@ -368,24 +368,19 @@ def load_global_model():
     model.eval()
 
     # Try to load checkpoint if available
-    checkpoint_path = CHECKPOINT_DIR / "global_model.pt"
+    checkpoint_path = CHECKPOINT_DIR / "final_fedavg_model.pt"
     if checkpoint_path.exists():
         state_dict = torch.load(checkpoint_path, map_location="cpu", weights_only=True)
         model.load_state_dict(state_dict)
+        # Get correctly fitted scaler from load_data
+        from fedcare.task import load_data
+        _, _, scaler = load_data(partition_id=None)
     else:
         # Fall back: train a quick centralized model for the risk calculator
         from fedcare.task import load_data, train as train_fn
         train_loader, _, scaler = load_data(partition_id=None)
         train_fn(model, train_loader, epochs=15, lr=0.001)
         model.eval()
-        return model, scaler
-
-    # Fit scaler on combined data
-    combined_path = DATA_DIR / "combined.csv"
-    df = pd.read_csv(combined_path)
-    X = df.drop(columns=["target"]).values
-    scaler = StandardScaler()
-    scaler.fit(X)
 
     return model, scaler
 

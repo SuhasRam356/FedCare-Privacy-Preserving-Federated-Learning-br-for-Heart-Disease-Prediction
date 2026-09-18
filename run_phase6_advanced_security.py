@@ -17,6 +17,7 @@ import traceback
 from typing import Any
 
 from fedcare.client_app import FlowerClient, get_parameters, set_parameters
+from fedcare.reproducibility import seed_everything
 from fedcare.strategy.trimmed_mean import aggregate_trimmed_mean
 from fedcare.strategy.root_defense import RootDatasetDefense
 from fedcare.task import Net, load_data, evaluate
@@ -84,7 +85,7 @@ def run_scenario_1_massive_attack():
                 global_params = aggregate_trimmed_mean(fit_results, beta=0.17)
             else:
                 # Use our new RootDatasetDefense
-                strategy = RootDatasetDefense(threshold_accuracy=0.60)
+                strategy = RootDatasetDefense(threshold_accuracy=0.75)
                 # Mock Flwr objects for the strategy
                 flwr_results = []
                 for idx, (w, n) in enumerate(fit_results):
@@ -108,7 +109,7 @@ def run_scenario_1_massive_attack():
             print(f"  -> Global Accuracy: {metrics['accuracy']:.4f} | Global AUC: {metrics['auc']:.4f}")
             
         final_acc = evaluate(eval_model, server_test_loader, device)["accuracy"]
-        if final_acc < 0.65:
+        if final_acc < 0.75:
             print(f" => RESULT: {defense_name} FAILED! Hackers destroyed the global model.")
         else:
             print(f" => RESULT: {defense_name} SUCCEEDED! Global model protected.")
@@ -148,5 +149,6 @@ def run_scenario_2_server_compromise():
         print(f"  => SUCCESS! Hospital detected the attack and aborted. Error caught: {e}")
 
 if __name__ == "__main__":
+    seed_everything(42)
     run_scenario_1_massive_attack()
     run_scenario_2_server_compromise()

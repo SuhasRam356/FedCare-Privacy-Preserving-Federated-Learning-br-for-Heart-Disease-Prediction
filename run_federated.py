@@ -41,6 +41,7 @@ from flwr.common import (
 from fedcare.client_app import FlowerClient, get_parameters, set_parameters
 from fedcare.server_app import create_fedavg_strategy, get_initial_parameters
 from fedcare.strategy.fedavg_weighted import FedAvgWeighted
+from fedcare.reproducibility import seed_everything
 from fedcare.task import Net, evaluate, load_data
 
 # Configure logging
@@ -347,4 +348,5 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    seed_everything(42)
     main()

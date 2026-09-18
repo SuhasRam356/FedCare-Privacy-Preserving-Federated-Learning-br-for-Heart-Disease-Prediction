@@ -28,35 +28,37 @@ rng = np.random.default_rng(SEED)
 
 # ── Feature definitions ──────────────────────────────────────────────
 FEATURE_NAMES = [
-    "age", "sex", "cp", "trestbps", "chol", "fbs",
-    "restecg", "thalach", "exang", "oldpeak", "slope", "ca",
+    "age", "resting_bp", "cholesterol", "max_heart_rate", "bmi", "glucose",
+    "sex", "smoker", "diabetes_history", "family_history",
+    "cp_atypical_angina", "cp_non_anginal", "cp_typical_angina",
 ]
 
 # Realistic ranges (loosely based on the Cleveland dataset)
 FEATURE_RANGES: dict[str, tuple[float, float]] = {
-    "age":      (29.0, 77.0),
-    "sex":      (0.0,  1.0),    # binary
-    "cp":       (0.0,  3.0),    # chest-pain type
-    "trestbps": (94.0, 200.0),
-    "chol":     (126.0, 564.0),
-    "fbs":      (0.0,  1.0),    # binary
-    "restecg":  (0.0,  2.0),
-    "thalach":  (71.0, 202.0),
-    "exang":    (0.0,  1.0),    # binary
-    "oldpeak":  (0.0,  6.2),
-    "slope":    (0.0,  2.0),
-    "ca":       (0.0,  4.0),
+    "age":                (29.0, 77.0),
+    "resting_bp":         (94.0, 200.0),
+    "cholesterol":        (126.0, 564.0),
+    "max_heart_rate":     (71.0, 202.0),
+    "bmi":                (18.0, 40.0),
+    "glucose":            (70.0, 200.0),
+    "sex":                (0.0,  1.0),
+    "smoker":             (0.0,  1.0),
+    "diabetes_history":   (0.0,  1.0),
+    "family_history":     (0.0,  1.0),
+    "cp_atypical_angina": (0.0,  1.0),
+    "cp_non_anginal":     (0.0,  1.0),
+    "cp_typical_angina":  (0.0,  1.0),
 }
 
 # Per-hospital configuration: (num_samples, positive_class_ratio)
-# Varying sizes and ratios simulates mild Non-IID skew.
+# Varying sizes and ratios simulates realistic Non-IID skew.
 HOSPITAL_CONFIG: list[tuple[int, float]] = [
-    (300, 0.45),   # Hospital 1 – large, balanced
-    (250, 0.50),   # Hospital 2 – medium, balanced
-    (180, 0.35),   # Hospital 3 – smaller, fewer positives
-    (220, 0.55),   # Hospital 4 – medium, more positives
-    (150, 0.40),   # Hospital 5 – small
-    (200, 0.60),   # Hospital 6 – skewed toward disease
+    (2000, 0.235),   # Hospital 1
+    (2000, 0.048),   # Hospital 2
+    (2000, 0.379),   # Hospital 3
+    (2000, 0.207),   # Hospital 4
+    (2000, 0.463),   # Hospital 5
+    (2000, 0.342),   # Hospital 6
 ]
 
 OUTPUT_DIR = Path(__file__).resolve().parent.parent / "data" / "heart"

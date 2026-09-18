@@ -23,8 +23,9 @@ def main():
 
     ckpt_dir = Path(__file__).resolve().parent.parent / "checkpoints"
     ckpt_dir.mkdir(exist_ok=True)
-    torch.save(model.state_dict(), ckpt_dir / "global_model.pt")
-    print("Checkpoint saved to checkpoints/global_model.pt")
+    # This is the centralized baseline model, NOT the federated model.
+    torch.save(model.state_dict(), ckpt_dir / "centralized_model.pt")
+    print("Checkpoint saved to checkpoints/centralized_model.pt")
 
     # Final evaluation
     final = evaluate(model, test_loader)

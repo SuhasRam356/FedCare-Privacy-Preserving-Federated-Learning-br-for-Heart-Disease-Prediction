@@ -5,6 +5,11 @@ This strategy defends against massive attacks (e.g., 51% attacks) where hackers 
 Before aggregating, the server tests each hospital's update against a secret, clean "Root Dataset".
 If a hospital's update fails to meet a baseline accuracy threshold, it is identified as malicious and discarded,
 even if the majority of hospitals agree with it.
+
+WARNING: This defense requires the server to hold a validation dataset. This is a privacy
+trade-off, as the server must have access to raw patient data to evaluate the updates.
+In a production scenario, this would be a small curated and highly-secured dataset,
+not the full pooled dataset.
 """
 
 from __future__ import annotations
@@ -28,12 +33,15 @@ logger = logging.getLogger(__name__)
 class RootDatasetDefense(FedAvgWeighted):
     """
     Advanced defense strategy using a Server-side Root Dataset to test client updates.
+    
+    WARNING: This strategy compromises structural privacy by requiring the server 
+    to hold a validation dataset.
     """
 
     def __init__(
         self,
         *,
-        threshold_accuracy: float = 0.60,
+        threshold_accuracy: float = 0.75,
         **kwargs,
     ) -> None:
         super().__init__(**kwargs)

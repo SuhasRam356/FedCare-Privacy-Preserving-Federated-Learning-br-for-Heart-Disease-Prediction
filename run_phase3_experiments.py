@@ -39,6 +39,7 @@ from flwr.common import (
 
 from fedcare.client_app import FlowerClient, get_parameters, set_parameters
 from fedcare.metrics import compute_classification_metrics, compute_fairness_metrics
+from fedcare.reproducibility import seed_everything
 from fedcare.server_app import get_evaluate_fn, get_initial_parameters
 from fedcare.strategy.fedavg_weighted import FedAvgWeighted
 from fedcare.strategy.fedprox import FedProx
@@ -317,6 +318,7 @@ def run_all_phase3_experiments(
 
 
 if __name__ == "__main__":
+    seed_everything(42)
     args = parse_args()
     run_all_phase3_experiments(
         rounds=args.rounds,

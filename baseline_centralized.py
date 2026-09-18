@@ -9,6 +9,7 @@ Usage:
     python baseline_centralized.py
 """
 
+from fedcare.reproducibility import seed_everything
 from fedcare.task import Net, load_data, train, evaluate
 
 # ── Configuration ─────────────────────────────────────────────────────
@@ -18,6 +19,7 @@ DEVICE = "cpu"
 
 
 def main() -> None:
+    seed_everything(42)
     print("=" * 60)
     print("  CENTRALIZED BASELINE  (all hospitals pooled)")
     print("=" * 60)

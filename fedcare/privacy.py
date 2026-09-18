@@ -138,15 +138,29 @@ class PrivacyAccountant:
         return round(float(epsilon), 3)
 
     @staticmethod
+    def compute_noise_multiplier(
+        epsilon: float,
+        num_rounds: int,
+        delta: float = 1e-5,
+    ) -> float:
+        """
+        Compute required noise multiplier for a target epsilon over T rounds.
+        """
+        if epsilon <= 0.0:
+            return float("inf")
+        if num_rounds <= 0:
+            return 0.0
+        numerator = math.sqrt(2.0 * num_rounds * math.log(1.25 / delta))
+        return float(numerator / epsilon)
+
+    @staticmethod
     def get_privacy_regime_description(epsilon: float) -> str:
         """Provide a human-readable interpretation of the privacy level."""
-        if math.isinf(epsilon):
-            return "No Privacy Guarantee (eps = inf)"
+        if math.isinf(epsilon) or epsilon >= 10.0:
+            return "No Privacy Guarantee (Functional)"
         elif epsilon < 1.0:
             return f"Very Strong Privacy (eps = {epsilon:.2f})"
         elif epsilon < 5.0:
             return f"Strong Privacy (eps = {epsilon:.2f})"
-        elif epsilon < 10.0:
-            return f"Moderate Privacy (eps = {epsilon:.2f})"
         else:
-            return f"Weak Privacy (eps = {epsilon:.2f})"
+            return f"Moderate Privacy (eps = {epsilon:.2f})"

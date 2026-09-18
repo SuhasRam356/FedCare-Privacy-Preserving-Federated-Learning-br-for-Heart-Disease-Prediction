@@ -36,7 +36,8 @@ import torch
 
 from fedcare.client_app import FlowerClient, get_parameters, set_parameters
 from fedcare.comm_cost import compute_federation_comm_cost
-from fedcare.metrics import compute_fairness_metrics
+from fedcare.metrics import compute_classification_metrics, compute_fairness_metrics
+from fedcare.reproducibility import seed_everything
 from fedcare.privacy import PrivacyAccountant
 from fedcare.strategy.krum import aggregate_krum
 from fedcare.strategy.median import aggregate_median
@@ -67,7 +68,7 @@ def parse_args() -> argparse.Namespace:
 def simulate_federation_phase4(
     strategy_name: str = "fedavg",
     attack_type: str = "none",
-    malicious_hospital_id: int = 4,
+    malicious_hospital_ids: list[int] = None,
     dp_clip_norm: float = 0.0,
     dp_noise_multiplier: float = 0.0,
     num_rounds: int = 12,
@@ -84,10 +85,13 @@ def simulate_federation_phase4(
 
     # 1. Initialize Clients (Configuring Adversary if active)
     clients: list[FlowerClient] = []
+    if malicious_hospital_ids is None:
+        malicious_hospital_ids = [4, 5]
+
     for i in range(1, num_clients + 1):
-        is_malicious = (i == malicious_hospital_id) and (attack_type != "none")
+        is_malicious = (i in malicious_hospital_ids) and (attack_type != "none")
         c_attack = attack_type if is_malicious else None
-        c_poison_scale = -3.0 if (is_malicious and attack_type == "model_poison") else 1.0
+        c_poison_scale = -20.0 if (is_malicious and attack_type == "model_poison") else 1.0
 
         client = FlowerClient(
             partition_id=i,
@@ -211,8 +215,8 @@ def run_all_phase4_experiments(
     # ─────────────────────────────────────────────────────────────
     attacks = [
         ("clean", "None (Clean)"),
-        ("label_flip", "Label-Flipping (Hosp 4)"),
-        ("model_poison", "Model Poisoning (Hosp 4, Sign-Flip)"),
+        ("label_flip", "Label-Flipping (Hosp 4, 5)"),
+        ("model_poison", "Model Poisoning (Hosp 4, 5, Sign-Flip)"),
     ]
 
     strategies = [
@@ -232,7 +236,7 @@ def run_all_phase4_experiments(
             res = simulate_federation_phase4(
                 strategy_name=strat_id,
                 attack_type="none" if att_id == "clean" else att_id,
-                malicious_hospital_id=4,
+                malicious_hospital_ids=[4, 5],
                 num_rounds=rounds,
                 local_epochs=local_epochs,
                 lr=lr,
@@ -270,13 +274,13 @@ def run_all_phase4_experiments(
     # ─────────────────────────────────────────────────────────────
     # PART 2: Differential Privacy (DP) Sweep (Figure 5 Data)
     # ─────────────────────────────────────────────────────────────
-    print("\n[2/3] Executing Differential Privacy Noise Multiplier Sweep...")
-    noise_multipliers = [0.0, 0.001, 0.005, 0.01, 0.05, 0.1]
+    print("\n[2/3] Executing Differential Privacy Sweep (True Utilities)...")
+    target_epsilons = [float('inf'), 10.0, 5.0, 1.0, 0.5]
     dp_results: list[dict[str, Any]] = []
 
-    for sigma in noise_multipliers:
-        eps = PrivacyAccountant.compute_epsilon(
-            noise_multiplier=sigma,
+    for eps in target_epsilons:
+        sigma = PrivacyAccountant.compute_noise_multiplier(
+            epsilon=eps,
             num_rounds=rounds,
             delta=1e-5,
         )
@@ -372,6 +376,7 @@ def run_all_phase4_experiments(
 
 
 if __name__ == "__main__":
+    seed_everything(42)
     args = parse_args()
     run_all_phase4_experiments(
         rounds=args.rounds,

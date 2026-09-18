@@ -146,7 +146,7 @@ def check_figures():
 def ensure_checkpoint():
     """Ensure a model checkpoint exists for the risk calculator."""
     print("[5/5] Checking model checkpoint...")
-    checkpoint_path = CHECKPOINT_DIR / "global_model.pt"
+    checkpoint_path = CHECKPOINT_DIR / "final_fedavg_model.pt"
 
     if checkpoint_path.exists():
         print("  -> Global model checkpoint found.")

@@ -52,6 +52,10 @@ class Net(nn.Module):
     """
     Simple MLP for binary classification on 13-feature tabular data.
 
+    Features: age, resting_bp, cholesterol, max_heart_rate, bmi, glucose, 
+              sex, smoker, diabetes_history, family_history, 
+              cp_atypical_angina, cp_non_anginal, cp_typical_angina
+
     Architecture:
         Input (13) -> Linear(64) -> ReLU -> Dropout(0.3)
                    -> Linear(32) -> ReLU -> Dropout(0.3)
@@ -97,7 +101,7 @@ def load_data(
         if not csv_path.exists():
             raise FileNotFoundError(
                 f"Data file not found: {csv_path}\n"
-                "Run  python scripts/generate_dummy_data.py  first."
+                "Ensure synthetic datasets have been generated."
             )
         df = pd.read_csv(csv_path)
         X = df.drop(columns=["target"]).values
@@ -140,8 +144,23 @@ def load_data(
     train_ds = HeartDiseaseDataset(X_train, y_train)
     test_ds = HeartDiseaseDataset(X_test, y_test)
 
-    train_loader = DataLoader(train_ds, batch_size=batch_size, shuffle=True)
-    test_loader = DataLoader(test_ds, batch_size=batch_size, shuffle=False)
+    g = torch.Generator()
+    g.manual_seed(RANDOM_STATE)
+
+    def seed_worker(worker_id):
+        worker_seed = torch.initial_seed() % 2**32
+        np.random.seed(worker_seed)
+        import random
+        random.seed(worker_seed)
+
+    train_loader = DataLoader(
+        train_ds, batch_size=batch_size, shuffle=True, 
+        worker_init_fn=seed_worker, generator=g
+    )
+    test_loader = DataLoader(
+        test_ds, batch_size=batch_size, shuffle=False, 
+        worker_init_fn=seed_worker, generator=g
+    )
 
     return train_loader, test_loader, scaler
 
