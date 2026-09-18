@@ -1,8 +1,7 @@
 """
 FedCare Demo Launcher
 =====================
-One-command script to launch the FedCare interactive dashboard
-for the M.Tech viva presentation.
+One-command script to launch the FedCare interactive dashboard.
 
 Usage:
     python demo.py
@@ -42,7 +41,7 @@ def check_banner():
     Privacy-Preserving Federated Learning
     for Heart Disease Prediction
     ================================================================
-    M.Tech Viva Demonstration Dashboard
+    Interactive Demonstration Dashboard
     ================================================================
     """
     print(banner)

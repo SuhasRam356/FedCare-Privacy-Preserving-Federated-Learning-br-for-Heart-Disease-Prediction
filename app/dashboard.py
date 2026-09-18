@@ -55,66 +55,63 @@ st.set_page_config(
 
 # ── Custom CSS for Premium Look ───────────────────────────────────────
 def inject_custom_css():
-    """Inject premium glassmorphism-inspired CSS styling."""
+    """Inject robust, enterprise-grade CSS styling."""
     st.markdown(
         """
         <style>
         /* Import Google Font */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-        /* Root variables */
+        /* Root variables for Enterprise Dark Theme */
         :root {
-            --primary: #6366f1;
-            --primary-light: #818cf8;
-            --accent: #f43f5e;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --info: #3b82f6;
-            --bg-dark: #0f172a;
-            --bg-card: rgba(30, 41, 59, 0.7);
-            --text-primary: #f1f5f9;
-            --text-secondary: #94a3b8;
-            --border: rgba(148, 163, 184, 0.15);
-            --gradient-1: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
-            --gradient-2: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
-            --gradient-3: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --primary: #3b82f6; /* Enterprise blue */
+            --primary-light: #60a5fa;
+            --bg-dark: #09090b; /* Deep Vercel-like black */
+            --bg-card: #18181b; /* Zinc 900 for cards */
+            --text-primary: #fafafa;
+            --text-secondary: #a1a1aa;
+            --border: #27272a;
+            --gradient-1: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
         }
 
-        /* Global font */
-        html, body {
+        /* Global font & background */
+        html, body, [class*="css"] {
             font-family: 'Inter', sans-serif !important;
         }
 
-        /* Main background */
         .stApp {
-            background: linear-gradient(180deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            background-color: var(--bg-dark);
         }
+
+        /* Hide Streamlit components for a cleaner look */
+        #MainMenu {visibility: hidden;}
+        header {visibility: hidden;}
+        footer {visibility: hidden;}
 
         /* Sidebar */
         section[data-testid="stSidebar"] {
-            background: rgba(15, 23, 42, 0.95) !important;
+            background-color: #0f0f13 !important;
             border-right: 1px solid var(--border);
         }
 
         /* Metric cards */
         div[data-testid="stMetric"] {
             background: var(--bg-card);
-            backdrop-filter: blur(12px);
             border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 20px 24px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border-radius: 8px;
+            padding: 16px 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+            transition: border-color 0.15s ease, transform 0.15s ease;
         }
 
         div[data-testid="stMetric"]:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 40px rgba(99, 102, 241, 0.15);
+            border-color: var(--primary);
+            transform: translateY(-1px);
         }
 
         div[data-testid="stMetric"] label {
             color: var(--text-secondary) !important;
-            font-size: 0.85rem !important;
+            font-size: 0.8rem !important;
             font-weight: 500 !important;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -127,47 +124,48 @@ def inject_custom_css():
         }
 
         /* Headers */
-        h1, h2, h3 {
+        h1, h2, h3, h4, h5 {
             color: var(--text-primary) !important;
-            font-weight: 700 !important;
+            font-weight: 600 !important;
         }
 
         h1 {
-            background: var(--gradient-1);
+            background: var(--text-primary);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
             font-size: 2.2rem !important;
+            font-weight: 700 !important;
+            letter-spacing: -0.5px;
         }
 
         /* Tab styling */
         .stTabs [data-baseweb="tab-list"] {
             gap: 8px;
             background: var(--bg-card);
-            border-radius: 12px;
+            border-radius: 8px;
             padding: 4px;
             border: 1px solid var(--border);
         }
 
         .stTabs [data-baseweb="tab"] {
-            border-radius: 8px;
+            border-radius: 6px;
             color: var(--text-secondary);
             font-weight: 500;
-            padding: 8px 20px;
+            padding: 8px 16px;
         }
 
         .stTabs [aria-selected="true"] {
-            background: var(--gradient-1) !important;
-            color: white !important;
+            background: var(--border) !important;
+            color: var(--text-primary) !important;
         }
 
         /* Expander */
         .streamlit-expanderHeader {
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 12px;
+            border-radius: 8px;
             color: var(--text-primary) !important;
-            font-weight: 600;
+            font-weight: 500;
         }
 
         /* Divider */
@@ -175,47 +173,32 @@ def inject_custom_css():
             border-color: var(--border) !important;
         }
 
-        /* Glass card helper */
-        .glass-card {
-            background: var(--bg-card);
-            backdrop-filter: blur(16px);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 24px;
-            margin: 8px 0;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-        }
-
+        /* Badge */
         .hero-badge {
             display: inline-block;
-            background: var(--gradient-1);
-            color: white;
-            padding: 4px 16px;
-            border-radius: 20px;
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--primary-light);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            padding: 4px 12px;
+            border-radius: 16px;
             font-size: 0.75rem;
             font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
             margin-bottom: 8px;
         }
 
-        /* Risk indicator */
-        .risk-low { color: #10b981; font-weight: 700; font-size: 1.5rem; }
-        .risk-moderate { color: #f59e0b; font-weight: 700; font-size: 1.5rem; }
-        .risk-high { color: #ef4444; font-weight: 700; font-size: 1.5rem; }
-        .risk-very-high { color: #dc2626; font-weight: 700; font-size: 1.5rem; }
-
         /* Scrollbar */
         ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
+            width: 8px;
+            height: 8px;
         }
         ::-webkit-scrollbar-track {
             background: transparent;
         }
         ::-webkit-scrollbar-thumb {
-            background: rgba(148, 163, 184, 0.3);
-            border-radius: 3px;
+            background: #3f3f46;
+            border-radius: 4px;
         }
 
         /* Selectbox / Input styling */
@@ -223,43 +206,43 @@ def inject_custom_css():
         .stNumberInput > div > div > input,
         .stSlider > div {
             border-color: var(--border) !important;
+            background-color: var(--bg-card) !important;
+            color: var(--text-primary) !important;
         }
 
         /* Button */
         .stButton > button {
-            background: var(--gradient-1) !important;
+            background: var(--primary) !important;
             color: white !important;
             border: none !important;
-            border-radius: 10px !important;
-            padding: 10px 24px !important;
-            font-weight: 600 !important;
-            font-size: 1rem !important;
-            transition: all 0.3s ease !important;
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3) !important;
+            border-radius: 6px !important;
+            padding: 8px 16px !important;
+            font-weight: 500 !important;
+            font-size: 0.9rem !important;
+            transition: opacity 0.2s ease !important;
         }
 
         .stButton > button:hover {
-            transform: translateY(-1px) !important;
-            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4) !important;
+            opacity: 0.9 !important;
+        }
+        
+        /* Dataframes */
+        .dataframe {
+            background-color: var(--bg-card) !important;
+            border-color: var(--border) !important;
         }
 
-        /* Info/Warning/Error boxes */
-        .stAlert {
-            border-radius: 12px !important;
-        }
-
-        /* Network topology */
+        /* Network topology hospital node */
         .hospital-node {
             text-align: center;
             padding: 16px;
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 16px;
-            transition: all 0.3s ease;
+            border-radius: 8px;
+            transition: border-color 0.15s ease;
         }
         .hospital-node:hover {
             border-color: var(--primary);
-            box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
         }
         </style>
         """,
@@ -392,7 +375,7 @@ def load_global_model():
 def render_header():
     """Render the main dashboard header with hero section."""
     st.markdown(
-        '<div class="hero-badge">M.Tech Research Project</div>',
+        '<div class="hero-badge">Live Demonstration</div>',
         unsafe_allow_html=True,
     )
     st.title("FedCare: Privacy-Preserving Federated Learning for Heart Disease Prediction")
@@ -1380,7 +1363,6 @@ def render_sidebar():
             """
             <div style="text-align: center;">
                 <p style="color: #475569; font-size: 0.7rem;">
-                    M.Tech Research Project<br>
                     Privacy-Preserving Federated Learning<br>
                     for Heart Disease Prediction
                 </p>
