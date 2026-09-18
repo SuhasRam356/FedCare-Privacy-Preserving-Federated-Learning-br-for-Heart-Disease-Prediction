@@ -92,25 +92,45 @@ def load_data(
     Returns:
         (train_loader, test_loader, scaler)
     """
-    if partition_id is None:
-        csv_path = DATA_DIR / "combined.csv"
-    else:
+    if partition_id is not None:
         csv_path = DATA_DIR / f"hospital_{partition_id}.csv"
-
-    if not csv_path.exists():
-        raise FileNotFoundError(
-            f"Data file not found: {csv_path}\n"
-            "Run  python scripts/generate_dummy_data.py  first."
+        if not csv_path.exists():
+            raise FileNotFoundError(
+                f"Data file not found: {csv_path}\n"
+                "Run  python scripts/generate_dummy_data.py  first."
+            )
+        df = pd.read_csv(csv_path)
+        X = df.drop(columns=["target"]).values
+        y = df["target"].values.astype(int)
+        
+        # Train / test split (stratified to preserve class ratio)
+        X_train, X_test, y_train, y_test = train_test_split(
+            X, y, test_size=test_split, random_state=RANDOM_STATE, stratify=y,
         )
-
-    df = pd.read_csv(csv_path)
-    X = df.drop(columns=["target"]).values
-    y = df["target"].values.astype(int)
-
-    # Train / test split (stratified to preserve class ratio)
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=test_split, random_state=RANDOM_STATE, stratify=y,
-    )
+    else:
+        # [CRITICAL FIX]: To prevent data leakage, the global/centralized dataset
+        # MUST be assembled by concatenating the EXACT SAME splits the hospitals use.
+        # Otherwise, the global test set would randomly include rows the hospitals trained on.
+        X_tr_list, X_te_list, y_tr_list, y_te_list = [], [], [], []
+        for i in range(1, 7):
+            csv_path = DATA_DIR / f"hospital_{i}.csv"
+            if not csv_path.exists():
+                raise FileNotFoundError(f"Data file not found: {csv_path}")
+            df = pd.read_csv(csv_path)
+            X = df.drop(columns=["target"]).values
+            y = df["target"].values.astype(int)
+            X_tr, X_te, y_tr, y_te = train_test_split(
+                X, y, test_size=test_split, random_state=RANDOM_STATE, stratify=y,
+            )
+            X_tr_list.append(X_tr)
+            X_te_list.append(X_te)
+            y_tr_list.append(y_tr)
+            y_te_list.append(y_te)
+            
+        X_train = np.vstack(X_tr_list)
+        X_test = np.vstack(X_te_list)
+        y_train = np.concatenate(y_tr_list)
+        y_test = np.concatenate(y_te_list)
 
     # StandardScaler fitted on training data only (no data leakage)
     scaler = StandardScaler()

@@ -415,8 +415,8 @@ Round 1:           Round 2:           Round 3:        ...    Round 20:
 
 | Metric | Value |
 |--------|-------|
-| Global AUC (Round 20) | **0.8504** |
-| Global Accuracy | **0.8117** |
+| Global AUC (Round 20) | **0.8468** |
+| Global Accuracy | **0.8063** |
 | Total Rounds | 20 |
 | Local Epochs per Round | 2 |
 | Learning Rate | 0.001 |
@@ -433,7 +433,7 @@ Round 1:           Round 2:           Round 3:        ...    Round 20:
 | Hospital 6 | 0.7827 | Moderate |
 | **Equity Gap** | **0.0727** | (Best - Worst) |
 
-**Key Insight**: FedAvg achieves **AUC 0.8504** — which is **higher** than the centralized baseline (0.8480), proving that federated learning can match or exceed centralized training while fully preserving patient privacy.
+**Key Insight**: FedAvg achieves **AUC 0.8468** — recovering **96.7%** of the performance gap between Local-Only training (0.8121) and Centralized training (0.8480). This proves that federated learning achieves highly competitive performance while fully preserving patient privacy.
 
 ### Convergence Chart
 
@@ -707,7 +707,7 @@ python -m pytest tests/test_phase5.py -v  # 28 tests
 |-----------|------------|
 | Centralized Baseline | AUC = 0.8480 |
 | Local-Only Baseline | AUC = 0.8121 (avg) |
-| **FedAvg (20 rounds)** | **AUC = 0.8504** (beats centralized!) |
+| **FedAvg (20 rounds)** | **AUC = 0.8468** (recovers 96.7% of gap) |
 | FedProx (best mu=0.001) | AUC = 0.8501 |
 | Non-IID Severe (alpha=0.1) | AUC = 0.7040 (14.6% drop) |
 | Label-Flip Attack on FedAvg | AUC = 0.8520 (robust) |
@@ -717,7 +717,7 @@ python -m pytest tests/test_phase5.py -v  # 28 tests
 
 ### Key Takeaways
 
-1. **Federated learning works**: FedAvg achieves AUC 0.8504, exceeding the centralized baseline of 0.8480
+1. **Federated learning works**: FedAvg achieves AUC 0.8468, recovering almost all the performance lost by isolating data locally, approaching the centralized upper bound of 0.8480.
 2. **Privacy is preserved**: No raw patient data is ever transmitted between hospitals
 3. **Attacks are survivable**: Byzantine-robust strategies like Trimmed Mean fully recover from model poisoning
 4. **Differential Privacy is viable**: Light noise (epsilon=335.66) causes negligible utility loss (< 0.1%)
