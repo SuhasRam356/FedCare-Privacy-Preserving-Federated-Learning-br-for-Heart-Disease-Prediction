@@ -708,12 +708,12 @@ python -m pytest tests/test_phase5.py -v  # 28 tests
 | Centralized Baseline | AUC = 0.8480 |
 | Local-Only Baseline | AUC = 0.8121 (avg) |
 | **FedAvg (20 rounds)** | **AUC = 0.8468** (recovers 96.7% of gap) |
-| FedProx (best mu=0.001) | AUC = 0.8501 |
-| Non-IID Severe (alpha=0.1) | AUC = 0.7040 (14.6% drop) |
-| Label-Flip Attack on FedAvg | AUC = 0.8520 (robust) |
-| Model Poison on FedAvg | AUC = 0.8372 (1.3% drop) |
-| Model Poison + Trimmed Mean | AUC = 0.8508 (fully recovered) |
-| DP (noise=0.05, eps=335.66) | AUC = 0.8497 (0.07% drop only) |
+| FedProx (best mu=0.001) | AUC = 0.8473 |
+| Non-IID Severe (alpha=0.1) | AUC = 0.7070 (16.6% drop) |
+| Label-Flip Attack on FedAvg | AUC = 0.8475 (robust) |
+| Model Poison on FedAvg | AUC = 0.8435 (0.3% drop) |
+| Model Poison + Trimmed Mean | AUC = 0.8480 (fully recovered) |
+| DP (noise=0.05, eps=335.66) | AUC = 0.8472 (0.04% drop only) |
 
 ### Key Takeaways
 
