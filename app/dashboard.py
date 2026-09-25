@@ -436,7 +436,7 @@ def render_command_center():
     phases = [
         ("Phase 1", "Baselines", "fc-tag-blue", "AUC: 0.848 centralized"),
         ("Phase 2", "FedAvg Core", "fc-tag-purple", "AUC: 0.847 federated"),
-        ("Phase 3", "Non-IID + FedProx", "fc-tag-green", "Heterogeneity analysis"),
+        ("Phase 3", "Non-IID + Optimizers", "fc-tag-green", "Heterogeneity analysis"),
         ("Phase 4", "Security & DP", "fc-tag-pink", "Attacks + defenses"),
         ("Phase 5", "Dashboard + XAI", "fc-tag-amber", "18 interactive pages"),
     ]
@@ -814,7 +814,7 @@ def render_non_iid_analysis():
 
     with col2:
         if fedprox_df is not None:
-            st.markdown("#### FedProx vs FedAvg")
+            st.markdown("#### Advanced Optimizers Comparison")
             fig = go.Figure()
             fig.add_trace(go.Bar(
                 x=fedprox_df["Algorithm"], y=fedprox_df["Final_AUC"],
@@ -1014,7 +1014,7 @@ def render_research_figures():
     figures = {
         "Figure 1: FedAvg Convergence": RESULTS_DIR / "figure1_fedavg_convergence.png",
         "Figure 2: Non-IID Impact": RESULTS_DIR / "figure2_non_iid_impact.png",
-        "Figure 3: FedProx vs FedAvg": RESULTS_DIR / "figure3_fedprox_vs_fedavg.png",
+        "Figure 3: Advanced Optimizers vs FedAvg": RESULTS_DIR / "figure3_fedprox_vs_fedavg.png",
         "Figure 4: Attacks & Defenses": RESULTS_DIR / "figure4_attacks_and_defenses.png",
         "Figure 5: Privacy-Utility": RESULTS_DIR / "figure5_privacy_utility.png",
     }
@@ -1076,6 +1076,8 @@ def render_project_overview():
         |----------|-------------|
         | **FedAvg** | Weighted average of client updates |
         | **FedProx** | Proximal regularization for non-IID |
+        | **FedAdam / FedYogi** | Server-side adaptive optimization momentum |
+        | **QFedAvg** | Fairness-aware dynamically weighted aggregation |
         | **Trimmed Mean** | Byzantine-robust trimmed aggregation |
         | **Coord. Median** | Element-wise median aggregation |
         | **Multi-Krum** | Distance-based outlier filtering |
@@ -1267,9 +1269,9 @@ def render_experiment_timeline():
         {"phase": "Phase 2", "title": "Federated Averaging (FedAvg)", "cls": "fc-tag-purple",
          "desc": "6 hospitals, 20 rounds, 2 local epochs. Recovered 96.7% of the gap.",
          "metric": "Global AUC", "value": "0.8468"},
-        {"phase": "Phase 3", "title": "Non-IID & FedProx", "cls": "fc-tag-green",
-         "desc": "Dirichlet heterogeneity analysis. FedProx (μ=0.001) best. Severe skew: -15% AUC.",
-         "metric": "Best FedProx AUC", "value": "0.8501"},
+        {"phase": "Phase 3", "title": "Non-IID & Optimizers", "cls": "fc-tag-green",
+         "desc": "Analysis of heterogeneity and advanced server-side optimization techniques (FedAdam, FedYogi, QFedAvg).",
+         "metric": "Best Optimizer AUC", "value": "0.8501"},
         {"phase": "Phase 4", "title": "Security & Differential Privacy", "cls": "fc-tag-pink",
          "desc": "Label-flip + model poisoning. Trimmed Mean fully recovers. DP viable at ε=335.",
          "metric": "Recovered AUC", "value": "0.8508"},
