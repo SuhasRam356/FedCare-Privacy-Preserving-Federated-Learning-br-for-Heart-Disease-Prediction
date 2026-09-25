@@ -294,6 +294,19 @@ def simulate_federation(
     h2_personalized_metrics = h2_client.personalize(epochs=2, lr=lr)
     h2_after = h2_personalized_metrics["auc"]
 
+    # Save round history to CSV for Dashboard
+    df_rounds = pd.DataFrame(round_history)
+    
+    # Map the columns to match what the dashboard expects
+    df_rounds = df_rounds.rename(columns={
+        "server_loss": "test_loss",
+        "server_accuracy": "accuracy",
+        "server_auc": "auc",
+    })
+    
+    csv_path = RESULTS_DIR / f"rounds_{strategy_name}.csv"
+    df_rounds.to_csv(csv_path, index=False)
+
     final = round_history[-1]
     return {
         "final_accuracy": final["server_accuracy"],

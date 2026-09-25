@@ -577,15 +577,23 @@ def render_network_topology():
 
 def render_training_console():
     st.markdown("### ⚡ Training Convergence Console")
-    rounds_df = load_fedavg_rounds()
-    if rounds_df is None:
-        st.warning("No training data. Run `run_federated.py` first.")
-        return
+    
+    c1, c2, c3, c4 = st.columns(4)
+    with c1: algo_choice = st.selectbox("Algorithm", ["FedAvg", "FedProx", "FedAdam", "FedYogi", "QFedAvg", "FedNova", "SCAFFOLD", "FedPer", "FedBN"], index=0, key="tc_algo")
+    with c2: metric_choice = st.selectbox("Primary Metric", ["ROC-AUC", "Accuracy", "Loss"], index=0, key="tc_metric")
+    with c3: show_hospitals = st.toggle("Per-Hospital AUC", value=True, key="tc_hosp")
+    with c4: animate = st.toggle("Animate Rounds", value=False, key="tc_anim")
 
-    c1, c2, c3 = st.columns(3)
-    with c1: metric_choice = st.selectbox("Primary Metric", ["ROC-AUC", "Accuracy", "Loss"], index=0, key="tc_metric")
-    with c2: show_hospitals = st.toggle("Per-Hospital AUC", value=True, key="tc_hosp")
-    with c3: animate = st.toggle("Animate Rounds", value=False, key="tc_anim")
+    algo_slug = algo_choice.lower()
+    if algo_slug == "fedavg":
+        rounds_df = load_fedavg_rounds()
+    else:
+        csv_path = RESULTS_DIR / f"rounds_{algo_slug}.csv"
+        rounds_df = pd.read_csv(csv_path) if csv_path.exists() else None
+
+    if rounds_df is None:
+        st.warning(f"No training data for {algo_choice}. Wait for background simulation to finish.")
+        return
 
     metric_map = {"ROC-AUC": ("auc", "ROC-AUC"), "Accuracy": ("accuracy", "Accuracy"), "Loss": ("test_loss", "Loss")}
     col_name, display_name = metric_map[metric_choice]
@@ -1343,6 +1351,10 @@ def render_model_comparison():
     st.markdown('<div class="fc-divider"></div>', unsafe_allow_html=True)
     st.markdown("#### 🌲 Federated Tree Models vs Neural Network")
 
+    algo_choice = st.selectbox("Select Federated MLP Algorithm for Comparison", 
+                               ["FedAvg", "FedProx", "FedAdam", "FedYogi", "QFedAvg", "FedNova", "SCAFFOLD", "FedPer", "FedBN"], 
+                               index=0, key="mc_algo")
+
     if st.button("🚀 Run Model Comparison (XGBoost + Random Forest)", key="run_model_comp"):
         with st.spinner("Training Federated XGBoost and Random Forest..."):
             try:
@@ -1359,12 +1371,18 @@ def render_model_comparison():
                 rf_global = fed_rf.evaluate_global()
 
                 # MLP from existing results
-                rounds_df = load_fedavg_rounds()
+                algo_slug = algo_choice.lower()
+                if algo_slug == "fedavg":
+                    rounds_df = load_fedavg_rounds()
+                else:
+                    csv_path = RESULTS_DIR / f"rounds_{algo_slug}.csv"
+                    rounds_df = pd.read_csv(csv_path) if csv_path.exists() else None
+                    
                 mlp_auc = float(rounds_df.iloc[-1]["auc"]) if rounds_df is not None else 0.847
                 mlp_acc = float(rounds_df.iloc[-1]["accuracy"]) if rounds_df is not None else 0.806
 
                 comparison = pd.DataFrame([
-                    {"Model": "Federated MLP (FedAvg)", "Global AUC": mlp_auc, "Global Accuracy": mlp_acc},
+                    {"Model": f"Federated MLP ({algo_choice})", "Global AUC": mlp_auc, "Global Accuracy": mlp_acc},
                     {"Model": "Federated XGBoost", "Global AUC": xgb_global["global_auc"], "Global Accuracy": xgb_global["global_accuracy"]},
                     {"Model": "Federated Random Forest", "Global AUC": rf_global["global_auc"], "Global Accuracy": rf_global["global_accuracy"]},
                 ])
