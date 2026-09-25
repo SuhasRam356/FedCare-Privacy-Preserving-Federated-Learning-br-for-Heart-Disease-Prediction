@@ -75,7 +75,8 @@ FedCare uses **Federated Learning** — a privacy-preserving technique where:
 |---------|-------------|
 | **6-Hospital Federation** | 100% synthetic clinical data (zero real patients) partitioned across 6 simulated hospital nodes |
 | **FL Orchestration** | Sequential in-process simulation using Flower's strategy and model components |
-| **Multiple Aggregation Strategies** | FedAvg, FedProx, Trimmed Mean, Coordinate Median, Multi-Krum |
+| **Multiple Aggregation Strategies** | FedAvg, FedProx, FedAdam, FedYogi, QFedAvg, FedNova, SCAFFOLD, Trimmed Mean, Coordinate Median, Multi-Krum |
+| **Personalized FL** | Base+Head architecture split (FedPer) and Local BatchNorm (FedBN) |
 | **Multi-Model Training** | Federated MLP, Federated XGBoost, and Federated Random Forest with ensemble aggregation |
 | **Adversarial Robustness** | Label-flipping and model poisoning attack simulations |
 | **Byzantine Defenses** | Trimmed Mean, Coordinate Median, and Multi-Krum strategies |
@@ -463,8 +464,9 @@ python -m pytest tests/test_federated.py -v  # 11 tests
 Phase 3 investigates how **data heterogeneity** (non-IID distributions) affects federated learning and how to mitigate it:
 
 1. **Non-IID Analysis**: Tests the impact of different levels of data skew using Dirichlet distributions
-2. **FedProx**: Adds a proximal regularization term to prevent local models from drifting too far from the global model
-3. **Personalization**: Fine-tunes the global model locally at each hospital for better per-hospital performance
+2. **Advanced Optimizers**: Evaluates server-side momentum (FedAdam, FedYogi) and fairness-aware weighting (QFedAvg)
+3. **Drift Correction**: Corrects client-side objective inconsistency using Normalized Averaging (FedNova) and Control Variates (SCAFFOLD)
+4. **Personalization**: Modifies the neural network architecture itself via Base/Head splitting (FedPer) and Local Batch Normalization (FedBN) to mitigate domain shift.
 
 ### What is Non-IID?
 
