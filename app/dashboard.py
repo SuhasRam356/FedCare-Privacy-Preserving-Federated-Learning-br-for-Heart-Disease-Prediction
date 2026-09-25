@@ -44,7 +44,12 @@ st.set_page_config(
     page_title="FedCare — Federated Learning Dashboard",
     page_icon="🫀",
     layout="wide",
-    initial_sidebar_state="collapsed",
+    initial_sidebar_state="expanded",
+    menu_items={
+        'Get Help': None,
+        'Report a bug': None,
+        'About': "FedCare - Privacy-Preserving Federated Learning for Heart Disease Prediction"
+    }
 )
 
 # ══════════════════════════════════════════════════════════════════════
@@ -77,6 +82,11 @@ PLOTLY_THEME = dict(
     paper_bgcolor="rgba(0,0,0,0)",
     font=dict(color="#e8eaed", family="'Space Grotesk', 'Inter', sans-serif", size=12),
     legend=dict(
+        orientation="h",
+        yanchor="top",
+        y=-0.15,
+        xanchor="center",
+        x=0.5,
         bgcolor="rgba(15,15,35,0.8)", bordercolor="rgba(100,100,180,0.2)",
         borderwidth=1, font=dict(size=11, color="#8b8fa3")
     ),
@@ -127,10 +137,18 @@ def inject_css():
             radial-gradient(ellipse at 50% 50%, rgba(236,72,153,0.02) 0%, transparent 70%);
     }
 
+    /* Hide default header menus/icons to clean up UI */
     #MainMenu, header, footer { visibility: hidden; }
-    .stDeployButton { display: none; }
-    [data-testid="collapsedControl"] { display: none; }
-    [data-testid="stSidebar"] { display: none !important; }
+    [data-testid="stToolbar"] { display: none !important; }
+    .stDeployButton { display: none !important; }
+
+    /* Clean Sidebar Styling */
+    [data-testid="stSidebar"] {
+        background-color: rgba(10, 10, 26, 0.95) !important;
+        border-right: 1px solid var(--border) !important;
+    }
+    /* Hide the ugly "keyboard_double_arrow" icon and rely on clean layout */
+    [data-testid="stSidebarCollapseButton"] { display: none !important; }
 
     /* ── Metric Cards ──────────────────────────────────────────── */
     div[data-testid="stMetric"] {
@@ -491,27 +509,35 @@ def _hex_to_rgb(hex_color: str) -> str:
 #                          HEADER
 # ══════════════════════════════════════════════════════════════════════
 
-def render_header():
-    st.markdown("""
-    <div style="text-align:center; padding: 30px 0 10px;">
-        <div class="fc-hero-badge">Privacy-Preserving Research Platform</div>
-    </div>
-    """, unsafe_allow_html=True)
-    st.markdown("""
-    <h1 style="text-align:center; font-size: 3.5rem !important; margin-bottom: 0;">FedCare</h1>
-    <p style="text-align:center; color:#8b8fa3; font-size:1.15rem; max-width:800px; line-height:1.8; margin: 4px auto 10px auto;">
-        Enabling <strong style="color:#00d4ff">6 hospitals</strong> to collaboratively train
-        heart disease classifiers via federated learning.
-        <strong style="color:#a855f7">Zero patient data exposure.</strong>
-    </p>
-    <div style="text-align:center; display:flex; justify-content:center; gap:12px; flex-wrap:wrap; padding-bottom:20px;">
-        <span class="fc-tag fc-tag-blue">🧠 MLP + XGBoost + RF</span>
-        <span class="fc-tag fc-tag-purple">🔐 DP + Secure Aggregation</span>
-        <span class="fc-tag fc-tag-green">🔍 SHAP Explainability</span>
-        <span class="fc-tag fc-tag-pink">🛡️ Byzantine Defenses</span>
-        <span class="fc-tag fc-tag-amber">📊 18 Interactive Pages</span>
-    </div>
-    """, unsafe_allow_html=True)
+def render_header(is_hero=False, page_title="", page_subtitle=""):
+    if is_hero:
+        st.markdown("""
+        <div style="text-align:center; padding: 30px 0 10px;">
+            <div class="fc-hero-badge">Privacy-Preserving Research Platform</div>
+        </div>
+        """, unsafe_allow_html=True)
+        st.markdown("""
+        <h1 style="text-align:center; font-size: 3.5rem !important; margin-bottom: 0;">FedCare</h1>
+        <p style="text-align:center; color:#8b8fa3; font-size:1.15rem; max-width:800px; line-height:1.8; margin: 4px auto 10px auto;">
+            Enabling <strong style="color:#00d4ff">6 hospitals</strong> to collaboratively train
+            heart disease classifiers via federated learning.
+            <strong style="color:#a855f7">Zero patient data exposure.</strong>
+        </p>
+        <div style="text-align:center; display:flex; justify-content:center; gap:12px; flex-wrap:wrap; padding-bottom:20px;">
+            <span class="fc-tag fc-tag-blue">🧠 MLP + XGBoost + RF</span>
+            <span class="fc-tag fc-tag-purple">🔐 DP + Secure Aggregation</span>
+            <span class="fc-tag fc-tag-green">🔍 SHAP Explainability</span>
+            <span class="fc-tag fc-tag-pink">🛡️ Byzantine Defenses</span>
+            <span class="fc-tag fc-tag-amber">📊 18 Interactive Pages</span>
+        </div>
+        """, unsafe_allow_html=True)
+    else:
+        st.markdown(f"""
+        <div style="padding: 10px 0 20px 0;">
+            <h1 style="font-size: 2.2rem !important; margin-bottom: 0;">{page_title}</h1>
+            <p style="color:#8b8fa3; font-size:1rem; margin-top: 4px;">{page_subtitle}</p>
+        </div>
+        """, unsafe_allow_html=True)
 
 
 # ══════════════════════════════════════════════════════════════════════
@@ -990,56 +1016,57 @@ def render_communication_cost():
 # ══════════════════════════════════════════════════════════════════════
 
 def render_risk_calculator():
-    st.markdown("### 🩺 Clinical Risk Calculator + AI Explainability")
-    st.markdown("""<p style="color:#8b8fa3; font-size:0.95rem;">
-    Enter 13 clinical features. The federated model predicts heart disease risk,
-    <strong style="color:#00d4ff">then SHAP explains WHY</strong>.
-    </p>""", unsafe_allow_html=True)
-
+    st.markdown("### 🩺 Patient Clinical Data")
+    
     with st.spinner("Loading global model..."):
         model, scaler = load_global_model()
 
-    with st.form("risk_form", clear_on_submit=False):
-        st.markdown("#### Patient Clinical Features")
-        ca, cb, cc = st.columns(3)
-        with ca:
-            age = st.number_input("Age (years)", 18, 100, 55, 1)
-            resting_bp = st.number_input("Resting BP (mmHg)", 80, 220, 130, 1)
-            cholesterol = st.number_input("Cholesterol (mg/dL)", 100, 600, 240, 5)
-            max_hr = st.number_input("Max Heart Rate (bpm)", 60, 220, 150, 1)
-        with cb:
-            bmi = st.number_input("BMI (kg/m²)", 15.0, 55.0, 27.5, 0.1, format="%.1f")
-            glucose = st.number_input("Fasting Glucose (mg/dL)", 50, 400, 100, 5)
-            sex = st.selectbox("Sex", ["Male", "Female"])
-            smoker = st.selectbox("Smoker", ["No", "Yes"])
-        with cc:
-            diabetes = st.selectbox("Diabetes History", ["No", "Yes"])
-            family_history = st.selectbox("Family History", ["No", "Yes"])
-            chest_pain = st.selectbox("Chest Pain Type", ["Asymptomatic", "Atypical Angina", "Non-Anginal", "Typical Angina"])
-        submitted = st.form_submit_button("⚡ Predict Risk + Explain", use_container_width=True)
+    # Layout: Form on the left, Results on the right
+    col_form, col_result = st.columns([1.3, 1])
+    
+    with col_form:
+        with st.form("risk_form", clear_on_submit=False):
+            st.markdown("#### Vitals & Biometrics")
+            c1, c2 = st.columns(2)
+            with c1:
+                age = st.number_input("Age (years)", 18, 100, 55, 1)
+                bmi = st.number_input("BMI (kg/m²)", 15.0, 55.0, 27.5, 0.1, format="%.1f")
+            with c2:
+                resting_bp = st.number_input("Resting BP (mmHg)", 80, 220, 130, 1)
+                max_hr = st.number_input("Max Heart Rate (bpm)", 60, 220, 150, 1)
+                
+            st.markdown("#### Labs & History")
+            c3, c4 = st.columns(2)
+            with c3:
+                cholesterol = st.number_input("Cholesterol (mg/dL)", 100, 600, 240, 5)
+                glucose = st.number_input("Fasting Glucose (mg/dL)", 50, 400, 100, 5)
+                diabetes = st.selectbox("Diabetes History", ["No", "Yes"])
+            with c4:
+                sex = st.selectbox("Sex", ["Male", "Female"])
+                smoker = st.selectbox("Smoker", ["No", "Yes"])
+                family_history = st.selectbox("Family History", ["No", "Yes"])
+                chest_pain = st.selectbox("Chest Pain Type", ["Asymptomatic", "Atypical Angina", "Non-Anginal", "Typical Angina"])
+                
+            submitted = st.form_submit_button("⚡ Predict Risk + Explain", use_container_width=True)
 
-    if submitted:
-        raw_features = np.array([[
-            age, resting_bp, cholesterol, max_hr, bmi, glucose,
-            1 if sex == "Male" else 0, 1 if smoker == "Yes" else 0,
-            1 if diabetes == "Yes" else 0, 1 if family_history == "Yes" else 0,
-            1 if chest_pain == "Atypical Angina" else 0,
-            1 if chest_pain == "Non-Anginal" else 0,
-            1 if chest_pain == "Typical Angina" else 0,
-        ]], dtype=np.float64)
+    with col_result:
+        if submitted:
+            raw_features = np.array([[
+                age, resting_bp, cholesterol, max_hr, bmi, glucose,
+                1 if sex == "Male" else 0, 1 if smoker == "Yes" else 0,
+                1 if diabetes == "Yes" else 0, 1 if family_history == "Yes" else 0,
+                1 if chest_pain == "Atypical Angina" else 0,
+                1 if chest_pain == "Non-Anginal" else 0,
+                1 if chest_pain == "Typical Angina" else 0,
+            ]], dtype=np.float64)
 
-        scaled = scaler.transform(raw_features)
-        input_tensor = torch.tensor(scaled, dtype=torch.float32)
-        with torch.no_grad():
-            logits = model(input_tensor)
-            probs = torch.softmax(logits, dim=1)
-            risk_prob = float(probs[0, 1])
+            scaled = scaler.transform(raw_features)
+            input_tensor = torch.tensor(scaled, dtype=torch.float32)
+            with torch.no_grad():
+                logits = model(input_tensor)
+                probs = torch.softmax(logits, dim=1)
+                risk_prob = float(probs[0, 1])
 
-        st.markdown('<div class="fc-divider"></div>', unsafe_allow_html=True)
-
-        col_gauge, col_explain = st.columns([1, 1])
-
-        with col_gauge:
             if risk_prob < 0.25:
                 risk_level, risk_color = "LOW RISK", "#22d3ee"
                 advice = "Maintain healthy lifestyle. Regular check-ups recommended."
@@ -1055,7 +1082,7 @@ def render_risk_calculator():
 
             fig_gauge = go.Figure(go.Indicator(
                 mode="gauge+number", value=risk_prob * 100,
-                number=dict(suffix="%", font=dict(size=52, color="#e8eaed", family="Fira Code")),
+                number=dict(suffix="%", font=dict(size=42, color="#e8eaed", family="Fira Code")),
                 title=dict(text="Heart Disease Probability", font=dict(size=14, color="#8b8fa3")),
                 gauge=dict(
                     axis=dict(range=[0, 100], tickwidth=1, tickcolor="#5a5e73", dtick=25),
@@ -1069,28 +1096,25 @@ def render_risk_calculator():
                     ],
                     threshold=dict(line=dict(color=risk_color, width=4), thickness=0.8, value=risk_prob * 100))))
             fig_gauge.update_layout(**PLOTLY_THEME)
-            fig_gauge.update_layout(height=340, margin=dict(l=30, r=30, t=60, b=20))
+            fig_gauge.update_layout(height=260, margin=dict(l=20, r=20, t=40, b=10))
             st.plotly_chart(fig_gauge, use_container_width=True)
 
-            st.markdown(f'<p style="text-align:center; font-size:1.8rem; color:{risk_color}; font-weight:800;">{risk_level}</p>', unsafe_allow_html=True)
-            st.markdown(f'<p style="color:#8b8fa3; text-align:center; font-size:0.95rem;">{advice}</p>', unsafe_allow_html=True)
+            st.markdown(f'<p style="text-align:center; font-size:1.5rem; color:{risk_color}; font-weight:800; margin-bottom:0;">{risk_level}</p>', unsafe_allow_html=True)
+            st.markdown(f'<p style="color:#8b8fa3; text-align:center; font-size:0.9rem;">{advice}</p>', unsafe_allow_html=True)
 
-        with col_explain:
-            st.markdown("#### 🔍 SHAP Feature Contributions")
-            st.markdown('<p style="color:#5a5e73; font-size:0.85rem;">Why did the model make this prediction?</p>', unsafe_allow_html=True)
-
+            st.markdown('<div class="fc-divider" style="margin: 1.5rem 0;"></div>', unsafe_allow_html=True)
+            
+            st.markdown("#### 🔍 SHAP Explanation")
             try:
-                from fedcare.explainability import explain_single_prediction, FEATURE_NAMES
+                from fedcare.explainability import explain_single_prediction
                 from fedcare.task import load_data
-                _, _, bg_scaler = load_data(partition_id=None)
-                # Get background data
                 combined = load_combined_data()
                 if combined is not None:
                     bg_raw = combined.drop(columns=["target"]).values[:200]
                     bg_scaled = scaler.transform(bg_raw)
                     explanation = explain_single_prediction(model, bg_scaled, scaled, seed=42)
 
-                    contribs = explanation["contributions"][:8]  # Top 8
+                    contribs = explanation["contributions"][:6]  # Top 6 to save vertical space
                     feat_names = [c["feature"] for c in contribs]
                     shap_vals = [c["shap_value"] for c in contribs]
                     colors = ["#22d3ee" if v > 0 else "#fb7185" for v in shap_vals]
@@ -1101,31 +1125,26 @@ def render_risk_calculator():
                         orientation="h",
                         marker_color=colors[::-1],
                         marker_cornerradius=4,
-                        text=[f"{v:+.4f}" for v in shap_vals[::-1]],
+                        text=[f"{v:+.3f}" for v in shap_vals[::-1]],
                         textposition="outside",
                         textfont=dict(color="#8b8fa3", size=10, family="Fira Code")))
                     fig_shap.update_layout(**PLOTLY_THEME)
                     fig_shap.update_layout(
-                        height=340,
-                        xaxis_title="SHAP Value (Impact on Risk)",
-                        margin=dict(l=120, r=60, t=20, b=40),
+                        height=250,
+                        xaxis_title="Impact on Risk",
+                        margin=dict(l=100, r=40, t=10, b=30),
                         showlegend=False)
                     fig_shap.add_vline(x=0, line_dash="dash", line_color="rgba(100,100,180,0.3)")
                     st.plotly_chart(fig_shap, use_container_width=True)
-
-                    st.markdown("""
-                    <p style="color:#5a5e73; font-size:0.8rem;">
-                    <span style="color:#22d3ee;">■ Blue</span> = pushes risk HIGHER &nbsp;|&nbsp;
-                    <span style="color:#fb7185;">■ Pink</span> = pushes risk LOWER
-                    </p>
-                    """, unsafe_allow_html=True)
                 else:
-                    st.info("Combined data not available for SHAP explanation.")
+                    st.info("Combined data not available for SHAP.")
             except Exception as e:
                 st.warning(f"SHAP explanation unavailable: {e}")
-                st.info("Install `shap` package: `pip install shap`")
 
-        st.caption("**Disclaimer**: Research demonstration only. Not for clinical decision-making without professional medical review.")
+        else:
+            st.info("Fill out the clinical features and click **Predict Risk** to see the AI evaluation and SHAP explanation.")
+
+    st.caption("**Disclaimer**: Research demonstration only. Not for clinical decision-making without professional medical review.")
 
 
 # ══════════════════════════════════════════════════════════════════════
@@ -1689,64 +1708,131 @@ def render_feature_importance():
 
 def main():
     inject_css()
-    render_header()
 
-    # Main navigation tabs
-    tabs = st.tabs([
-        "🎯 Command Center",
-        "🧪 Experiments",
-        "🔍 Data & Insights",
-        "🛠️ Tools & AI",
-        "🔒 Advanced Security",
-    ])
+    with st.sidebar:
+        st.markdown("<h2 style='text-align:center; color:#00d4ff;'>FedCare</h2>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align:center; color:#8b8fa3; font-size:0.85rem; margin-top:-10px;'>Privacy-Preserving Federated Learning</p>", unsafe_allow_html=True)
+        st.markdown('<hr style="margin: 10px 0;">', unsafe_allow_html=True)
+        
+        st.markdown('<p style="color:#5a5e73; font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">Overview</p>', unsafe_allow_html=True)
+        nav_overview = st.radio("Overview Nav", ["Dashboard Overview", "Project Overview"], label_visibility="collapsed")
+        
+        st.markdown('<br><p style="color:#5a5e73; font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">Training & Network</p>', unsafe_allow_html=True)
+        nav_training = st.radio("Training Nav", ["Network Topology", "Training Console", "Communication Cost"], label_visibility="collapsed")
 
-    with tabs[0]:  # Command Center
-        sub = st.radio("Navigate", [
-            "Command Center", "Network Topology", "Project Overview"
-        ], horizontal=True, label_visibility="collapsed", key="nav0")
-        st.markdown("<br>", unsafe_allow_html=True)
-        if sub == "Command Center": render_command_center()
-        elif sub == "Network Topology": render_network_topology()
-        elif sub == "Project Overview": render_project_overview()
+        st.markdown('<br><p style="color:#5a5e73; font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">Security & Privacy</p>', unsafe_allow_html=True)
+        nav_security = st.radio("Security Nav", ["Secure Aggregation", "Attack vs. Defense", "Privacy-Utility Tradeoff", "Non-IID Analysis"], label_visibility="collapsed")
+        
+        st.markdown('<br><p style="color:#5a5e73; font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">Tools & Insights</p>', unsafe_allow_html=True)
+        nav_tools = st.radio("Tools Nav", ["Risk Calculator", "Data Explorer", "Feature Importance", "Model Comparison", "Experiment Timeline", "Research Figures"], label_visibility="collapsed")
+        
+        # State tracking to ensure only one item is active (Streamlit radio hack)
+        # Using a unified selector from session state if preferred, but for simplicity, we map based on whichever was clicked last.
+        # However, multiple radios can be confusing if they all have active states. 
+        # A better approach is to use standard buttons if we want a clean single-state, or use `st.radio` with empty default.
+        # But for now, we'll determine the active page sequentially based on non-default selections or just rely on a unified logic.
+        
+    # Since Streamlit doesn't easily support grouped radios that act as one group, we will build a custom unified selection logic.
+    # Actually, a simpler way is to just use a single selectbox or option_menu, but the user asked to "Group these into logical sections with subheadings".
+    # I will use a single `st.radio` for now but inject markdown headers if possible? Streamlit doesn't allow that in `st.radio`.
+    
+    # We'll use session state to track the active page so clicking one group updates the page.
+    if 'active_page' not in st.session_state:
+        st.session_state.active_page = "Project Overview"
 
-    with tabs[1]:  # Experiments
-        sub = st.radio("Navigate", [
-            "Training Console", "Attack vs Defense", "Privacy-Utility",
-            "Non-IID Analysis", "Communication Cost", "Experiment Timeline"
-        ], horizontal=True, label_visibility="collapsed", key="nav1")
-        st.markdown("<br>", unsafe_allow_html=True)
-        if sub == "Training Console": render_training_console()
-        elif sub == "Attack vs Defense": render_attack_defense()
-        elif sub == "Privacy-Utility": render_privacy_utility()
-        elif sub == "Non-IID Analysis": render_non_iid_analysis()
-        elif sub == "Communication Cost": render_communication_cost()
-        elif sub == "Experiment Timeline": render_experiment_timeline()
+    # Quick and dirty hack: detect which group changed
+    def on_nav_change(key):
+        st.session_state.active_page = st.session_state[key]
+        
+    with st.sidebar:
+        # Re-render with unified logic
+        st.empty() # Clear previous markdown radios
+        
+    # Rebuilding sidebar cleanly
+    with st.sidebar:
+        st.markdown("<h2 style='text-align:center; color:#00d4ff;'>FedCare</h2>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align:center; color:#8b8fa3; font-size:0.85rem; margin-top:-10px;'>Research Platform</p>", unsafe_allow_html=True)
+        st.markdown('<hr style="margin: 10px 0;">', unsafe_allow_html=True)
+        
+        # Group 1: Overview
+        st.markdown('**Overview**')
+        if st.button("Project Overview", use_container_width=True): st.session_state.active_page = "Project Overview"
+        if st.button("Dashboard Overview", use_container_width=True): st.session_state.active_page = "Dashboard Overview"
+        
+        st.markdown('**Training & Network**')
+        if st.button("Network Topology", use_container_width=True): st.session_state.active_page = "Network Topology"
+        if st.button("Training Console", use_container_width=True): st.session_state.active_page = "Training Console"
+        if st.button("Communication Cost", use_container_width=True): st.session_state.active_page = "Communication Cost"
+        
+        st.markdown('**Security & Privacy**')
+        if st.button("Secure Aggregation", use_container_width=True): st.session_state.active_page = "Secure Aggregation"
+        if st.button("Attack vs. Defense", use_container_width=True): st.session_state.active_page = "Attack vs. Defense"
+        if st.button("Privacy-Utility", use_container_width=True): st.session_state.active_page = "Privacy-Utility"
+        if st.button("Non-IID Analysis", use_container_width=True): st.session_state.active_page = "Non-IID Analysis"
+        
+        st.markdown('**Tools & Insights**')
+        if st.button("Risk Calculator", use_container_width=True): st.session_state.active_page = "Risk Calculator"
+        if st.button("Feature Importance", use_container_width=True): st.session_state.active_page = "Feature Importance"
+        if st.button("Model Comparison", use_container_width=True): st.session_state.active_page = "Model Comparison"
+        if st.button("Data Explorer", use_container_width=True): st.session_state.active_page = "Data Explorer"
+        if st.button("Experiment Timeline", use_container_width=True): st.session_state.active_page = "Experiment Timeline"
+        if st.button("Research Figures", use_container_width=True): st.session_state.active_page = "Research Figures"
+        
+        st.markdown('<hr style="margin: 10px 0;">', unsafe_allow_html=True)
+        with st.expander("Dataset Summary"):
+            hospital_stats = load_hospital_stats()
+            if not hospital_stats.empty:
+                st.metric("Total Hospitals", f"{len(hospital_stats)}")
+                st.metric("Total Patients", f"{hospital_stats['Samples'].sum():,}")
+                st.metric("Overall Prevalence", f"{(hospital_stats['Positive'].sum() / hospital_stats['Samples'].sum()) * 100:.1f}%")
 
-    with tabs[2]:  # Data & Insights
-        sub = st.radio("Navigate", [
-            "Data Explorer", "Hospital Deep Dive", "Research Figures"
-        ], horizontal=True, label_visibility="collapsed", key="nav2")
-        st.markdown("<br>", unsafe_allow_html=True)
-        if sub == "Data Explorer": render_data_explorer()
-        elif sub == "Hospital Deep Dive": render_hospital_deep_dive()
-        elif sub == "Research Figures": render_research_figures()
-
-    with tabs[3]:  # Tools & AI
-        sub = st.radio("Navigate", [
-            "Risk Calculator + SHAP", "Feature Importance", "Model Comparison"
-        ], horizontal=True, label_visibility="collapsed", key="nav3")
-        st.markdown("<br>", unsafe_allow_html=True)
-        if sub == "Risk Calculator + SHAP": render_risk_calculator()
-        elif sub == "Feature Importance": render_feature_importance()
-        elif sub == "Model Comparison": render_model_comparison()
-
-    with tabs[4]:  # Advanced Security
-        sub = st.radio("Navigate", [
-            "Secure Aggregation"
-        ], horizontal=True, label_visibility="collapsed", key="nav4")
-        st.markdown("<br>", unsafe_allow_html=True)
-        if sub == "Secure Aggregation": render_secure_aggregation()
-
+    page = st.session_state.active_page
+    
+    if page == "Project Overview":
+        render_header(is_hero=True)
+        render_project_overview()
+    elif page == "Dashboard Overview":
+        render_header(is_hero=False, page_title="Command Center", page_subtitle="High-level metrics and research phase progress.")
+        render_command_center()
+    elif page == "Network Topology":
+        render_header(is_hero=False, page_title="Network Topology", page_subtitle="Federated network architecture and hospital participants.")
+        render_network_topology()
+    elif page == "Training Console":
+        render_header(is_hero=False, page_title="Training Console", page_subtitle="Round-by-round convergence and inter-hospital equity.")
+        render_training_console()
+    elif page == "Communication Cost":
+        render_header(is_hero=False, page_title="Communication Cost", page_subtitle="Bandwidth analysis of federated vs centralized learning.")
+        render_communication_cost()
+    elif page == "Secure Aggregation":
+        render_header(is_hero=False, page_title="Secure Aggregation", page_subtitle="Cryptographic privacy via Secret Sharing and Homomorphic Encryption.")
+        render_secure_aggregation()
+    elif page == "Attack vs. Defense":
+        render_header(is_hero=False, page_title="Attack vs. Defense", page_subtitle="Evaluating Byzantine robustness against adversarial attacks.")
+        render_attack_defense()
+    elif page == "Privacy-Utility":
+        render_header(is_hero=False, page_title="Privacy-Utility Tradeoff", page_subtitle="Differential Privacy noise multiplier analysis.")
+        render_privacy_utility()
+    elif page == "Non-IID Analysis":
+        render_header(is_hero=False, page_title="Non-IID Analysis", page_subtitle="Impact of data heterogeneity across hospitals.")
+        render_non_iid_analysis()
+    elif page == "Risk Calculator":
+        render_header(is_hero=False, page_title="Risk Calculator", page_subtitle="Live clinical prediction using the global federated model.")
+        render_risk_calculator()
+    elif page == "Feature Importance":
+        render_header(is_hero=False, page_title="Feature Importance", page_subtitle="Global feature influence explained by SHAP.")
+        render_feature_importance()
+    elif page == "Model Comparison":
+        render_header(is_hero=False, page_title="Model Comparison", page_subtitle="MLP vs Federated XGBoost vs Federated Random Forest.")
+        render_model_comparison()
+    elif page == "Data Explorer":
+        render_header(is_hero=False, page_title="Data Explorer", page_subtitle="Interactive feature distributions and correlation matrix.")
+        render_data_explorer()
+    elif page == "Experiment Timeline":
+        render_header(is_hero=False, page_title="Experiment Timeline", page_subtitle="Step-by-step progress through the 5 research phases.")
+        render_experiment_timeline()
+    elif page == "Research Figures":
+        render_header(is_hero=False, page_title="Research Figures", page_subtitle="High-resolution figures ready for publication.")
+        render_research_figures()
 
 if __name__ == "__main__":
     main()
