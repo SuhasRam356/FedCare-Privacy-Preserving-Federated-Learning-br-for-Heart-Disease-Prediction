@@ -67,6 +67,14 @@ FedCare uses **Federated Learning** — a privacy-preserving technique where:
 
 **Result**: A model as good as (or better than) centralized training, with zero patient data exposure.
 
+### Comparison to State-of-the-Art (SOTA)
+
+This project has been developed as a complete research package, and is designed to be evaluated against the following benchmarks:
+
+*   **CardioNexus-AI**: The best single benchmark to compare to FedCare. It is the closest in the heart-disease use case and also includes FedProx and Differential Privacy (DP). FedCare differentiates itself by adding advanced personalization (FedBN/FedPer), drift correction (SCAFFOLD/FedNova), and interactive XAI.
+*   **FedMed**: The best general research comparator. It provides a similar healthcare FL foundation and emphasizes data realism.
+*   **hospital_federated_learning**: The best hospital-system comparator. It closely resembles FedCare in its hospital client design and multi-site coordination logic.
+
 ---
 
 ## Key Features
