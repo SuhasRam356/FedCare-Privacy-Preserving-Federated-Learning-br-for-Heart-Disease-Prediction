@@ -676,7 +676,7 @@ def render_attack_defense():
 
     # Grouped bar chart
     fig = px.bar(filtered, x="Attack_Name", y=selected_metric, color="Strategy_Name", barmode="group",
-        color_discrete_sequence=STRATEGY_COLORS,
+        color_discrete_map=STRATEGY_COLORS,
         labels={"Attack_Name": "Attack Scenario", selected_metric: selected_metric.replace("_", " "), "Strategy_Name": "Defense Strategy"})
     fig.update_layout(**PLOTLY_THEME)
     fig.update_layout(height=460)
@@ -716,8 +716,8 @@ def render_attack_defense():
                 fig_radar.add_trace(go.Scatterpolar(
                     r=vals + [vals[0]], theta=categories + [categories[0]],
                     fill="toself", name=strat,
-                    fillcolor=f"rgba({_hex_to_rgb(STRATEGY_COLORS[i % len(STRATEGY_COLORS)])},0.08)",
-                    line=dict(color=STRATEGY_COLORS[i % len(STRATEGY_COLORS)], width=2)))
+                    fillcolor=f"rgba({_hex_to_rgb(list(STRATEGY_COLORS.values())[i % len(STRATEGY_COLORS)])},0.08)",
+                    line=dict(color=list(STRATEGY_COLORS.values())[i % len(STRATEGY_COLORS)], width=2)))
             fig_radar.update_layout(**PLOTLY_THEME)
             fig_radar.update_layout(height=380, polar=dict(bgcolor="rgba(0,0,0,0)",
                 radialaxis=dict(visible=True, gridcolor="rgba(100,100,180,0.1)", tickfont=dict(color="#5a5e73", size=9)),
@@ -1170,7 +1170,7 @@ def render_data_explorer():
                 fig.add_trace(go.Bar(
                     x=hospital_stats["Hospital"], y=hospital_stats[feat],
                     name=feat.replace("Avg_", "").replace("_", " "),
-                    marker_color=STRATEGY_COLORS[i % len(STRATEGY_COLORS)], marker_cornerradius=6))
+                    marker_color=list(STRATEGY_COLORS.values())[i % len(STRATEGY_COLORS)], marker_cornerradius=6))
             fig.update_layout(**PLOTLY_THEME)
             fig.update_layout(height=440, barmode="group", yaxis_title="Value")
             st.plotly_chart(fig, use_container_width=True)
@@ -1325,7 +1325,7 @@ def render_model_comparison():
             for i, m in enumerate(available_metrics):
                 fig.add_trace(go.Bar(
                     x=clean_df["Strategy_Name"], y=clean_df[m],
-                    name=m.replace("_", " "), marker_color=STRATEGY_COLORS[i % len(STRATEGY_COLORS)],
+                    name=m.replace("_", " "), marker_color=list(STRATEGY_COLORS.values())[i % len(STRATEGY_COLORS)],
                     marker_cornerradius=6,
                     text=clean_df[m].round(4), textposition="outside",
                     textfont=dict(color="#8b8fa3", size=10, family="Fira Code")))
