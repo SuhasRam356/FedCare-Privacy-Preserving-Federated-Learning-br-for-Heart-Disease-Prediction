@@ -98,10 +98,29 @@ def simulate_federation(
 
     # 2. Pooled test data for server evaluation
     _, server_test_loader, _ = load_data(partition_id=None, batch_size=batch_size)
-    eval_model = Net().to(device)
+    if strategy_name == "fedbn":
+        from fedcare.task import FedBNNet
+        eval_model = FedBNNet().to(device)
+    elif strategy_name == "fedper":
+        from fedcare.task import FedPerNet
+        eval_model = FedPerNet().to(device)
+    else:
+        eval_model = Net().to(device)
 
     # 3. Global parameters
-    global_net = Net().to(device)
+    if strategy_name == "fedbn":
+        from fedcare.task import FedBNNet
+        global_net = FedBNNet().to(device)
+        for c in clients:
+            c.net = FedBNNet().to(device)
+    elif strategy_name == "fedper":
+        from fedcare.task import FedPerNet
+        global_net = FedPerNet().to(device)
+        for c in clients:
+            c.net = FedPerNet().to(device)
+    else:
+        global_net = Net().to(device)
+    
     global_params = get_parameters(global_net)
     
     # Server-side Optimizer states (for FedAdam, FedYogi)
@@ -123,8 +142,17 @@ def simulate_federation(
             if strategy_name == "scaffold":
                 c.c_global = [torch.tensor(cg, dtype=torch.float32) for cg in c_global]
                 c.c_local = [torch.tensor(cl, dtype=torch.float32) for cl in c.c_local]
+            # Personalized FL: Inject local layers before fitting
+            mixed_params = global_params
+            if strategy_name in ["fedbn", "fedper"]:
+                from fedcare.task import get_personalized_indices
+                local_params = get_parameters(c.net)
+                mixed_params = list(global_params)
+                for idx in get_personalized_indices(strategy_name):
+                    mixed_params[idx] = local_params[idx]
+                    
             weights, n_samples, metrics = c.fit(
-                parameters=global_params,
+                parameters=mixed_params,
                 config={"local_epochs": local_epochs, "lr": lr, "mu": mu},
             )
             fit_results.append((weights, n_samples, metrics))
@@ -150,7 +178,7 @@ def simulate_federation(
             tau_i = [m["local_steps"] for w, n, m in fit_results]
             tau_eff = sum((n / total_samples) * t for (w, n, m), t in zip(fit_results, tau_i))
             
-            new_params = [np.zeros_like(p) for p in global_params]
+            new_params = [np.zeros_like(p, dtype=np.float64) for p in global_params]
             for (w, n, m), t in zip(fit_results, tau_i):
                 p_i = n / total_samples
                 weight = p_i * (tau_eff / max(t, 1))
@@ -163,8 +191,8 @@ def simulate_federation(
 
         elif strategy_name == "scaffold":
             # SCAFFOLD standard aggregation + control variate update
-            avg_update = [np.zeros_like(p) for p in global_params]
-            sum_delta_c = [np.zeros_like(p) for p in global_params]
+            avg_update = [np.zeros_like(p, dtype=np.float64) for p in global_params]
+            sum_delta_c = [np.zeros_like(p, dtype=np.float64) for p in global_params]
             
             for w, n, m in fit_results:
                 fraction = n / total_samples
@@ -189,7 +217,7 @@ def simulate_federation(
             
             # Re-weight using empirical loss
             weights_sum = 0.0
-            new_params = [np.zeros_like(p) for p in global_params]
+            new_params = [np.zeros_like(p, dtype=np.float64) for p in global_params]
             for (w, n, _), loss in zip(fit_results, client_losses):
                 q_weight = n * (loss ** q_param)
                 weights_sum += q_weight
@@ -201,12 +229,17 @@ def simulate_federation(
             
         else:
             # Standard FedAvg aggregation
-            avg_update = [np.zeros_like(p) for p in global_params]
+            avg_update = [np.zeros_like(p, dtype=np.float64) for p in global_params]
             for w, n, _ in fit_results:
                 fraction = n / total_samples
                 for i, layer in enumerate(w):
                     avg_update[i] += layer * fraction
             
+            if strategy_name in ["fedbn", "fedper"]:
+                from fedcare.task import get_personalized_indices
+                for idx in get_personalized_indices(strategy_name):
+                    avg_update[idx] = global_params[idx] # Keep server init for personalized layers
+                    
             # Server-Side Optimization (FedAdam / FedYogi)
             if strategy_name in ["fedadam", "fedyogi"]:
                 pseudo_grad = [global_params[i] - avg_update[i] for i in range(len(global_params))]
@@ -348,6 +381,8 @@ def run_all_phase3_experiments(
         {"name": "QFedAvg", "mu": 0.0, "strategy_name": "qfedavg"},
         {"name": "FedNova", "mu": 0.0, "strategy_name": "fednova"},
         {"name": "SCAFFOLD", "mu": 0.0, "strategy_name": "scaffold"},
+        {"name": "FedPer", "mu": 0.0, "strategy_name": "fedper"},
+        {"name": "FedBN", "mu": 0.0, "strategy_name": "fedbn"},
     ]
 
     fedprox_results: list[dict[str, Any]] = []

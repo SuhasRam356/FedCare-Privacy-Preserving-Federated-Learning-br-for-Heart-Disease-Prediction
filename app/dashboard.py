@@ -1080,6 +1080,8 @@ def render_project_overview():
         | **QFedAvg** | Fairness-aware dynamically weighted aggregation |
         | **FedNova** | Normalized Averaging for objective inconsistency |
         | **SCAFFOLD** | Stochastic Controlled Averaging for client drift |
+        | **FedBN** | Local Batch Normalization for domain shift |
+        | **FedPer** | Base+Head architecture split for personalization |
         | **Trimmed Mean** | Byzantine-robust trimmed aggregation |
         | **Coord. Median** | Element-wise median aggregation |
         | **Multi-Krum** | Distance-based outlier filtering |
@@ -1271,9 +1273,9 @@ def render_experiment_timeline():
         {"phase": "Phase 2", "title": "Federated Averaging (FedAvg)", "cls": "fc-tag-purple",
          "desc": "6 hospitals, 20 rounds, 2 local epochs. Recovered 96.7% of the gap.",
          "metric": "Global AUC", "value": "0.8468"},
-        {"phase": "Phase 3", "title": "Non-IID & Optimizers", "cls": "fc-tag-green",
-         "desc": "Analysis of heterogeneity and advanced server-side optimization techniques (FedAdam, FedYogi, QFedAvg) and client drift correction (FedNova, SCAFFOLD).",
-         "metric": "Best Optimizer AUC", "value": "0.8501"},
+        {"phase": "Phase 3", "title": "Non-IID, Optimizers & Personalization", "cls": "fc-tag-green",
+         "desc": "Analysis of heterogeneity, advanced optimizers (FedAdam, QFedAvg), and Personalized FL (FedPer, FedBN).",
+         "metric": "Best Personalized AUC", "value": "0.8650"},
         {"phase": "Phase 4", "title": "Security & Differential Privacy", "cls": "fc-tag-pink",
          "desc": "Label-flip + model poisoning. Trimmed Mean fully recovers. DP viable at ε=335.",
          "metric": "Recovered AUC", "value": "0.8508"},

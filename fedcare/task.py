@@ -285,3 +285,74 @@ def evaluate(
         auc = 0.0  # only one class present
 
     return {"loss": avg_loss, "accuracy": accuracy, "auc": auc}
+
+# ── Personalized Federated Learning Architectures ────────────────────────
+
+class FedPerNet(nn.Module):
+    """
+    FedPer (Base + Head split).
+    The base layers (feature extractor) are federated.
+    The head layers (classifier) are kept strictly local.
+    """
+    def __init__(self) -> None:
+        super().__init__()
+        self.base = nn.Sequential(
+            nn.Linear(NUM_FEATURES, 64),
+            nn.ReLU(),
+            nn.Dropout(0.3),
+            nn.Linear(64, 32),
+            nn.ReLU(),
+            nn.Dropout(0.3),
+        )
+        self.head = nn.Linear(32, NUM_CLASSES)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        features = self.base(x)
+        return self.head(features)
+
+
+class FedBNNet(nn.Module):
+    """
+    FedBN (Batch Normalization local).
+    All layers except BatchNorm layers are federated.
+    BatchNorm statistics (mean, var) and affine parameters remain local.
+    """
+    def __init__(self) -> None:
+        super().__init__()
+        self.network = nn.Sequential(
+            nn.Linear(NUM_FEATURES, 64),
+            nn.BatchNorm1d(64),
+            nn.ReLU(),
+            nn.Dropout(0.3),
+            nn.Linear(64, 32),
+            nn.BatchNorm1d(32),
+            nn.ReLU(),
+            nn.Dropout(0.3),
+            nn.Linear(32, NUM_CLASSES),
+        )
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return self.network(x)
+
+
+def get_personalized_indices(strategy_name: str) -> list[int]:
+    """
+    Returns the indices of the parameters in get_parameters() that should 
+    remain strictly local for the given personalized FL algorithm.
+    """
+    if strategy_name == "fedper":
+        # FedPerNet state_dict:
+        # base.0.weight, base.0.bias (0, 1)
+        # base.3.weight, base.3.bias (2, 3)
+        # head.weight, head.bias (4, 5)
+        return [4, 5]
+    elif strategy_name == "fedbn":
+        # FedBNNet state_dict:
+        # network.0.weight, bias (0, 1)
+        # network.1.weight, bias, running_mean, running_var, num_batches_tracked (2, 3, 4, 5, 6)
+        # network.4.weight, bias (7, 8)
+        # network.5.weight, bias, running_mean, running_var, num_batches_tracked (9, 10, 11, 12, 13)
+        # network.8.weight, bias (14, 15)
+        # Local BN layers: indices 2 to 6, and 9 to 13.
+        return [2, 3, 4, 5, 6, 9, 10, 11, 12, 13]
+    return []
