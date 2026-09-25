@@ -83,7 +83,7 @@ FedCare uses **Federated Learning** — a privacy-preserving technique where:
 | **Secure Aggregation** | Additive Secret Sharing and simulated Paillier Homomorphic Encryption |
 | **Explainable AI (XAI)** | SHAP-based global feature importance and per-prediction explanations |
 | **Non-IID Analysis** | Dirichlet-based heterogeneity evaluation with equity gap metrics |
-| **Interactive Dashboard** | 18-page premium Streamlit web app with muted-dark clinical research design and 5 navigation tabs |
+| **Interactive Dashboard** | 15-page premium Streamlit web app with muted-dark clinical research design and 3 navigation areas |
 | **Risk Calculator + SHAP** | Live clinical heart disease prediction with AI-powered feature explanations |
 | **One-Command Demo** | Single `python demo.py` to launch the full viva presentation |
 | **Comprehensive Testing** | 69 automated tests covering all 5 project phases |
@@ -626,35 +626,30 @@ python -m pytest tests/test_phase4.py -v  # 12 tests
 
 ### What This Phase Does
 
-Phase 5 delivers a complete **Streamlit web application** with **18 interactive pages** for the M.Tech viva presentation. It features a premium, clinical muted-dark UI with cohesive navigation and 5 functional tabs, visualizing all experiment results and including a live clinical risk calculator with SHAP explainability.
+Phase 5 delivers a complete **Streamlit web application** with **15 interactive pages** for the M.Tech viva presentation. It features a premium, clinical muted-dark UI with cohesive navigation categorized into 3 functional areas, visualizing all experiment results and including a live clinical risk calculator with SHAP explainability.
 
-### Dashboard Architecture (5 Main Tabs)
+### Dashboard Architecture (3 Main Sections)
 
-#### 1. 🎯 Command Center
-- **Command Center**: Mission-control-style landing page with hero stats, phase progress cards, convergence trends, and hospital data landscape.
-- **Network Topology**: Hub-and-spoke federated architecture visualization with neon-outlined hospital nodes.
-- **Project Overview**: Technical documentation of architecture, strategies, and the complete privacy stack.
-
-#### 2. 🧪 Experiments
+#### 1. 🌐 Training & Network
+- **Command Center (Landing Page)**: Mission-control-style overview with hero stats, phase progress cards, convergence trends, and hospital data landscape.
+- **Network Topology**: Hub-and-spoke federated architecture visualization mapping out hospital nodes.
 - **Training Console**: Interactive convergence dashboard with metric selectors, hospital AUC distributions, and round animation.
-- **Attack vs. Defense Analysis**: Adversarial robustness heatmaps, radar charts, and grouped bar charts.
+- **Communication Cost**: Bandwidth analysis of federated vs centralized learning overhead.
+
+#### 2. 🔒 Security & Privacy
+- **Secure Aggregation**: Live demo of **Additive Secret Sharing** and **Paillier Homomorphic Encryption** ensuring the server never sees raw individual hospital weights.
+- **Attack vs. Defense Analysis**: Adversarial robustness heatmaps and grouped bar charts evaluating Byzantine defenses.
 - **Privacy-Utility Tradeoff**: Interactive epsilon vs. AUC explorer with privacy regime annotations.
 - **Non-IID Analysis**: Side-by-side heterogeneity impact and FedProx comparison.
-- **Communication Cost**: Bandwidth comparison for federated model exchange.
-- **Experiment Timeline**: Visual journey through all 5 research phases with key milestones.
 
-#### 3. 🔍 Data & Insights
+#### 3. 🛠️ Tools & Insights
+- **Risk Calculator + SHAP**: Clinical heart disease prediction with **SHAP explainability** — the model explains *why* each prediction is made.
+- **Feature Importance**: SHAP-based global feature importance computed across patient samples.
+- **Model Comparison**: Live training and comparison of **Federated MLP vs XGBoost vs Random Forest**.
 - **Data Explorer**: Interactive EDA tool for feature distributions, correlation matrices, and hospital population comparisons.
 - **Hospital Deep Dive**: Detailed analytics for individual hospitals including age/class distributions and local vs. global AUC.
-- **Research Figures**: Gallery of all 5 pre-generated publication-quality research figures.
-
-#### 4. 🛠️ Tools & AI
-- **Risk Calculator + SHAP** *(NEW)*: Clinical heart disease prediction with **SHAP explainability** — the model explains *why* each prediction is made.
-- **Global Feature Importance** *(NEW)*: SHAP-based global feature importance computed across 200 patient samples.
-- **Multi-Model Comparison** *(NEW)*: Live training and comparison of **Federated MLP vs XGBoost vs Random Forest**.
-
-#### 5. 🔒 Advanced Security
-- **Secure Aggregation** *(NEW)*: Live demo of **Additive Secret Sharing** and **Paillier Homomorphic Encryption** — the server aggregates model updates without ever seeing individual hospital weights.
+- **Experiment Timeline**: Visual journey through all 5 research phases with key milestones.
+- **Research Figures**: Gallery of all pre-generated publication-quality research figures.
 
 ### Launching the Dashboard
 
