@@ -525,7 +525,7 @@ def render_network_topology():
     # Central server
     fig.add_trace(go.Scatter(
         x=[0], y=[0], mode="markers+text",
-        marker=dict(size=65, color=CHART_COLORS["background"], symbol="diamond",
+        marker=dict(size=65, color="#0f172a", symbol="diamond",
                     line=dict(width=3, color=CHART_COLORS["primary"])),
         text=["FedCare<br>Server"], textposition="bottom center",
         textfont=dict(size=12, color=CHART_COLORS["primary"], family="Space Grotesk"),
@@ -547,7 +547,7 @@ def render_network_topology():
         prev_pct = row["Prevalence"] * 100
         fig.add_trace(go.Scatter(
             x=[x], y=[y], mode="markers+text",
-            marker=dict(size=45, color=CHART_COLORS["background"], symbol="circle",
+            marker=dict(size=45, color="#0f172a", symbol="circle",
                         line=dict(width=3, color=HOSPITAL_COLORS[idx])),
             text=[f"H{row['ID']}"], textposition="middle center",
             textfont=dict(size=14, color=HOSPITAL_COLORS[idx], family="Fira Code"),
@@ -691,7 +691,7 @@ def render_attack_defense():
             pivot = filtered.pivot_table(index="Attack_Name", columns="Strategy_Name", values="Final_AUC", aggfunc="mean")
             fig_hm = go.Figure(data=go.Heatmap(
                 z=pivot.values, x=pivot.columns.tolist(), y=pivot.index.tolist(),
-                colorscale=[[0,CHART_COLORS["background"]],[0.3,HOSPITAL_COLORS[4]],[0.5,HOSPITAL_COLORS[4]],[0.7,CHART_COLORS["primary"]],[1.0,CHART_COLORS["success"]]],
+                colorscale=[[0,"#0f172a"],[0.3,HOSPITAL_COLORS[4]],[0.5,HOSPITAL_COLORS[4]],[0.7,CHART_COLORS["primary"]],[1.0,CHART_COLORS["success"]]],
                 text=np.round(pivot.values, 4), texttemplate="%{text}",
                 textfont=dict(size=12, color="white", family="Fira Code"),
                 hoverongaps=False, colorbar=dict(title="AUC", tickfont=dict(color="#8b8fa3"))))
@@ -1152,7 +1152,7 @@ def render_data_explorer():
             corr = df[numeric_cols].corr()
             fig = go.Figure(data=go.Heatmap(
                 z=corr.values, x=corr.columns.tolist(), y=corr.index.tolist(),
-                colorscale=[[0,CHART_COLORS["background"]],[0.5,CHART_COLORS["background"]],[1.0,CHART_COLORS["primary"]]],
+                colorscale=[[0,"#0f172a"],[0.5,"#0f172a"],[1.0,CHART_COLORS["primary"]]],
                 text=np.round(corr.values, 2), texttemplate="%{text}",
                 textfont=dict(size=9, color="#d1d5db")))
             fig.update_layout(**PLOTLY_THEME)
@@ -1552,7 +1552,7 @@ def render_feature_importance():
                     orientation="h",
                     marker=dict(
                         color=values[::-1],
-                        colorscale=[[0,CHART_COLORS["background"]],[0.5,HOSPITAL_COLORS[4]],[1.0,CHART_COLORS["primary"]]],
+                        colorscale=[[0,"#0f172a"],[0.5,HOSPITAL_COLORS[4]],[1.0,CHART_COLORS["primary"]]],
                         cornerradius=6),
                     text=[f"{v:.4f}" for v in values[::-1]],
                     textposition="outside",
@@ -1588,17 +1588,13 @@ def main():
     inject_clinical_theme()
 
     if 'active_page' not in st.session_state:
-        st.session_state.active_page = "Project Overview"
+        st.session_state.active_page = "Dashboard Overview"
 
     with st.sidebar:
-        st.markdown("<h2 style='text-align:center; color:#3b82f6;'>FedCare</h2>", unsafe_allow_html=True)
+        st.markdown("<h2 style='text-align:center; color:#3b82f6;'>🫀 FedCare</h2>", unsafe_allow_html=True)
         st.markdown("<p style='text-align:center; color:#94a3b8; font-size:0.85rem; margin-top:-10px;'>Clinical Research Platform</p>", unsafe_allow_html=True)
         st.markdown('<hr style="margin: 10px 0;">', unsafe_allow_html=True)
         
-        # Group 1: Overview
-        st.markdown('**Overview**')
-        if st.button("Project Overview", use_container_width=True): st.session_state.active_page = "Project Overview"
-        if st.button("Dashboard Overview", use_container_width=True): st.session_state.active_page = "Dashboard Overview"
         
         st.markdown('**Training & Network**')
         if st.button("Network Topology", use_container_width=True): st.session_state.active_page = "Network Topology"
