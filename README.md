@@ -80,7 +80,7 @@ FedCare uses **Federated Learning** — a privacy-preserving technique where:
 | **Byzantine Defenses** | Trimmed Mean, Coordinate Median, and Multi-Krum strategies |
 | **Differential Privacy** | L2 gradient clipping + calibrated Gaussian noise with Renyi accountant |
 | **Non-IID Analysis** | Dirichlet-based heterogeneity evaluation with equity gap metrics |
-| **Interactive Dashboard** | 10-page Streamlit web app with real-time visualizations |
+| **Interactive Dashboard** | 14-page Premium Streamlit web app with horizontal navigation and glassmorphic UI |
 | **Risk Calculator** | Live clinical heart disease prediction from the global model |
 | **One-Command Demo** | Single `python demo.py` to launch the full viva presentation |
 | **Comprehensive Testing** | 69 automated tests covering all 5 project phases |
@@ -620,66 +620,31 @@ python -m pytest tests/test_phase4.py -v  # 12 tests
 
 ### What This Phase Does
 
-Phase 5 delivers a complete **Streamlit web application** with **10 interactive pages** for the M.Tech viva presentation. It visualizes all experiment results and includes a live clinical risk calculator.
+Phase 5 delivers a complete **Streamlit web application** with **14 interactive pages** for the M.Tech viva presentation. It features a premium, glassmorphic UI with horizontal top-navigation, visualizing all experiment results and including a live clinical risk calculator.
 
-### Dashboard Pages
+### Dashboard Architecture (4 Main Tabs)
 
-#### 1. Dashboard Overview
+#### 1. 📊 Overview
+- **Dashboard Overview**: The main landing page showing top-level KPIs, convergence trends, and hospital data distribution charts.
+- **Network Topology**: An interactive hub-and-spoke visualization of the federated architecture.
+- **Project Overview**: Technical documentation of the architecture, strategies, security mechanisms, and model design.
 
-The main landing page showing top-level KPIs (Global AUC, Accuracy, Training Rounds, Security Experiments, Best Privacy Epsilon) along with convergence trends and hospital data distribution charts.
+#### 2. 🧪 Experiments
+- **Training Console**: Interactive training convergence dashboard with metric selectors and hospital AUC distributions.
+- **Attack vs. Defense Analysis**: Comprehensive adversarial robustness visualization (heatmaps, radar charts, and grouped bar charts).
+- **Privacy-Utility Tradeoff**: Interactive epsilon vs. AUC chart.
+- **Non-IID Analysis**: Side-by-side comparison of data heterogeneity impact.
+- **Communication Cost**: Bandwidth comparison for federated model exchange.
+- **Model Comparison (NEW)**: Deep dive into strategy performance under clean conditions and attack scenarios.
+- **Experiment Timeline (NEW)**: A visual journey through all 5 research phases with key milestones and results.
 
-![Dashboard Overview](docs/screenshots/dashboard_overview.png)
+#### 3. 🔍 Data & Insights
+- **Data Explorer (NEW)**: Interactive EDA tool for feature distributions, correlation matrices, and hospital population comparisons.
+- **Hospital Deep Dive (NEW)**: Detailed analytics for individual hospitals, including age/class distributions and local vs. global AUC comparisons.
+- **Research Figures**: Gallery of all 5 pre-generated publication-quality research figures.
 
-#### 2. Network Topology
-
-An interactive hub-and-spoke visualization of the federated architecture. The central FedCare Server connects to 6 hospital nodes, each displaying sample counts and disease prevalence on hover.
-
-![Network Topology](docs/screenshots/network_topology.png)
-
-#### 3. Training Console
-
-Interactive training convergence dashboard with:
-- **Metric selector**: Switch between ROC-AUC, Accuracy, and Loss views
-- **Per-hospital toggle**: Overlay individual hospital AUC curves
-- **Animation slider**: Simulate round-by-round training progression
-- **Hospital AUC bar chart**: Final per-hospital performance distribution
-
-![Training Console](docs/screenshots/training_console.png)
-
-#### 4. Attack vs. Defense Analysis
-
-Comprehensive adversarial robustness visualization:
-- **Grouped bar charts**: Compare strategies across attack scenarios
-- **Attack x Defense heatmap**: Color-coded AUC performance matrix
-- **Trajectory charts**: Round-by-round impact of attacks over time
-
-![Attack vs Defense](docs/screenshots/attack_defense.png)
-
-#### 5. Privacy-Utility Tradeoff Explorer
-
-Interactive epsilon vs. AUC chart with privacy regime annotations showing how different noise levels affect model performance.
-
-#### 6. Non-IID Data Heterogeneity Analysis
-
-Side-by-side comparison of data heterogeneity impact and FedProx effectiveness.
-
-#### 7. Communication Cost Analysis
-
-Bar chart comparing federated model exchange vs. centralized raw data transfer bandwidth.
-
-#### 8. Clinical Risk Calculator
-
-A live heart disease risk prediction tool where clinicians can input 13 clinical features and get an instant probability score with a gauge chart and risk classification.
-
-![Risk Calculator](docs/screenshots/risk_calculator.png)
-
-#### 9. Research Figures Gallery
-
-Display of all 5 pre-generated publication-quality research figures.
-
-#### 10. Project Overview
-
-Technical documentation of the architecture, strategies, security mechanisms, and model design.
+#### 4. 🛠️ Interactive Tools
+- **Clinical Risk Calculator**: A live heart disease risk prediction tool with a stunning animated gauge chart. Input 13 clinical features for instant probability scoring.
 
 ### Launching the Dashboard
 
