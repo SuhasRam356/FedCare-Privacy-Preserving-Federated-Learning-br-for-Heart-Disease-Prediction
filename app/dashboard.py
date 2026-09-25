@@ -461,15 +461,15 @@ def render_command_center():
             fig.add_trace(go.Scatter(
                 x=rounds_df["round"], y=rounds_df["auc"],
                 mode="lines+markers", name="AUC",
-                line=dict(width=3, color="#00d4ff", shape="spline"),
-                marker=dict(size=7, color="#00d4ff", line=dict(width=1, color="rgba(0,212,255,0.3)")),
+                line=dict(width=3, color=CHART_COLORS["primary"], shape="spline"),
+                marker=dict(size=7, color=CHART_COLORS["primary"], line=dict(width=1, color="rgba(59,130,246,0.3)")),
                 fill="tozeroy", fillcolor="rgba(0,212,255,0.05)",
             ))
             fig.add_trace(go.Scatter(
                 x=rounds_df["round"], y=rounds_df["accuracy"],
                 mode="lines+markers", name="Accuracy",
-                line=dict(width=2, color="#a855f7", dash="dot", shape="spline"),
-                marker=dict(size=5, color="#a855f7"),
+                line=dict(width=2, color=HOSPITAL_COLORS[4], dash="dot", shape="spline"),
+                marker=dict(size=5, color=HOSPITAL_COLORS[4]),
             ))
             fig.update_layout(**PLOTLY_THEME)
             fig.update_layout(height=400)
@@ -486,11 +486,11 @@ def render_command_center():
             fig = go.Figure()
             fig.add_trace(go.Bar(
                 x=hospital_stats["Hospital"], y=hospital_stats["Positive"],
-                name="Heart Disease", marker_color="#fb7185", marker_cornerradius=6,
+                name="Heart Disease", marker_color=CHART_COLORS["danger"], marker_cornerradius=6,
             ))
             fig.add_trace(go.Bar(
                 x=hospital_stats["Hospital"], y=hospital_stats["Negative"],
-                name="Healthy", marker_color="#22d3ee", marker_cornerradius=6,
+                name="Healthy", marker_color=CHART_COLORS["success"], marker_cornerradius=6,
             ))
             fig.update_layout(**PLOTLY_THEME)
             fig.update_layout(height=400, barmode="stack")
@@ -525,10 +525,10 @@ def render_network_topology():
     # Central server
     fig.add_trace(go.Scatter(
         x=[0], y=[0], mode="markers+text",
-        marker=dict(size=65, color="#0a0a1a", symbol="diamond",
-                    line=dict(width=3, color="#00d4ff")),
+        marker=dict(size=65, color=CHART_COLORS["background"], symbol="diamond",
+                    line=dict(width=3, color=CHART_COLORS["primary"])),
         text=["FedCare<br>Server"], textposition="bottom center",
-        textfont=dict(size=12, color="#00d4ff", family="Space Grotesk"),
+        textfont=dict(size=12, color=CHART_COLORS["primary"], family="Space Grotesk"),
         name="Central Server", hoverinfo="text",
         hovertext="<b>Aggregation Server</b><br>FedAvg · FedProx · Krum · TrimmedMean · Median<br>+ Secret Sharing · Homomorphic Encryption",
     ))
@@ -547,7 +547,7 @@ def render_network_topology():
         prev_pct = row["Prevalence"] * 100
         fig.add_trace(go.Scatter(
             x=[x], y=[y], mode="markers+text",
-            marker=dict(size=45, color="#0a0a1a", symbol="circle",
+            marker=dict(size=45, color=CHART_COLORS["background"], symbol="circle",
                         line=dict(width=3, color=HOSPITAL_COLORS[idx])),
             text=[f"H{row['ID']}"], textposition="middle center",
             textfont=dict(size=14, color=HOSPITAL_COLORS[idx], family="Fira Code"),
@@ -603,7 +603,7 @@ def render_training_console():
 
     fig.add_trace(go.Scatter(
         x=plot_df["round"], y=plot_df[col_name], mode="lines+markers",
-        name=f"Global {display_name}", line=dict(width=3, color="#00d4ff", shape="spline"),
+        name=f"Global {display_name}", line=dict(width=3, color=CHART_COLORS["primary"], shape="spline"),
         marker=dict(size=6), fill="tozeroy" if col_name != "test_loss" else None,
         fillcolor="rgba(0,212,255,0.05)"), row=1, col=1)
 
@@ -691,7 +691,7 @@ def render_attack_defense():
             pivot = filtered.pivot_table(index="Attack_Name", columns="Strategy_Name", values="Final_AUC", aggfunc="mean")
             fig_hm = go.Figure(data=go.Heatmap(
                 z=pivot.values, x=pivot.columns.tolist(), y=pivot.index.tolist(),
-                colorscale=[[0,"#1a0a2e"],[0.3,"#6b21a8"],[0.5,"#a855f7"],[0.7,"#00d4ff"],[1.0,"#22d3ee"]],
+                colorscale=[[0,CHART_COLORS["background"]],[0.3,HOSPITAL_COLORS[4]],[0.5,HOSPITAL_COLORS[4]],[0.7,CHART_COLORS["primary"]],[1.0,CHART_COLORS["success"]]],
                 text=np.round(pivot.values, 4), texttemplate="%{text}",
                 textfont=dict(size=12, color="white", family="Fira Code"),
                 hoverongaps=False, colorbar=dict(title="AUC", tickfont=dict(color="#8b8fa3"))))
@@ -729,7 +729,7 @@ def render_attack_defense():
     if traj_df is not None and len(traj_df) > 0 and "round" in traj_df.columns and "auc" in traj_df.columns and "label" in traj_df.columns:
         st.markdown("#### ⏱️ Attack Impact Over Rounds")
         fig_traj = px.line(traj_df, x="round", y="auc", color="label",
-            color_discrete_sequence=["#00d4ff", "#fb7185", "#22d3ee", "#fbbf24", "#a855f7"],
+            color_discrete_sequence=[CHART_COLORS["primary"], CHART_COLORS["danger"], CHART_COLORS["success"], CHART_COLORS["warning"], HOSPITAL_COLORS[4]],
             labels={"round": "Communication Round", "auc": "Global AUC", "label": "Scenario"})
         fig_traj.update_layout(**PLOTLY_THEME)
         fig_traj.update_layout(height=400)
@@ -752,16 +752,16 @@ def render_privacy_utility():
         fig = go.Figure()
         fig.add_trace(go.Scatter(
             x=dp_df["Epsilon"], y=dp_df["Final_AUC"], mode="lines+markers",
-            name="Global AUC", line=dict(width=3, color="#00d4ff", shape="spline"),
-            marker=dict(size=10, symbol="circle", color="#00d4ff",
-                        line=dict(width=2, color="rgba(0,212,255,0.3)"))))
+            name="Global AUC", line=dict(width=3, color=CHART_COLORS["primary"], shape="spline"),
+            marker=dict(size=10, symbol="circle", color=CHART_COLORS["primary"],
+                        line=dict(width=2, color="rgba(59,130,246,0.3)"))))
         fig.add_trace(go.Scatter(
             x=dp_df["Epsilon"], y=dp_df["Worst_Hospital_AUC"], mode="lines+markers",
-            name="Worst Hospital", line=dict(width=2, color="#fb7185", dash="dash", shape="spline"),
-            marker=dict(size=8, symbol="diamond", color="#fb7185")))
+            name="Worst Hospital", line=dict(width=2, color=CHART_COLORS["danger"], dash="dash", shape="spline"),
+            marker=dict(size=8, symbol="diamond", color=CHART_COLORS["danger"])))
         for _, row in dp_df.iterrows():
             regime = str(row.get("Privacy_Regime", ""))
-            color = {"Strong": "#22d3ee", "Moderate": "#fbbf24", "Weak": "#fb7185"}.get(regime, "#5a5e73")
+            color = {"Strong": CHART_COLORS["success"], "Moderate": CHART_COLORS["warning"], "Weak": CHART_COLORS["danger"]}.get(regime, "#5a5e73")
             fig.add_annotation(x=row["Epsilon"], y=row["Final_AUC"], text=regime,
                                showarrow=False, yshift=20, font=dict(size=9, color=color))
         fig.update_layout(**PLOTLY_THEME)
@@ -795,12 +795,12 @@ def render_non_iid_analysis():
             fig = go.Figure()
             fig.add_trace(go.Bar(
                 x=non_iid_df["Configuration"], y=non_iid_df["Final_AUC"],
-                name="AUC", marker_color="#00d4ff", marker_cornerradius=6,
+                name="AUC", marker_color=CHART_COLORS["primary"], marker_cornerradius=6,
                 text=non_iid_df["Final_AUC"].round(4), textposition="outside",
                 textfont=dict(color="#8b8fa3", size=10)))
             fig.add_trace(go.Bar(
                 x=non_iid_df["Configuration"], y=non_iid_df["Equity_Gap"],
-                name="Equity Gap", marker_color="#fb7185", marker_cornerradius=6,
+                name="Equity Gap", marker_color=CHART_COLORS["danger"], marker_cornerradius=6,
                 text=non_iid_df["Equity_Gap"].round(4), textposition="outside",
                 textfont=dict(color="#8b8fa3", size=10), yaxis="y2"))
             fig.update_layout(**PLOTLY_THEME)
@@ -818,17 +818,19 @@ def render_non_iid_analysis():
             fig = go.Figure()
             fig.add_trace(go.Bar(
                 x=fedprox_df["Algorithm"], y=fedprox_df["Final_AUC"],
-                name="AUC", marker_color="#a855f7", marker_cornerradius=6,
+                name="AUC", marker_color=HOSPITAL_COLORS[4], marker_cornerradius=6,
                 text=fedprox_df["Final_AUC"].round(4), textposition="outside",
                 textfont=dict(color="#8b8fa3", size=10)))
             fig.add_trace(go.Bar(
                 x=fedprox_df["Algorithm"], y=fedprox_df["Equity_Gap"],
-                name="Equity Gap", marker_color="#fbbf24", marker_cornerradius=6,
+                name="Equity Gap", marker_color=CHART_COLORS["warning"], marker_cornerradius=6,
                 text=fedprox_df["Equity_Gap"].round(4), textposition="outside",
-                textfont=dict(color="#8b8fa3", size=10)))
+                textfont=dict(color="#8b8fa3", size=10), yaxis="y2"))
             fig.update_layout(**PLOTLY_THEME)
             fig.update_layout(height=440, barmode="group",
-                yaxis=dict(title="Value"), xaxis=dict(tickangle=-20))
+                yaxis=dict(title="AUC"),
+                yaxis2=dict(title="Equity Gap", overlaying="y", side="right"),
+                xaxis=dict(tickangle=-20))
             st.plotly_chart(fig, use_container_width=True)
         else:
             st.warning("No FedProx data found.")
@@ -924,16 +926,16 @@ def render_risk_calculator():
                 risk_prob = float(probs[0, 1])
 
             if risk_prob < 0.25:
-                risk_level, risk_color = "LOW RISK", "#22d3ee"
+                risk_level, risk_color = "LOW RISK", CHART_COLORS["success"]
                 advice = "Maintain healthy lifestyle. Regular check-ups recommended."
             elif risk_prob < 0.50:
-                risk_level, risk_color = "MODERATE RISK", "#fbbf24"
+                risk_level, risk_color = "MODERATE RISK", CHART_COLORS["warning"]
                 advice = "Lifestyle modifications recommended. Consult cardiologist."
             elif risk_prob < 0.75:
-                risk_level, risk_color = "HIGH RISK", "#fb7185"
+                risk_level, risk_color = "HIGH RISK", CHART_COLORS["danger"]
                 advice = "Immediate medical consultation. Diagnostic tests advised."
             else:
-                risk_level, risk_color = "VERY HIGH RISK", "#ef4444"
+                risk_level, risk_color = "VERY HIGH RISK", CHART_COLORS["danger"]
                 advice = "Urgent cardiology referral. Comprehensive cardiac workup required."
 
             fig_gauge = go.Figure(go.Indicator(
@@ -945,10 +947,10 @@ def render_risk_calculator():
                     bar=dict(color=risk_color, thickness=0.25),
                     bgcolor="rgba(15,15,35,0.5)", borderwidth=1, bordercolor="rgba(100,100,180,0.2)",
                     steps=[
-                        dict(range=[0, 25], color="rgba(34,211,238,0.08)"),
-                        dict(range=[25, 50], color="rgba(251,191,36,0.08)"),
-                        dict(range=[50, 75], color="rgba(251,113,133,0.08)"),
-                        dict(range=[75, 100], color="rgba(239,68,68,0.1)"),
+                        dict(range=[0, 25], color="rgba(16,185,129,0.08)"),
+                        dict(range=[25, 50], color="rgba(245,158,11,0.08)"),
+                        dict(range=[50, 75], color="rgba(239,68,68,0.08)"),
+                        dict(range=[75, 100], color="rgba(220,38,38,0.1)"),
                     ],
                     threshold=dict(line=dict(color=risk_color, width=4), thickness=0.8, value=risk_prob * 100))))
             fig_gauge.update_layout(**PLOTLY_THEME)
@@ -968,12 +970,12 @@ def render_risk_calculator():
                 if combined is not None:
                     bg_raw = combined.drop(columns=["target"]).values[:200]
                     bg_scaled = scaler.transform(bg_raw)
-                    explanation = explain_single_prediction(model, bg_scaled, scaled, seed=42)
+                    explanation = explain_single_prediction(model, bg_scaled, raw_features, seed=42)
 
                     contribs = explanation["contributions"][:6]  # Top 6 to save vertical space
                     feat_names = [c["feature"] for c in contribs]
                     shap_vals = [c["shap_value"] for c in contribs]
-                    colors = ["#22d3ee" if v > 0 else "#fb7185" for v in shap_vals]
+                    colors = [CHART_COLORS["success"] if v > 0 else CHART_COLORS["danger"] for v in shap_vals]
 
                     fig_shap = go.Figure()
                     fig_shap.add_trace(go.Bar(
@@ -1150,7 +1152,7 @@ def render_data_explorer():
             corr = df[numeric_cols].corr()
             fig = go.Figure(data=go.Heatmap(
                 z=corr.values, x=corr.columns.tolist(), y=corr.index.tolist(),
-                colorscale=[[0,"#0a0a1a"],[0.5,"#1a0a2e"],[1.0,"#00d4ff"]],
+                colorscale=[[0,CHART_COLORS["background"]],[0.5,CHART_COLORS["background"]],[1.0,CHART_COLORS["primary"]]],
                 text=np.round(corr.values, 2), texttemplate="%{text}",
                 textfont=dict(size=9, color="#d1d5db")))
             fig.update_layout(**PLOTLY_THEME)
@@ -1228,7 +1230,7 @@ def render_hospital_deep_dive():
             labels=["Healthy", "Heart Disease"],
             values=[h_row["Negative"], h_row["Positive"]],
             hole=0.6,
-            marker=dict(colors=["#22d3ee", color]),
+            marker=dict(colors=[CHART_COLORS["success"], color]),
             textinfo="label+percent",
             textfont=dict(size=13, color="#e8eaed"))])
         fig.update_layout(**PLOTLY_THEME)
@@ -1242,7 +1244,7 @@ def render_hospital_deep_dive():
             st.markdown(f"#### {hospital_id} AUC vs Global Over Training")
             fig = go.Figure()
             fig.add_trace(go.Scatter(x=rounds_df["round"], y=rounds_df["auc"], mode="lines+markers",
-                name="Global AUC", line=dict(width=3, color="#00d4ff", shape="spline"), marker=dict(size=5)))
+                name="Global AUC", line=dict(width=3, color=CHART_COLORS["primary"], shape="spline"), marker=dict(size=5)))
             fig.add_trace(go.Scatter(x=rounds_df["round"], y=rounds_df[hosp_col], mode="lines+markers",
                 name=f"{hospital_id} AUC", line=dict(width=3, color=color, shape="spline"), marker=dict(size=5),
                 fill="tonexty", fillcolor=f"rgba({_hex_to_rgb(color)},0.06)"))
@@ -1364,7 +1366,7 @@ def render_model_comparison():
                 fig = go.Figure()
                 fig.add_trace(go.Bar(
                     x=comparison["Model"], y=comparison["Global AUC"],
-                    name="AUC", marker_color=["#00d4ff", "#a855f7", "#22d3ee"], marker_cornerradius=8,
+                    name="AUC", marker_color=[CHART_COLORS["primary"], HOSPITAL_COLORS[4], CHART_COLORS["success"]], marker_cornerradius=8,
                     text=comparison["Global AUC"].round(4), textposition="outside",
                     textfont=dict(color="#e8eaed", size=13, family="Fira Code")))
                 fig.update_layout(**PLOTLY_THEME)
@@ -1498,7 +1500,7 @@ def render_secure_aggregation():
                 fig = go.Figure()
                 fig.add_trace(go.Bar(
                     x=results["Protocol"], y=results["AUC"],
-                    marker_color=["#fb7185", "#00d4ff", "#a855f7"], marker_cornerradius=8,
+                    marker_color=[CHART_COLORS["danger"], CHART_COLORS["primary"], HOSPITAL_COLORS[4]], marker_cornerradius=8,
                     text=results["AUC"].round(4), textposition="outside",
                     textfont=dict(color="#e8eaed", size=14, family="Fira Code")))
                 fig.update_layout(**PLOTLY_THEME)
@@ -1550,7 +1552,7 @@ def render_feature_importance():
                     orientation="h",
                     marker=dict(
                         color=values[::-1],
-                        colorscale=[[0,"#1a0a2e"],[0.5,"#a855f7"],[1.0,"#00d4ff"]],
+                        colorscale=[[0,CHART_COLORS["background"]],[0.5,HOSPITAL_COLORS[4]],[1.0,CHART_COLORS["primary"]]],
                         cornerradius=6),
                     text=[f"{v:.4f}" for v in values[::-1]],
                     textposition="outside",
