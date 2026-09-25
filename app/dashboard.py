@@ -1591,8 +1591,8 @@ def main():
         st.session_state.active_page = "Dashboard Overview"
 
     with st.sidebar:
-        st.markdown("<h2 style='text-align:center; color:#3b82f6;'>🫀 FedCare</h2>", unsafe_allow_html=True)
-        st.markdown("<p style='text-align:center; color:#94a3b8; font-size:0.85rem; margin-top:-10px;'>Clinical Research Platform</p>", unsafe_allow_html=True)
+        st.markdown("<h2 style='text-align:center; color:#3b82f6; font-size: 2.2rem; margin-bottom: 0px;'>🫀 FedCare</h2>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align:center; color:#94a3b8; font-size:1.05rem; margin-top:-5px;'>Clinical Research Platform</p>", unsafe_allow_html=True)
         st.markdown('<hr style="margin: 10px 0;">', unsafe_allow_html=True)
         
         
