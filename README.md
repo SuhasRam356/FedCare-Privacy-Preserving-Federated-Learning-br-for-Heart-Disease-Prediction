@@ -83,7 +83,7 @@ FedCare uses **Federated Learning** — a privacy-preserving technique where:
 | **Secure Aggregation** | Additive Secret Sharing and simulated Paillier Homomorphic Encryption |
 | **Explainable AI (XAI)** | SHAP-based global feature importance and per-prediction explanations |
 | **Non-IID Analysis** | Dirichlet-based heterogeneity evaluation with equity gap metrics |
-| **Interactive Dashboard** | 18-page premium Streamlit web app with neon-cyberpunk design and 5 navigation tabs |
+| **Interactive Dashboard** | 18-page premium Streamlit web app with muted-dark clinical research design and 5 navigation tabs |
 | **Risk Calculator + SHAP** | Live clinical heart disease prediction with AI-powered feature explanations |
 | **One-Command Demo** | Single `python demo.py` to launch the full viva presentation |
 | **Comprehensive Testing** | 69 automated tests covering all 5 project phases |
@@ -626,7 +626,7 @@ python -m pytest tests/test_phase4.py -v  # 12 tests
 
 ### What This Phase Does
 
-Phase 5 delivers a complete **Streamlit web application** with **18 interactive pages** for the M.Tech viva presentation. It features a premium, neon-cyberpunk UI with aurora gradient animations and 5 navigation tabs, visualizing all experiment results and including a live clinical risk calculator with SHAP explainability.
+Phase 5 delivers a complete **Streamlit web application** with **18 interactive pages** for the M.Tech viva presentation. It features a premium, clinical muted-dark UI with cohesive navigation and 5 functional tabs, visualizing all experiment results and including a live clinical risk calculator with SHAP explainability.
 
 ### Dashboard Architecture (5 Main Tabs)
 

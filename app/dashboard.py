@@ -53,47 +53,15 @@ st.set_page_config(
 )
 
 # ══════════════════════════════════════════════════════════════════════
-#                         DESIGN SYSTEM v3
+#                         IMPORTS & SETUP
 # ══════════════════════════════════════════════════════════════════════
 
-# Neon cyberpunk palette
-COLORS = {
-    "neon_blue": "#00d4ff",
-    "neon_purple": "#a855f7",
-    "neon_pink": "#ec4899",
-    "neon_green": "#22d3ee",
-    "neon_amber": "#fbbf24",
-    "neon_rose": "#fb7185",
-    "bg_deep": "#0a0a1a",
-    "bg_card": "rgba(15,15,35,0.85)",
-    "bg_card_hover": "rgba(25,25,55,0.95)",
-    "text_primary": "#e8eaed",
-    "text_secondary": "#8b8fa3",
-    "text_dim": "#5a5e73",
-    "border": "rgba(100,100,180,0.15)",
-    "border_glow": "rgba(0,212,255,0.25)",
-}
-
-HOSPITAL_COLORS = ["#00d4ff", "#a855f7", "#22d3ee", "#fbbf24", "#fb7185", "#34d399"]
-STRATEGY_COLORS = ["#00d4ff", "#a855f7", "#22d3ee", "#fbbf24", "#fb7185"]
-
-PLOTLY_THEME = dict(
-    plot_bgcolor="rgba(0,0,0,0)",
-    paper_bgcolor="rgba(0,0,0,0)",
-    font=dict(color="#e8eaed", family="'Space Grotesk', 'Inter', sans-serif", size=12),
-    legend=dict(
-        orientation="h",
-        yanchor="top",
-        y=-0.15,
-        xanchor="center",
-        x=0.5,
-        bgcolor="rgba(15,15,35,0.8)", bordercolor="rgba(100,100,180,0.2)",
-        borderwidth=1, font=dict(size=11, color="#8b8fa3")
-    ),
-    margin=dict(l=40, r=20, t=50, b=40),
-    xaxis=dict(gridcolor="rgba(100,100,180,0.08)", zerolinecolor="rgba(100,100,180,0.12)"),
-    yaxis=dict(gridcolor="rgba(100,100,180,0.08)", zerolinecolor="rgba(100,100,180,0.12)"),
+from app.components.theme import (
+    inject_clinical_theme, render_page_header, 
+    HOSPITAL_COLORS, STRATEGY_COLORS, CHART_COLORS, PLOTLY_LAYOUT_DEFAULTS
 )
+
+PLOTLY_THEME = PLOTLY_LAYOUT_DEFAULTS
 
 
 def inject_css():
@@ -409,95 +377,11 @@ def inject_css():
 #                     CACHED DATA LOADERS
 # ══════════════════════════════════════════════════════════════════════
 
-@st.cache_data(show_spinner=False)
-def load_hospital_stats() -> pd.DataFrame:
-    """Load per-hospital statistics from the raw CSV data files."""
-    stats = []
-    for i in range(1, 7):
-        csv_path = DATA_DIR / f"hospital_{i}.csv"
-        if csv_path.exists():
-            df = pd.read_csv(csv_path)
-            n_samples = len(df)
-            n_positive = int(df["target"].sum())
-            prevalence = n_positive / n_samples if n_samples > 0 else 0.0
-            avg_age = float(df["age"].mean()) if "age" in df.columns else 0.0
-            avg_chol = float(df["cholesterol"].mean()) if "cholesterol" in df.columns else 0.0
-            avg_bp = float(df["resting_bp"].mean()) if "resting_bp" in df.columns else 0.0
-            avg_hr = float(df["max_heart_rate"].mean()) if "max_heart_rate" in df.columns else 0.0
-            avg_bmi = float(df["bmi"].mean()) if "bmi" in df.columns else 0.0
-            smoker_pct = float(df["smoker"].mean()) * 100 if "smoker" in df.columns else 0.0
-            stats.append({
-                "Hospital": f"Hospital {i}", "ID": i, "Samples": n_samples,
-                "Positive": n_positive, "Negative": n_samples - n_positive,
-                "Prevalence": prevalence, "Avg_Age": avg_age, "Avg_Cholesterol": avg_chol,
-                "Avg_BP": avg_bp, "Avg_HR": avg_hr, "Avg_BMI": avg_bmi, "Smoker_Pct": smoker_pct,
-            })
-    return pd.DataFrame(stats)
-
-@st.cache_data(show_spinner=False)
-def load_hospital_raw(hospital_id: int) -> Optional[pd.DataFrame]:
-    csv_path = DATA_DIR / f"hospital_{hospital_id}.csv"
-    return pd.read_csv(csv_path) if csv_path.exists() else None
-
-@st.cache_data(show_spinner=False)
-def load_combined_data() -> Optional[pd.DataFrame]:
-    path = DATA_DIR / "combined.csv"
-    return pd.read_csv(path) if path.exists() else None
-
-@st.cache_data(show_spinner=False)
-def load_fedavg_rounds() -> Optional[pd.DataFrame]:
-    path = RESULTS_DIR / "rounds_fedavg.csv"
-    return pd.read_csv(path) if path.exists() else None
-
-@st.cache_data(show_spinner=False)
-def load_attack_defense_matrix() -> Optional[pd.DataFrame]:
-    path = RESULTS_DIR / "phase4_attack_defense_matrix.csv"
-    return pd.read_csv(path) if path.exists() else None
-
-@st.cache_data(show_spinner=False)
-def load_dp_sweep() -> Optional[pd.DataFrame]:
-    path = RESULTS_DIR / "phase4_dp_sweep.csv"
-    return pd.read_csv(path) if path.exists() else None
-
-@st.cache_data(show_spinner=False)
-def load_non_iid_results() -> Optional[pd.DataFrame]:
-    path = RESULTS_DIR / "phase3_non_iid_experiments.csv"
-    return pd.read_csv(path) if path.exists() else None
-
-@st.cache_data(show_spinner=False)
-def load_fedprox_results() -> Optional[pd.DataFrame]:
-    path = RESULTS_DIR / "phase3_fedprox_experiments.csv"
-    return pd.read_csv(path) if path.exists() else None
-
-@st.cache_data(show_spinner=False)
-def load_comm_cost() -> Optional[pd.DataFrame]:
-    path = RESULTS_DIR / "phase4_comm_cost.csv"
-    return pd.read_csv(path) if path.exists() else None
-
-@st.cache_data(show_spinner=False)
-def load_attack_trajectories() -> Optional[pd.DataFrame]:
-    path = RESULTS_DIR / "phase4_attack_trajectories.csv"
-    return pd.read_csv(path) if path.exists() else None
-
-@st.cache_resource(show_spinner=False)
-def load_global_model():
-    """Load the trained global FedCare model for real-time inference."""
-    from fedcare.task import Net
-    from sklearn.preprocessing import StandardScaler
-    model = Net()
-    model.eval()
-    checkpoint_path = CHECKPOINT_DIR / "final_fedavg_model.pt"
-    if checkpoint_path.exists():
-        state_dict = torch.load(checkpoint_path, map_location="cpu", weights_only=True)
-        model.load_state_dict(state_dict)
-        from fedcare.task import load_data
-        _, _, scaler = load_data(partition_id=None)
-    else:
-        from fedcare.task import load_data, train as train_fn
-        train_loader, _, scaler = load_data(partition_id=None)
-        train_fn(model, train_loader, epochs=15, lr=0.001)
-        model.eval()
-    return model, scaler
+from app.utils.data_loaders import (
+    load_hospital_stats, load_hospital_raw, load_combined_data, load_fedavg_rounds,
+    load_attack_defense_matrix, load_dp_sweep, load_non_iid_results, load_fedprox_results,
+    load_comm_cost, load_attack_trajectories, load_global_model
+)
 
 
 def _hex_to_rgb(hex_color: str) -> str:
@@ -509,35 +393,7 @@ def _hex_to_rgb(hex_color: str) -> str:
 #                          HEADER
 # ══════════════════════════════════════════════════════════════════════
 
-def render_header(is_hero=False, page_title="", page_subtitle=""):
-    if is_hero:
-        st.markdown("""
-        <div style="text-align:center; padding: 30px 0 10px;">
-            <div class="fc-hero-badge">Privacy-Preserving Research Platform</div>
-        </div>
-        """, unsafe_allow_html=True)
-        st.markdown("""
-        <h1 style="text-align:center; font-size: 3.5rem !important; margin-bottom: 0;">FedCare</h1>
-        <p style="text-align:center; color:#8b8fa3; font-size:1.15rem; max-width:800px; line-height:1.8; margin: 4px auto 10px auto;">
-            Enabling <strong style="color:#00d4ff">6 hospitals</strong> to collaboratively train
-            heart disease classifiers via federated learning.
-            <strong style="color:#a855f7">Zero patient data exposure.</strong>
-        </p>
-        <div style="text-align:center; display:flex; justify-content:center; gap:12px; flex-wrap:wrap; padding-bottom:20px;">
-            <span class="fc-tag fc-tag-blue">🧠 MLP + XGBoost + RF</span>
-            <span class="fc-tag fc-tag-purple">🔐 DP + Secure Aggregation</span>
-            <span class="fc-tag fc-tag-green">🔍 SHAP Explainability</span>
-            <span class="fc-tag fc-tag-pink">🛡️ Byzantine Defenses</span>
-            <span class="fc-tag fc-tag-amber">📊 18 Interactive Pages</span>
-        </div>
-        """, unsafe_allow_html=True)
-    else:
-        st.markdown(f"""
-        <div style="padding: 10px 0 20px 0;">
-            <h1 style="font-size: 2.2rem !important; margin-bottom: 0;">{page_title}</h1>
-            <p style="color:#8b8fa3; font-size:1rem; margin-top: 4px;">{page_subtitle}</p>
-        </div>
-        """, unsafe_allow_html=True)
+
 
 
 # ══════════════════════════════════════════════════════════════════════
@@ -995,17 +851,17 @@ def render_communication_cost():
     with c2: st.metric("Single Message", f"{row['single_message_kb']:.1f} KB")
     with c3: st.metric("Total FL Comm.", f"{row['total_fl_mb']:.2f} MB")
     with c4:
-        ratio = row["comm_ratio"]
-        savings = abs((1 - ratio) * 100)
-        st.metric("vs. Centralized", f"{ratio:.2f}x", delta=f"{savings:.1f}% savings")
+        ratio = row["comm_ratio"] # This is total_fl_mb / centralized_data_mb (e.g., 3.58)
+        overhead = (ratio - 1) * 100
+        st.metric("vs. Centralized", f"{ratio:.2f}x", delta=f"-{overhead:.1f}% overhead", delta_color="inverse")
 
     fig = go.Figure()
     fig.add_trace(go.Bar(
         x=["Federated<br>Model Exchange", "Centralized<br>Raw Data Transfer"],
         y=[row["total_fl_mb"], row["centralized_data_mb"]],
-        marker_color=["#00d4ff", "#fb7185"], marker_cornerradius=8,
+        marker_color=[CHART_COLORS["primary"], CHART_COLORS["danger"]], marker_cornerradius=8,
         text=[f"{row['total_fl_mb']:.2f} MB", f"{row['centralized_data_mb']:.2f} MB"],
-        textposition="outside", textfont=dict(color="#e8eaed", size=14, family="Fira Code"), width=0.35))
+        textposition="outside", textfont=dict(color="#e8eaed", size=14, family="Roboto Mono"), width=0.35))
     fig.update_layout(**PLOTLY_THEME)
     fig.update_layout(height=400, yaxis=dict(title="Data Transfer (MB)"), showlegend=False)
     st.plotly_chart(fig, use_container_width=True)
@@ -1180,6 +1036,26 @@ def render_research_figures():
 # ══════════════════════════════════════════════════════════════════════
 
 def render_project_overview():
+    st.markdown("""
+    <div style="text-align:center; padding: 30px 0 10px;">
+        <div class="fc-hero-badge">M.TECH RESEARCH PROJECT</div>
+    </div>
+    """, unsafe_allow_html=True)
+    st.markdown("""
+    <h1 style="text-align:center; font-size: 3.5rem !important; margin-bottom: 0;">FedCare</h1>
+    <p style="text-align:center; color:#64748b; font-size:1.15rem; max-width:800px; line-height:1.8; margin: 4px auto 10px auto;">
+        Enabling <strong style="color:#3b82f6">6 hospitals</strong> to collaboratively train
+        heart disease classifiers via federated learning.
+        <strong style="color:#10b981">Zero patient data exposure.</strong>
+    </p>
+    <div style="text-align:center; display:flex; justify-content:center; gap:12px; flex-wrap:wrap; padding-bottom:20px;">
+        <span class="fc-tag fc-tag-blue">🧠 MLP + XGBoost + RF</span>
+        <span class="fc-tag fc-tag-purple">🔐 DP + Secure Aggregation</span>
+        <span class="fc-tag fc-tag-green">🔍 SHAP Explainability</span>
+        <span class="fc-tag fc-tag-pink">🛡️ Byzantine Defenses</span>
+        <span class="fc-tag fc-tag-amber">📊 18 Interactive Pages</span>
+    </div>
+    """, unsafe_allow_html=True)
     st.markdown("### 📖 Architecture & Methodology")
     c1, c2 = st.columns(2)
     with c1:
@@ -1707,51 +1583,14 @@ def render_feature_importance():
 # ══════════════════════════════════════════════════════════════════════
 
 def main():
-    inject_css()
+    inject_clinical_theme()
 
-    with st.sidebar:
-        st.markdown("<h2 style='text-align:center; color:#00d4ff;'>FedCare</h2>", unsafe_allow_html=True)
-        st.markdown("<p style='text-align:center; color:#8b8fa3; font-size:0.85rem; margin-top:-10px;'>Privacy-Preserving Federated Learning</p>", unsafe_allow_html=True)
-        st.markdown('<hr style="margin: 10px 0;">', unsafe_allow_html=True)
-        
-        st.markdown('<p style="color:#5a5e73; font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">Overview</p>', unsafe_allow_html=True)
-        nav_overview = st.radio("Overview Nav", ["Dashboard Overview", "Project Overview"], label_visibility="collapsed")
-        
-        st.markdown('<br><p style="color:#5a5e73; font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">Training & Network</p>', unsafe_allow_html=True)
-        nav_training = st.radio("Training Nav", ["Network Topology", "Training Console", "Communication Cost"], label_visibility="collapsed")
-
-        st.markdown('<br><p style="color:#5a5e73; font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">Security & Privacy</p>', unsafe_allow_html=True)
-        nav_security = st.radio("Security Nav", ["Secure Aggregation", "Attack vs. Defense", "Privacy-Utility Tradeoff", "Non-IID Analysis"], label_visibility="collapsed")
-        
-        st.markdown('<br><p style="color:#5a5e73; font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">Tools & Insights</p>', unsafe_allow_html=True)
-        nav_tools = st.radio("Tools Nav", ["Risk Calculator", "Data Explorer", "Feature Importance", "Model Comparison", "Experiment Timeline", "Research Figures"], label_visibility="collapsed")
-        
-        # State tracking to ensure only one item is active (Streamlit radio hack)
-        # Using a unified selector from session state if preferred, but for simplicity, we map based on whichever was clicked last.
-        # However, multiple radios can be confusing if they all have active states. 
-        # A better approach is to use standard buttons if we want a clean single-state, or use `st.radio` with empty default.
-        # But for now, we'll determine the active page sequentially based on non-default selections or just rely on a unified logic.
-        
-    # Since Streamlit doesn't easily support grouped radios that act as one group, we will build a custom unified selection logic.
-    # Actually, a simpler way is to just use a single selectbox or option_menu, but the user asked to "Group these into logical sections with subheadings".
-    # I will use a single `st.radio` for now but inject markdown headers if possible? Streamlit doesn't allow that in `st.radio`.
-    
-    # We'll use session state to track the active page so clicking one group updates the page.
     if 'active_page' not in st.session_state:
         st.session_state.active_page = "Project Overview"
 
-    # Quick and dirty hack: detect which group changed
-    def on_nav_change(key):
-        st.session_state.active_page = st.session_state[key]
-        
     with st.sidebar:
-        # Re-render with unified logic
-        st.empty() # Clear previous markdown radios
-        
-    # Rebuilding sidebar cleanly
-    with st.sidebar:
-        st.markdown("<h2 style='text-align:center; color:#00d4ff;'>FedCare</h2>", unsafe_allow_html=True)
-        st.markdown("<p style='text-align:center; color:#8b8fa3; font-size:0.85rem; margin-top:-10px;'>Research Platform</p>", unsafe_allow_html=True)
+        st.markdown("<h2 style='text-align:center; color:#3b82f6;'>FedCare</h2>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align:center; color:#94a3b8; font-size:0.85rem; margin-top:-10px;'>Clinical Research Platform</p>", unsafe_allow_html=True)
         st.markdown('<hr style="margin: 10px 0;">', unsafe_allow_html=True)
         
         # Group 1: Overview
@@ -1775,6 +1614,7 @@ def main():
         if st.button("Feature Importance", use_container_width=True): st.session_state.active_page = "Feature Importance"
         if st.button("Model Comparison", use_container_width=True): st.session_state.active_page = "Model Comparison"
         if st.button("Data Explorer", use_container_width=True): st.session_state.active_page = "Data Explorer"
+        if st.button("Hospital Deep Dive", use_container_width=True): st.session_state.active_page = "Hospital Deep Dive"
         if st.button("Experiment Timeline", use_container_width=True): st.session_state.active_page = "Experiment Timeline"
         if st.button("Research Figures", use_container_width=True): st.session_state.active_page = "Research Figures"
         
@@ -1789,49 +1629,51 @@ def main():
     page = st.session_state.active_page
     
     if page == "Project Overview":
-        render_header(is_hero=True)
         render_project_overview()
     elif page == "Dashboard Overview":
-        render_header(is_hero=False, page_title="Command Center", page_subtitle="High-level metrics and research phase progress.")
+        render_page_header("Command Center", "High-level metrics and research phase progress.")
         render_command_center()
     elif page == "Network Topology":
-        render_header(is_hero=False, page_title="Network Topology", page_subtitle="Federated network architecture and hospital participants.")
+        render_page_header("Network Topology", "Federated network architecture and hospital participants.")
         render_network_topology()
     elif page == "Training Console":
-        render_header(is_hero=False, page_title="Training Console", page_subtitle="Round-by-round convergence and inter-hospital equity.")
+        render_page_header("Training Console", "Round-by-round convergence and inter-hospital equity.")
         render_training_console()
     elif page == "Communication Cost":
-        render_header(is_hero=False, page_title="Communication Cost", page_subtitle="Bandwidth analysis of federated vs centralized learning.")
+        render_page_header("Communication Cost", "Bandwidth analysis of federated vs centralized learning.")
         render_communication_cost()
     elif page == "Secure Aggregation":
-        render_header(is_hero=False, page_title="Secure Aggregation", page_subtitle="Cryptographic privacy via Secret Sharing and Homomorphic Encryption.")
+        render_page_header("Secure Aggregation", "Cryptographic privacy via Secret Sharing and Homomorphic Encryption.")
         render_secure_aggregation()
     elif page == "Attack vs. Defense":
-        render_header(is_hero=False, page_title="Attack vs. Defense", page_subtitle="Evaluating Byzantine robustness against adversarial attacks.")
+        render_page_header("Attack vs. Defense", "Evaluating Byzantine robustness against adversarial attacks.")
         render_attack_defense()
     elif page == "Privacy-Utility":
-        render_header(is_hero=False, page_title="Privacy-Utility Tradeoff", page_subtitle="Differential Privacy noise multiplier analysis.")
+        render_page_header("Privacy-Utility Tradeoff", "Differential Privacy noise multiplier analysis.")
         render_privacy_utility()
     elif page == "Non-IID Analysis":
-        render_header(is_hero=False, page_title="Non-IID Analysis", page_subtitle="Impact of data heterogeneity across hospitals.")
+        render_page_header("Non-IID Analysis", "Impact of data heterogeneity across hospitals.")
         render_non_iid_analysis()
     elif page == "Risk Calculator":
-        render_header(is_hero=False, page_title="Risk Calculator", page_subtitle="Live clinical prediction using the global federated model.")
+        render_page_header("Risk Calculator", "Live clinical prediction using the global federated model.")
         render_risk_calculator()
     elif page == "Feature Importance":
-        render_header(is_hero=False, page_title="Feature Importance", page_subtitle="Global feature influence explained by SHAP.")
+        render_page_header("Feature Importance", "Global feature influence explained by SHAP.")
         render_feature_importance()
     elif page == "Model Comparison":
-        render_header(is_hero=False, page_title="Model Comparison", page_subtitle="MLP vs Federated XGBoost vs Federated Random Forest.")
+        render_page_header("Model Comparison", "MLP vs Federated XGBoost vs Federated Random Forest.")
         render_model_comparison()
     elif page == "Data Explorer":
-        render_header(is_hero=False, page_title="Data Explorer", page_subtitle="Interactive feature distributions and correlation matrix.")
+        render_page_header("Data Explorer", "Interactive feature distributions and correlation matrix.")
         render_data_explorer()
+    elif page == "Hospital Deep Dive":
+        render_page_header("Hospital Deep Dive", "In-depth analysis of individual hospital cohorts.")
+        render_hospital_deep_dive()
     elif page == "Experiment Timeline":
-        render_header(is_hero=False, page_title="Experiment Timeline", page_subtitle="Step-by-step progress through the 5 research phases.")
+        render_page_header("Experiment Timeline", "Step-by-step progress through the 5 research phases.")
         render_experiment_timeline()
     elif page == "Research Figures":
-        render_header(is_hero=False, page_title="Research Figures", page_subtitle="High-resolution figures ready for publication.")
+        render_page_header("Research Figures", "High-resolution figures ready for publication.")
         render_research_figures()
 
 if __name__ == "__main__":
