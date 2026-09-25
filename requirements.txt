@@ -13,3 +13,5 @@ fpdf2>=2.8.0
 streamlit>=1.30.0
 streamlit-option-menu>=0.3.12
 plotly>=5.18.0
+shap>=0.52.0
+xgboost>=2.0.0
