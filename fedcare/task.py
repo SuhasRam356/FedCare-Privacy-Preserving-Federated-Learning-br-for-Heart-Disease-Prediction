@@ -174,7 +174,9 @@ def train(
     device: torch.device | str = "cpu",
     mu: float = 0.0,
     global_model: Optional[nn.Module] = None,
-) -> float:
+    c_local: Optional[list[torch.Tensor]] = None,
+    c_global: Optional[list[torch.Tensor]] = None,
+) -> tuple[float, int]:
     """
     Train ``model`` for ``epochs`` epochs on ``train_loader`` with optional FedProx proximal term.
 
@@ -188,7 +190,7 @@ def train(
         global_model:  Frozen snapshot of global model parameters at round start.
 
     Returns:
-        Average training loss over the last epoch.
+        Tuple of (Average training loss, Total number of local steps taken).
     """
     model.to(device)
     model.train()
@@ -197,6 +199,7 @@ def train(
 
     epoch_loss = 0.0
     n_batches = 0
+    total_steps = 0
 
     for epoch in range(epochs):
         epoch_loss = 0.0
@@ -215,13 +218,21 @@ def train(
                 loss = loss + (mu / 2.0) * proximal_term
 
             loss.backward()
+
+            # SCAFFOLD Control Variate Adjustment
+            if c_local is not None and c_global is not None:
+                for param, c_l, c_g in zip(model.parameters(), c_local, c_global):
+                    if param.grad is not None:
+                        param.grad.data += (c_g.to(device) - c_l.to(device))
+
             optimizer.step()
 
             epoch_loss += loss.item()
             n_batches += 1
+            total_steps += 1
 
     avg_loss = epoch_loss / max(n_batches, 1)
-    return avg_loss
+    return avg_loss, total_steps
 
 
 # ── Evaluation ────────────────────────────────────────────────────────

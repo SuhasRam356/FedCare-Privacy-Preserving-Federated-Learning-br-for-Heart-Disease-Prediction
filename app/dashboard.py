@@ -1078,6 +1078,8 @@ def render_project_overview():
         | **FedProx** | Proximal regularization for non-IID |
         | **FedAdam / FedYogi** | Server-side adaptive optimization momentum |
         | **QFedAvg** | Fairness-aware dynamically weighted aggregation |
+        | **FedNova** | Normalized Averaging for objective inconsistency |
+        | **SCAFFOLD** | Stochastic Controlled Averaging for client drift |
         | **Trimmed Mean** | Byzantine-robust trimmed aggregation |
         | **Coord. Median** | Element-wise median aggregation |
         | **Multi-Krum** | Distance-based outlier filtering |
@@ -1270,7 +1272,7 @@ def render_experiment_timeline():
          "desc": "6 hospitals, 20 rounds, 2 local epochs. Recovered 96.7% of the gap.",
          "metric": "Global AUC", "value": "0.8468"},
         {"phase": "Phase 3", "title": "Non-IID & Optimizers", "cls": "fc-tag-green",
-         "desc": "Analysis of heterogeneity and advanced server-side optimization techniques (FedAdam, FedYogi, QFedAvg).",
+         "desc": "Analysis of heterogeneity and advanced server-side optimization techniques (FedAdam, FedYogi, QFedAvg) and client drift correction (FedNova, SCAFFOLD).",
          "metric": "Best Optimizer AUC", "value": "0.8501"},
         {"phase": "Phase 4", "title": "Security & Differential Privacy", "cls": "fc-tag-pink",
          "desc": "Label-flip + model poisoning. Trimmed Mean fully recovers. DP viable at ε=335.",

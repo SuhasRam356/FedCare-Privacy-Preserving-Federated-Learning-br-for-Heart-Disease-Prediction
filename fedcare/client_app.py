@@ -264,7 +264,10 @@ class FlowerClient(NumPyClient):
                 param.requires_grad = False
 
         # 4. Perform local gradient updates
-        train_loss = train(
+        c_local = getattr(self, 'c_local', None)
+        c_global = getattr(self, 'c_global', None)
+        
+        train_loss, local_steps = train(
             self.net,
             self.train_loader,
             epochs=local_epochs,
@@ -272,6 +275,8 @@ class FlowerClient(NumPyClient):
             device=self.device,
             mu=mu,
             global_model=global_model,
+            c_local=c_local,
+            c_global=c_global,
         )
 
         local_weights = get_parameters(self.net)
@@ -301,6 +306,7 @@ class FlowerClient(NumPyClient):
             "train_loss": float(train_loss),
             "hospital_id": self.partition_id,
             "mu": mu,
+            "local_steps": local_steps,
         }
         return local_weights, self.num_train_samples, metrics
 
@@ -324,7 +330,7 @@ class FlowerClient(NumPyClient):
         dict[str, float]
             Evaluated personalized metrics (loss, accuracy, auc).
         """
-        train(
+        train_loss, _ = train(
             self.net,
             self.train_loader,
             epochs=epochs,

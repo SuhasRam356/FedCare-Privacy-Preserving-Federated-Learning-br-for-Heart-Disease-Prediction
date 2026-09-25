@@ -109,22 +109,77 @@ def simulate_federation(
     server_v = [np.zeros_like(p) for p in global_params]
     server_lr = 0.01
     beta_1, beta_2, tau = 0.9, 0.999, 1e-3
+    
+    # SCAFFOLD States
+    c_global = [np.zeros_like(p) for p in global_params]
+    for c in clients:
+        c.c_local = [np.zeros_like(p) for p in global_params]
 
     round_history: list[dict[str, Any]] = []
 
     for r in range(1, num_rounds + 1):
         fit_results = []
         for c in clients:
+            if strategy_name == "scaffold":
+                c.c_global = [torch.tensor(cg, dtype=torch.float32) for cg in c_global]
+                c.c_local = [torch.tensor(cl, dtype=torch.float32) for cl in c.c_local]
             weights, n_samples, metrics = c.fit(
                 parameters=global_params,
                 config={"local_epochs": local_epochs, "lr": lr, "mu": mu},
             )
-            fit_results.append((weights, n_samples))
+            fit_results.append((weights, n_samples, metrics))
+            
+            if strategy_name == "scaffold":
+                # Update client control variates
+                K = max(metrics.get("local_steps", 1), 1)
+                new_c_local = []
+                delta_c = []
+                for cl, cg, wg, wl in zip(c.c_local, c.c_global, global_params, weights):
+                    # c_i^+ = c_i - c + 1/(K * lr) * (w_g - w_l)
+                    cl_new = cl.numpy() - cg.numpy() + (1.0 / (K * lr)) * (wg - wl)
+                    new_c_local.append(cl_new)
+                    delta_c.append(cl_new - cl.numpy())
+                c.c_local = new_c_local
+                metrics["delta_c"] = delta_c
 
         # ── Compute Pseudo-Gradient & Aggregation ──
-        total_samples = sum(n for _, n in fit_results)
+        total_samples = sum(n for _, n, _ in fit_results)
         
-        if strategy_name == "qfedavg":
+        if strategy_name == "fednova":
+            # Normalized Averaging
+            tau_i = [m["local_steps"] for w, n, m in fit_results]
+            tau_eff = sum((n / total_samples) * t for (w, n, m), t in zip(fit_results, tau_i))
+            
+            new_params = [np.zeros_like(p) for p in global_params]
+            for (w, n, m), t in zip(fit_results, tau_i):
+                p_i = n / total_samples
+                weight = p_i * (tau_eff / max(t, 1))
+                for i, layer in enumerate(w):
+                    update = layer - global_params[i]
+                    new_params[i] += weight * update
+                    
+            for i in range(len(global_params)):
+                global_params[i] += new_params[i]
+
+        elif strategy_name == "scaffold":
+            # SCAFFOLD standard aggregation + control variate update
+            avg_update = [np.zeros_like(p) for p in global_params]
+            sum_delta_c = [np.zeros_like(p) for p in global_params]
+            
+            for w, n, m in fit_results:
+                fraction = n / total_samples
+                for i, layer in enumerate(w):
+                    avg_update[i] += layer * fraction
+                for i, dc in enumerate(m["delta_c"]):
+                    sum_delta_c[i] += dc
+            
+            global_params = avg_update
+            # Update global control variate: c = c + (1/N) * sum(delta_c)
+            # N is total clients (6)
+            for i in range(len(c_global)):
+                c_global[i] += sum_delta_c[i] / num_clients
+
+        elif strategy_name == "qfedavg":
             # q-Fairness aggregation (weights heavily penalized clients)
             q_param = 0.2
             client_losses = []
@@ -135,7 +190,7 @@ def simulate_federation(
             # Re-weight using empirical loss
             weights_sum = 0.0
             new_params = [np.zeros_like(p) for p in global_params]
-            for (w, n), loss in zip(fit_results, client_losses):
+            for (w, n, _), loss in zip(fit_results, client_losses):
                 q_weight = n * (loss ** q_param)
                 weights_sum += q_weight
                 for i, layer in enumerate(w):
@@ -147,7 +202,7 @@ def simulate_federation(
         else:
             # Standard FedAvg aggregation
             avg_update = [np.zeros_like(p) for p in global_params]
-            for w, n in fit_results:
+            for w, n, _ in fit_results:
                 fraction = n / total_samples
                 for i, layer in enumerate(w):
                     avg_update[i] += layer * fraction
@@ -291,6 +346,8 @@ def run_all_phase3_experiments(
         {"name": "FedAdam", "mu": 0.0, "strategy_name": "fedadam"},
         {"name": "FedYogi", "mu": 0.0, "strategy_name": "fedyogi"},
         {"name": "QFedAvg", "mu": 0.0, "strategy_name": "qfedavg"},
+        {"name": "FedNova", "mu": 0.0, "strategy_name": "fednova"},
+        {"name": "SCAFFOLD", "mu": 0.0, "strategy_name": "scaffold"},
     ]
 
     fedprox_results: list[dict[str, Any]] = []
