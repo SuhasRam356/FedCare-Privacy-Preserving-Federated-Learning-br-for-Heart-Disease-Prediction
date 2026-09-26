@@ -115,6 +115,23 @@ def get_evaluate_fn(
             "auc": float(eval_metrics["auc"]),
             "round": server_round,
         }
+
+        # Write live event stream for dashboard
+        import json
+        import os
+        from datetime import datetime
+        results_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "results")
+        os.makedirs(results_dir, exist_ok=True)
+        event = {
+            "timestamp": datetime.utcnow().isoformat(),
+            "server_round": server_round,
+            "loss": loss,
+            "accuracy": metrics["accuracy"],
+            "auc": metrics["auc"]
+        }
+        with open(os.path.join(results_dir, "live_events.jsonl"), "a") as f:
+            f.write(json.dumps(event) + "\n")
+
         return loss, metrics
 
     return evaluate_fn
@@ -123,6 +140,7 @@ def get_evaluate_fn(
 def get_on_fit_config_fn(
     local_epochs: int = 2,
     lr: float = 0.001,
+    use_opacus: bool = False,
 ) -> Callable[[int], dict[str, Scalar]]:
     """
     Create a callback that supplies training configuration to clients each round.
@@ -133,6 +151,8 @@ def get_on_fit_config_fn(
         Number of local training epochs each hospital executes per round.
     lr : float
         Learning rate for the Adam optimizer on clients.
+    use_opacus : bool
+        Whether to use Opacus for Differential Privacy.
 
     Returns
     -------
@@ -145,6 +165,7 @@ def get_on_fit_config_fn(
             "server_round": server_round,
             "local_epochs": local_epochs,
             "lr": lr,
+            "use_opacus": use_opacus,
         }
 
     return on_fit_config
@@ -174,6 +195,7 @@ def create_fedavg_strategy(
     lr: float = 0.001,
     min_clients: int = 6,
     checkpoint_dir: Optional[Union[str, Path]] = None,
+    use_opacus: bool = False,
 ) -> FedAvgWeighted:
     """
     Convenience factory to create and configure a FedAvgWeighted strategy.
@@ -190,6 +212,8 @@ def create_fedavg_strategy(
         Minimum number of clients required (default: 6).
     checkpoint_dir : str or Path, optional
         Directory to save model checkpoints.
+    use_opacus : bool
+        Whether to use Opacus for Differential Privacy.
 
     Returns
     -------
@@ -198,7 +222,7 @@ def create_fedavg_strategy(
     """
     initial_params = get_initial_parameters()
     evaluate_fn = get_evaluate_fn()
-    on_fit_config_fn = get_on_fit_config_fn(local_epochs=local_epochs, lr=lr)
+    on_fit_config_fn = get_on_fit_config_fn(local_epochs=local_epochs, lr=lr, use_opacus=use_opacus)
     on_evaluate_config_fn = get_on_evaluate_config_fn()
 
     return FedAvgWeighted(

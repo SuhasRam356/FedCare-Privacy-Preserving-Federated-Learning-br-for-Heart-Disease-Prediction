@@ -176,26 +176,35 @@ def train(
     global_model: Optional[nn.Module] = None,
     c_local: Optional[list[torch.Tensor]] = None,
     c_global: Optional[list[torch.Tensor]] = None,
+    use_opacus: bool = False,
+    dp_max_grad_norm: float = 1.0,
+    dp_noise_multiplier: float = 1.0,
 ) -> tuple[float, int]:
     """
-    Train ``model`` for ``epochs`` epochs on ``train_loader`` with optional FedProx proximal term.
-
-    Args:
-        model:         Local PyTorch neural network.
-        train_loader:  PyTorch DataLoader.
-        epochs:        Number of local epochs.
-        lr:            Learning rate.
-        device:        Computation device.
-        mu:            FedProx proximal term weight (mu=0 reduces to FedAvg).
-        global_model:  Frozen snapshot of global model parameters at round start.
-
-    Returns:
-        Tuple of (Average training loss, Total number of local steps taken).
+    Train ``model`` for ``epochs`` epochs on ``train_loader`` with optional FedProx proximal term
+    and optional rigorous Differential Privacy (DP-SGD) via Opacus.
     """
     model.to(device)
     model.train()
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
+
+    privacy_engine = None
+    if use_opacus:
+        try:
+            from opacus import PrivacyEngine
+            privacy_engine = PrivacyEngine()
+            model, optimizer, train_loader = privacy_engine.make_private(
+                module=model,
+                optimizer=optimizer,
+                data_loader=train_loader,
+                noise_multiplier=dp_noise_multiplier,
+                max_grad_norm=dp_max_grad_norm,
+            )
+        except ImportError:
+            import logging
+            logging.getLogger("fedcare.task").error("Opacus is not installed. Run 'pip install opacus' to use rigorous DP-SGD.")
+            use_opacus = False
 
     epoch_loss = 0.0
     n_batches = 0
@@ -210,7 +219,7 @@ def train(
             outputs = model(features)
             loss = criterion(outputs, labels)
 
-            # FedProx proximal regularization: (mu / 2) * ||w - w^t||^2
+            # FedProx proximal regularization
             if mu > 0.0 and global_model is not None:
                 proximal_term = torch.tensor(0.0, device=device)
                 for w, w_t in zip(model.parameters(), global_model.parameters()):
@@ -219,8 +228,8 @@ def train(
 
             loss.backward()
 
-            # SCAFFOLD Control Variate Adjustment
-            if c_local is not None and c_global is not None:
+            # SCAFFOLD Control Variate Adjustment (Skip if Opacus used, as DPOptimizer handles grads differently)
+            if c_local is not None and c_global is not None and not use_opacus:
                 for param, c_l, c_g in zip(model.parameters(), c_local, c_global):
                     if param.grad is not None:
                         param.grad.data += (c_g.to(device) - c_l.to(device))
@@ -230,6 +239,13 @@ def train(
             epoch_loss += loss.item()
             n_batches += 1
             total_steps += 1
+            
+    if use_opacus and privacy_engine is not None:
+        epsilon = privacy_engine.get_epsilon(delta=1e-5)
+        import logging
+        logging.getLogger("fedcare.task").info(f"DP-SGD Epochs complete. Privacy guarantee: ε = {epsilon:.2f}, δ = 1e-5")
+        # Remove opacus hooks before returning to avoid issues with state_dict
+        model.remove_hooks()
 
     avg_loss = epoch_loss / max(n_batches, 1)
     return avg_loss, total_steps

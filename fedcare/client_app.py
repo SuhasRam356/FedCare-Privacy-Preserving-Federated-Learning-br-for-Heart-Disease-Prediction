@@ -254,6 +254,7 @@ class FlowerClient(NumPyClient):
 
         dp_clip_norm = float(config.get("dp_clip_norm", self.dp_clip_norm))
         dp_noise_multiplier = float(config.get("dp_noise_multiplier", self.dp_noise_multiplier))
+        use_opacus = bool(config.get("use_opacus", False))
 
         # 3. Setup global model snapshot for FedProx proximal term
         global_model = None
@@ -277,6 +278,9 @@ class FlowerClient(NumPyClient):
             global_model=global_model,
             c_local=c_local,
             c_global=c_global,
+            use_opacus=use_opacus,
+            dp_max_grad_norm=dp_clip_norm if dp_clip_norm > 0.0 else 1.0,
+            dp_noise_multiplier=dp_noise_multiplier,
         )
 
         local_weights = get_parameters(self.net)
@@ -293,7 +297,7 @@ class FlowerClient(NumPyClient):
             )
 
         # 6. Apply Differential Privacy (L2 Clipping + Gaussian Noise) if active
-        if dp_clip_norm > 0.0 or dp_noise_multiplier > 0.0:
+        if (dp_clip_norm > 0.0 or dp_noise_multiplier > 0.0) and not use_opacus:
             from fedcare.privacy import clip_and_add_noise
             local_weights = clip_and_add_noise(
                 local_weights,

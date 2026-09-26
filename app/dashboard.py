@@ -1605,6 +1605,67 @@ def render_feature_importance():
 
 
 # ══════════════════════════════════════════════════════════════════════
+#                     PAGE: LIVE TRAINING STREAM
+# ══════════════════════════════════════════════════════════════════════
+
+def render_live_stream():
+    st.markdown("Monitor real-time training events as they occur on the Flower server.")
+    
+    import json
+    import os
+    import time
+    
+    live_events_path = RESULTS_DIR / "live_events.jsonl"
+    
+    # Check if file exists
+    if not live_events_path.exists():
+        st.info("Waiting for live training to start. No events recorded yet.")
+        st.code("python orchestrate.py --epochs 5 --num_clients 3", language="bash")
+        time.sleep(1)
+        st.rerun()
+        return
+
+    # Read events
+    events = []
+    with open(live_events_path, "r") as f:
+        for line in f:
+            if line.strip():
+                try:
+                    events.append(json.loads(line))
+                except:
+                    pass
+    
+    if not events:
+        st.info("No events found in live_events.jsonl")
+        time.sleep(1)
+        st.rerun()
+        return
+        
+    df = pd.DataFrame(events)
+    
+    # Auto-refresh logic using st.rerun
+    st.markdown("*Auto-refreshing every 2 seconds...*")
+    
+    col1, col2, col3 = st.columns(3)
+    last_event = df.iloc[-1]
+    with col1:
+        st.metric("Current Round", int(last_event["server_round"]))
+    with col2:
+        st.metric("Global Accuracy", f"{last_event['accuracy']:.4f}")
+    with col3:
+        st.metric("Global Loss", f"{last_event['loss']:.4f}")
+        
+    st.markdown("### Accuracy Trend")
+    st.line_chart(df.set_index("server_round")["accuracy"], color="#00d4ff")
+    
+    st.markdown("### Event Log")
+    st.dataframe(df.sort_values(by="timestamp", ascending=False), use_container_width=True)
+    
+    time.sleep(2)
+    st.rerun()
+
+
+# ══════════════════════════════════════════════════════════════════════
 #                         MAIN APP
 # ══════════════════════════════════════════════════════════════════════
 
@@ -1623,6 +1684,7 @@ def main():
         st.markdown('**Training & Network**')
         if st.button("Network Topology", use_container_width=True): st.session_state.active_page = "Network Topology"
         if st.button("Training Console", use_container_width=True): st.session_state.active_page = "Training Console"
+        if st.button("Live Training Stream", use_container_width=True): st.session_state.active_page = "Live Training Stream"
         if st.button("Communication Cost", use_container_width=True): st.session_state.active_page = "Communication Cost"
         
         st.markdown('**Security & Privacy**')
@@ -1661,6 +1723,9 @@ def main():
     elif page == "Training Console":
         render_page_header("Training Console", "Round-by-round convergence and inter-hospital equity.")
         render_training_console()
+    elif page == "Live Training Stream":
+        render_page_header("Live Training Stream", "Real-time metrics from the FL server.")
+        render_live_stream()
     elif page == "Communication Cost":
         render_page_header("Communication Cost", "Bandwidth analysis of federated vs centralized learning.")
         render_communication_cost()
