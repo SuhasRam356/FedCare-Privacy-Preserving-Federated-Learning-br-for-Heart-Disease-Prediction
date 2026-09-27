@@ -1,7 +1,7 @@
 """
-FedCare Enhanced Chart Builders
-================================
-Premium Plotly chart factory functions with consistent theming.
+FedCare Chart Builders — MedXChAln Light Theme
+================================================
+Plotly chart factories restyled for the light clinical SaaS design system.
 """
 
 from __future__ import annotations
@@ -14,14 +14,14 @@ from app.components.theme import PLOTLY_LAYOUT_DEFAULTS, HOSPITAL_COLORS, STRATE
 
 
 def apply_theme(fig: go.Figure, **overrides) -> go.Figure:
-    """Apply the premium FedCare theme to any Plotly figure."""
+    """Apply the MedXChAln light theme to any Plotly figure."""
     layout = {**PLOTLY_LAYOUT_DEFAULTS, **overrides}
     fig.update_layout(**layout)
     return fig
 
 
 def create_convergence_chart(rounds_df, metric_col, display_name, show_hospitals=True, max_round=None):
-    """Create an enhanced convergence chart with optional per-hospital overlays."""
+    """Create a convergence chart with optional per-hospital overlays (light theme)."""
     plot_df = rounds_df
     if max_round is not None:
         plot_df = rounds_df[rounds_df["round"] <= max_round]
@@ -30,22 +30,22 @@ def create_convergence_chart(rounds_df, metric_col, display_name, show_hospitals
         rows=1, cols=2,
         column_widths=[0.62, 0.38],
         subplot_titles=(
-            f"<span style='color:#f9fafb;font-size:14px'>Global {display_name} Convergence</span>",
-            "<span style='color:#f9fafb;font-size:14px'>Per-Hospital AUC</span>",
+            f"<span style='color:#0F172A;font-size:14px'>Global {display_name} Convergence</span>",
+            "<span style='color:#0F172A;font-size:14px'>Per-Hospital AUC</span>",
         ),
         horizontal_spacing=0.08,
     )
 
-    # Global metric with gradient fill
+    # Global metric — primary blue line with soft gradient fill
     fig.add_trace(
         go.Scatter(
             x=plot_df["round"], y=plot_df[metric_col],
             mode="lines+markers",
             name=f"Global {display_name}",
-            line=dict(width=3, color="#6366f1", shape="spline"),
-            marker=dict(size=7, color="#6366f1", line=dict(width=2, color="#818cf8")),
+            line=dict(width=2.5, color=CHART_COLORS["primary"], shape="spline"),
+            marker=dict(size=6, color=CHART_COLORS["primary"]),
             fill="tozeroy" if metric_col != "test_loss" else None,
-            fillcolor="rgba(99, 102, 241, 0.08)",
+            fillcolor="rgba(15,91,182,0.06)",
         ),
         row=1, col=1,
     )
@@ -81,13 +81,12 @@ def create_convergence_chart(rounds_df, metric_col, display_name, show_hospitals
                 x=hosp_labels, y=hosp_aucs,
                 marker=dict(
                     color=HOSPITAL_COLORS[:len(hosp_aucs)],
-                    line=dict(width=1, color="rgba(255,255,255,0.15)"),
-                    cornerradius=4,
+                    cornerradius=6,
                 ),
                 name="Hospital AUC",
                 text=[f"{v:.4f}" for v in hosp_aucs],
                 textposition="outside",
-                textfont=dict(size=10, color="#9ca3af", family="JetBrains Mono"),
+                textfont=dict(size=10, color="#64748B", family="Inter"),
             ),
             row=1, col=2,
         )
@@ -105,7 +104,7 @@ def create_convergence_chart(rounds_df, metric_col, display_name, show_hospitals
 
 
 def create_network_topology(hospital_stats):
-    """Create an enhanced network topology visualization."""
+    """Create a network topology visualization (light theme)."""
     fig = go.Figure()
 
     # Central server
@@ -113,13 +112,13 @@ def create_network_topology(hospital_stats):
         x=[0], y=[0],
         mode="markers+text",
         marker=dict(
-            size=60, color="#6366f1", symbol="diamond",
-            line=dict(width=3, color="#818cf8"),
+            size=60, color=CHART_COLORS["primary"], symbol="diamond",
+            line=dict(width=2, color="#0B4A93"),
             opacity=0.9,
         ),
         text=["FedCare<br>Server"],
         textposition="bottom center",
-        textfont=dict(size=11, color="#e0e7ff", family="Inter"),
+        textfont=dict(size=11, color="#0F172A", family="Inter"),
         name="Central Server",
         hoverinfo="text",
         hovertext=(
@@ -137,15 +136,15 @@ def create_network_topology(hospital_stats):
         x = radius * np.cos(angles[idx])
         y = radius * np.sin(angles[idx])
 
-        # Animated connection line
+        # Connection line
         fig.add_trace(go.Scatter(
             x=[0, x], y=[0, y],
             mode="lines",
-            line=dict(width=1.5, color=f"rgba({_hex_to_rgb(HOSPITAL_COLORS[idx])}, 0.25)", dash="dot"),
+            line=dict(width=1.5, color=f"rgba({_hex_to_rgb(HOSPITAL_COLORS[idx])}, 0.3)", dash="dot"),
             showlegend=False, hoverinfo="skip",
         ))
 
-        # Data flow arrow annotation
+        # Data flow arrow
         mid_x, mid_y = x * 0.55, y * 0.55
         fig.add_annotation(
             x=mid_x, y=mid_y,
@@ -161,7 +160,7 @@ def create_network_topology(hospital_stats):
             marker=dict(
                 size=40 + row["Samples"] / 100,
                 color=HOSPITAL_COLORS[idx],
-                line=dict(width=2, color="rgba(255,255,255,0.2)"),
+                line=dict(width=2, color="rgba(255,255,255,0.8)"),
                 opacity=0.85,
             ),
             text=[f"H{row['ID']}"],
@@ -187,7 +186,7 @@ def create_network_topology(hospital_stats):
                 x=0, y=1.0,
                 text="<b>Encrypted Parameters Only</b><br>No raw patient data transmitted",
                 showarrow=False,
-                font=dict(size=9, color="#6b7280"),
+                font=dict(size=9, color="#64748B"),
             )
         ]
     )
@@ -195,25 +194,25 @@ def create_network_topology(hospital_stats):
 
 
 def create_attack_heatmap(pivot_df):
-    """Create a premium heatmap for attack x defense matrix."""
+    """Create a heatmap for the attack × defense matrix (light theme)."""
     fig = go.Figure(data=go.Heatmap(
         z=pivot_df.values,
         x=pivot_df.columns.tolist(),
         y=pivot_df.index.tolist(),
         colorscale=[
-            [0.0, "#7f1d1d"],
-            [0.3, "#dc2626"],
-            [0.5, "#f59e0b"],
-            [0.7, "#22c55e"],
-            [1.0, "#059669"],
+            [0.0, "#FEE2E2"],
+            [0.3, "#FEF3C7"],
+            [0.5, "#DBEAFE"],
+            [0.7, "#DCFCE7"],
+            [1.0, "#16A34A"],
         ],
         text=np.round(pivot_df.values, 4),
         texttemplate="%{text}",
-        textfont=dict(size=13, color="white", family="JetBrains Mono"),
+        textfont=dict(size=12, color="#0F172A", family="Inter"),
         hoverongaps=False,
         colorbar=dict(
-            title=dict(text="AUC", font=dict(color="#9ca3af")),
-            tickfont=dict(color="#9ca3af"),
+            title=dict(text="AUC", font=dict(color="#64748B")),
+            tickfont=dict(color="#64748B"),
         ),
     ))
     fig = apply_theme(fig, height=380)
@@ -225,20 +224,20 @@ def create_attack_heatmap(pivot_df):
 
 
 def create_radar_chart(categories, values_dict, title=""):
-    """Create a radar/spider chart for strategy comparison."""
+    """Create a radar/spider chart for strategy comparison (light theme)."""
     fig = go.Figure()
 
+    strategy_keys = list(STRATEGY_COLORS.keys())
     for name, values in values_dict.items():
+        idx = list(values_dict.keys()).index(name)
+        color = STRATEGY_COLORS.get(name, strategy_keys[idx % len(strategy_keys)])
         fig.add_trace(go.Scatterpolar(
             r=values + [values[0]],
             theta=categories + [categories[0]],
             fill="toself",
             name=name,
-            fillcolor=f"rgba({_hex_to_rgb(STRATEGY_COLORS[list(values_dict.keys()).index(name) % len(STRATEGY_COLORS)])}, 0.1)",
-            line=dict(
-                color=STRATEGY_COLORS[list(values_dict.keys()).index(name) % len(STRATEGY_COLORS)],
-                width=2,
-            ),
+            fillcolor=f"rgba({_hex_to_rgb(color)}, 0.08)",
+            line=dict(color=color, width=2),
         ))
 
     fig = apply_theme(fig, height=420)
@@ -247,42 +246,43 @@ def create_radar_chart(categories, values_dict, title=""):
             bgcolor="rgba(0,0,0,0)",
             radialaxis=dict(
                 visible=True,
-                gridcolor="rgba(75, 85, 99, 0.2)",
-                linecolor="rgba(75, 85, 99, 0.2)",
-                tickfont=dict(color="#6b7280", size=9),
+                gridcolor="rgba(226,232,240,0.8)",
+                linecolor="rgba(226,232,240,0.8)",
+                tickfont=dict(color="#94A3B8", size=9),
             ),
             angularaxis=dict(
-                gridcolor="rgba(75, 85, 99, 0.2)",
-                linecolor="rgba(75, 85, 99, 0.15)",
-                tickfont=dict(color="#9ca3af", size=11),
+                gridcolor="rgba(226,232,240,0.6)",
+                linecolor="rgba(226,232,240,0.4)",
+                tickfont=dict(color="#64748B", size=11),
             ),
         ),
-        title=dict(text=title, font=dict(size=14, color="#f9fafb")),
+        title=dict(text=title, font=dict(size=14, color="#0F172A")),
     )
     return fig
 
 
-def create_gauge(value, title="", color="#6366f1"):
-    """Create a premium gauge chart for risk calculator."""
+def create_gauge(value, title="", color="#0F5BB6"):
+    """Create a gauge chart for risk calculator (light theme)."""
     fig = go.Figure(go.Indicator(
         mode="gauge+number",
         value=value * 100,
         number=dict(
             suffix="%",
-            font=dict(size=52, color="#f9fafb", family="JetBrains Mono"),
+            font=dict(size=48, color="#0F172A", family="Inter"),
         ),
-        title=dict(text=title, font=dict(size=14, color="#9ca3af")),
+        title=dict(text=title, font=dict(size=13, color="#64748B")),
         gauge=dict(
-            axis=dict(range=[0, 100], tickwidth=1, tickcolor="#4b5563", dtick=25),
+            axis=dict(range=[0, 100], tickwidth=1, tickcolor="#E5EAF2", dtick=25,
+                      tickfont=dict(color="#94A3B8")),
             bar=dict(color=color, thickness=0.25),
-            bgcolor="rgba(17, 24, 39, 0.5)",
+            bgcolor="rgba(246,250,255,0.5)",
             borderwidth=1,
-            bordercolor="rgba(75, 85, 99, 0.3)",
+            bordercolor="#E5EAF2",
             steps=[
-                dict(range=[0, 25], color="rgba(16, 185, 129, 0.12)"),
-                dict(range=[25, 50], color="rgba(245, 158, 11, 0.12)"),
-                dict(range=[50, 75], color="rgba(239, 68, 68, 0.12)"),
-                dict(range=[75, 100], color="rgba(220, 38, 38, 0.15)"),
+                dict(range=[0, 25], color="rgba(22,163,74,0.08)"),
+                dict(range=[25, 50], color="rgba(217,119,6,0.08)"),
+                dict(range=[50, 75], color="rgba(220,38,38,0.08)"),
+                dict(range=[75, 100], color="rgba(220,38,38,0.12)"),
             ],
             threshold=dict(
                 line=dict(color=color, width=4),

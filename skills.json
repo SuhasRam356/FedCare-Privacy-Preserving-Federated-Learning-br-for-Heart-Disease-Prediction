@@ -1,0 +1,16 @@
+{
+  "skills": [
+    {
+      "source": "google/agents-cli",
+      "skills": [
+        "google-agents-cli-adk-code"
+      ]
+    },
+    {
+      "source": "mattpocock/skills",
+      "skills": [
+        "improve-codebase-architecture"
+      ]
+    }
+  ]
+}
