@@ -16,7 +16,7 @@ dependencies = [
     "matplotlib>=3.8.0",
     "streamlit>=1.30.0",
     "plotly>=5.18.0",
-    "shap>=0.52.0",
+    "shap>=0.45.0,<0.52.0",
     "xgboost>=2.0.0"
 ]
 
