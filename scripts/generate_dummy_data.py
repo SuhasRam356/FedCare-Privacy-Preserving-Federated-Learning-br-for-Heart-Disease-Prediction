@@ -1,6 +1,13 @@
 """
 Generate synthetic heart-disease data for 6 hospitals.
 
+NOTE ON PROVENANCE: The CSV files committed under data/heart/ were produced
+by an earlier revision of this generator. Re-running this script today
+reproduces the same *kind* of seeded, synthetic non-IID data (seed 42), but
+not byte-identical copies of the committed files. Treat the committed CSVs
+as the canonical experimental data; this script documents the generation
+process.
+
 Each hospital gets a slightly different data distribution (varying sample
 sizes and class imbalance) to simulate realistic Non-IID skew that will
 be explored further in Phase 2.

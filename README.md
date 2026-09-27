@@ -8,6 +8,7 @@
   <img src="https://img.shields.io/badge/Flower-1.37%2B-4B0082?style=flat-square" alt="Flower">
   <img src="https://img.shields.io/badge/Streamlit-1.30%2B-FF4B4B?style=flat-square&logo=streamlit" alt="Streamlit">
   <img src="https://img.shields.io/badge/Tests-69%2F69%20Passed-brightgreen?style=flat-square" alt="Tests">
+  <img src="https://github.com/SuhasRam356/FedCare-Privacy-Preserving-Federated-Learning-br-for-Heart-Disease-Prediction/actions/workflows/test.yml/badge.svg" alt="CI">
   <img src="https://img.shields.io/badge/License-MIT-green?style=flat-square" alt="License">
 </p>
 
@@ -240,6 +241,8 @@ FedCare/
 
 The project uses a **100% synthetic heart disease database** with **12,000 generated patient records** distributed across **6 simulated hospitals**, each contributing 2,000 patients. The synthetic data is generated via code (seed 42) and contains **ZERO real patients**, but is designed to mimic true clinical distributions, including non-IID covariate shifts and varying disease prevalence across hospitals.
 
+> **Data provenance**: The committed CSVs are the canonical experimental data. They were produced by an earlier revision of the seeded generator; `scripts/generate_dummy_data.py` documents the generation process (re-running it reproduces the same kind of seeded non-IID data, but not byte-identical files).
+
 ### Features (13 Clinical Variables)
 
 | # | Feature | Type | Description |
@@ -316,8 +319,8 @@ pip install -e .
 | `plotly` | >= 5.18.0 | Interactive chart visualizations |
 | `streamlit` | >= 1.30.0 | Web dashboard framework |
 | `pytest` | >= 7.4.0 | Automated testing framework |
-| `openpyxl` | >= 3.1.0 | Excel file reading |
-| `fpdf2` | >= 2.8.0 | PDF report generation |
+
+> **Note**: `openpyxl` and `fpdf2` are no longer required (the Excel source and PDF report scripts were removed). `shap>=0.46.0` is the newest version available for Python 3.10/3.11 — 0.52.0+ requires Python ≥3.12.
 
 ---
 
@@ -668,7 +671,7 @@ Phase 5 delivers a complete **Streamlit web application** with **15 interactive 
 - **Communication Cost**: Bandwidth analysis of federated vs centralized learning overhead.
 
 #### 2. 🔒 Security & Privacy
-- **Secure Aggregation**: Live demo of **Additive Secret Sharing** and **Paillier Homomorphic Encryption** ensuring the server never sees raw individual hospital weights.
+- **Secure Aggregation**: Live demo of **Additive Secret Sharing** and **simulated Paillier Homomorphic Encryption** (demo-grade cryptographic simulations — see Limitations; the server-side inspection-resistance is illustrative, not cryptographically enforced).
 - **Attack vs. Defense Analysis**: Adversarial robustness heatmaps and grouped bar charts evaluating Byzantine defenses.
 - **Privacy-Utility Tradeoff**: Interactive epsilon vs. AUC explorer with privacy regime annotations.
 - **Non-IID Analysis**: Side-by-side heterogeneity impact and FedProx comparison.
@@ -1033,4 +1036,6 @@ Following the Phase 7 consolidation, we applied critical accessibility and visib
 - **Navigation Text Visibility**: Fixed an issue where sidebar navigation text was "submerged" in blue due to implicit DOM element color inheritance. Sidebar links now have perfect contrast (dark grey text on transparent backgrounds) and active buttons feature a crisp light-blue highlight with bold dark-blue text.
 - **Button Contrast**: Standard action buttons across all analytical pages are now guaranteed to display white text on the primary blue background, ensuring they are always visible and distinct.
 - **Dedicated Dashboard Button**: Added an explicit **Command Center** button under a new "Overview" category at the top of the sidebar. This allows users to easily navigate back to the main dashboard page at any time, fully separating it as its own distinct view in the UI.
+
+e, fully separating it as its own distinct view in the UI.
 

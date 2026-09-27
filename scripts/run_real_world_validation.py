@@ -29,15 +29,24 @@ UCI_URL = "https://archive.ics.uci.edu/ml/machine-learning-databases/heart-disea
 
 # 1. Download and preprocess data
 def load_real_data():
-    print("Downloading UCI Cleveland Dataset...")
-    urllib.request.urlretrieve(UCI_URL, "cleveland.csv")
-    
+    local_copy = Path(__file__).resolve().parent.parent / "cleveland.csv"
+    if local_copy.exists():
+        # Use the committed copy first (works offline / in restricted CI sandboxes).
+        # NOTE: this is the RAW UCI file; na_values="?" below handles the 6
+        # incomplete records, so the effective cohort is still 297 patients.
+        data_path = local_copy
+        print("Using committed cleveland.csv (offline-safe)...")
+    else:
+        print("Downloading UCI Cleveland Dataset...")
+        urllib.request.urlretrieve(UCI_URL, "cleveland.csv")
+        data_path = Path("cleveland.csv")
+
     # 14 columns
     columns = [
-        "age", "sex", "cp", "trestbps", "chol", "fbs", "restecg", 
+        "age", "sex", "cp", "trestbps", "chol", "fbs", "restecg",
         "thalach", "exang", "oldpeak", "slope", "ca", "thal", "target"
     ]
-    df = pd.read_csv("cleveland.csv", names=columns, na_values="?")
+    df = pd.read_csv(data_path, names=columns, na_values="?")
     df = df.dropna()
     
     # Target in Cleveland is 0 (no presence) to 4. Convert to binary:
