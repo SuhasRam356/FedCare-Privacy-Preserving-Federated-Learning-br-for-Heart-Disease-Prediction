@@ -13,6 +13,23 @@ import streamlit as st
 #                    GLOBAL CSS INJECTION
 # ══════════════════════════════════════════════════════════════════════
 
+def render_page_header(title: str, subtitle: str):
+    """Render a unified MedXChAln style header."""
+    st.markdown(f"""
+    <div class="fc-header-bar">
+        <div class="fc-header-left">
+            <h1 class="fc-header-title">{title}</h1>
+            <p class="fc-header-subtitle">{subtitle}</p>
+        </div>
+        <div class="fc-header-right">
+            <div class="fc-header-search">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="text" class="fc-search-input" placeholder="Search...">
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
 def inject_clinical_theme(active_page_key: str = ""):
     """Inject the full light clinical MedXChAln CSS theme."""
     active_nav_css = ""

@@ -959,3 +959,50 @@ The navigation is now explicitly focused on **Federated Learning Active** module
 - **Data Explorer**: Advanced exploration of local vs global distributions.
 - **Node Deep Dive**: Granular, node-specific insight into performance and cohort metrics.
 
+---
+
+## Phase 7: Real-Time Analytics Restoration & Dashboard Consolidation
+
+### What This Phase Does
+
+Phase 7 represents a crucial pivot in the dashboard architecture, balancing the sleek MedXChAIn design introduced in Phase 6 with the raw, functional power of the original monolithic `app/dashboard.py` analytics. 
+
+User feedback highlighted a critical issue: while the Phase 6 UI was beautiful, it had inadvertently abstracted away the "real-time" feel and functional depth of the analytical components (such as interactive Plotly charts, dynamic `st.selectbox` controls, and live data loaders). This phase resolves that tension by bringing the best of both worlds together into a cohesive, robust platform.
+
+### Architectural Consolidation
+
+- **Monolithic Efficiency**: We restored the rendering logic for all 18 analytical views back into a unified `dashboard.py` architecture. This prevents the "silent failure" routing errors that occurred when Streamlit's session state struggled to resolve multiple external page files.
+- **Stateful Navigation**: The sidebar now relies on rock-solid `st.button` events coupled tightly with `st.session_state`. This guarantees that clicking any section (e.g., "Attack vs. Defense" or "Network Topology") immediately and reliably renders the corresponding view without requiring URL query parameter workarounds.
+- **Theme Injection**: The pristine `MedXChAIn` CSS (neon-cyberpunk aesthetics, clinical typography, and Aurora gradients) is preserved and injected cleanly into the monolithic architecture via `inject_clinical_theme()`. We also restored the missing `render_page_header()` function in `app/components/theme.py`, fixing fatal `ImportError` exceptions.
+
+### Functional Analytics Restored
+
+We have meticulously reinstated the "old analytics" that users loved, ensuring everything is fully functional:
+
+1. **Interactive Data Selectors**: Users can once again dynamically switch algorithms (e.g., FedAvg vs. FedProx vs. Multi-Krum) using native `st.selectbox` components. The graphs update instantly based on these selections.
+2. **Real-Time Live Streaming**: The **Live Training Stream** view auto-refreshes every 2 seconds, pulling live metrics directly from the Flower server's JSONL event log. This gives the dashboard a genuine "real-time" pulse.
+3. **High-Fidelity Plotly Integration**: All legacy Plotly traces, animations, and custom styling configurations (`PLOTLY_LAYOUT_DEFAULTS`) have been mapped correctly to the new CSS variables, ensuring the charts look as good as they function.
+4. **Data Loaders Linked**: The dashboard once again successfully hooks into `load_fedavg_rounds()`, `load_non_iid_data()`, and `load_global_model()` instead of rendering static mock HTML.
+
+### Final Result
+
+The application is now a "clean, simple, professional, and robust" research workbench. It completely eschews legacy hospital management flows, dedicating 100% of its UI real estate to advanced Federated Learning operations—exactly as requested.
+
+---
+
+## Troubleshooting & FAQ
+
+**Q: Why does the Live Training Stream say "Waiting for live training to start"?**
+A: You need to start the flower server in a separate terminal using `python orchestrate.py`. The dashboard will automatically pick up the events from `results/live_events.jsonl` once they begin.
+
+**Q: Where did the "Anamnesis Record" and "Diagnosis Support" pages go?**
+A: In Phase 7, we removed all hospital-management-specific clinical workflows as requested, focusing entirely on the backend AI model training and federated learning analytics.
+
+**Q: How do I change the Differential Privacy noise multiplier?**
+A: Navigate to the **Privacy-Utility** page via the left sidebar. There you will find an interactive slider to adjust $\epsilon$ and observe the real-time tradeoff on the ROC curve.
+
+**Q: The SHAP Global Feature Importance plot is taking a long time to load.**
+A: SHAP values are computationally expensive. We compute them on a 200-patient sample by default. Make sure `shap` is installed (`pip install shap`) and give it 5-10 seconds to render.
+
+
+

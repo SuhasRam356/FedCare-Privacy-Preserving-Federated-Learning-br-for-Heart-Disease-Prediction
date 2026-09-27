@@ -1,5 +1,5 @@
-"""
-FedCare Interactive Dashboard — Complete Rebuild v3
+﻿"""
+FedCare Interactive Dashboard ΓÇö Complete Rebuild v3
 ====================================================
 Privacy-Preserving Federated Learning for Heart Disease Prediction.
 
@@ -31,7 +31,7 @@ from plotly.subplots import make_subplots
 import streamlit as st
 import torch
 
-# ── Path Setup ────────────────────────────────────────────────────────
+# ΓöÇΓöÇ Path Setup ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
@@ -39,10 +39,10 @@ DATA_DIR = PROJECT_ROOT / "data" / "heart"
 RESULTS_DIR = PROJECT_ROOT / "results"
 CHECKPOINT_DIR = PROJECT_ROOT / "checkpoints"
 
-# ── Streamlit Page Configuration ──────────────────────────────────────
+# ΓöÇΓöÇ Streamlit Page Configuration ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 st.set_page_config(
-    page_title="FedCare — Federated Learning Dashboard",
-    page_icon="🫀",
+    page_title="FedCare ΓÇö Federated Learning Dashboard",
+    page_icon="≡ƒ½Ç",
     layout="wide",
     initial_sidebar_state="expanded",
     menu_items={
@@ -52,9 +52,9 @@ st.set_page_config(
     }
 )
 
-# ══════════════════════════════════════════════════════════════════════
+# ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
 #                         IMPORTS & SETUP
-# ══════════════════════════════════════════════════════════════════════
+# ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
 
 from app.components.theme import (
     inject_clinical_theme, render_page_header, 
@@ -118,7 +118,7 @@ def inject_css():
     /* Hide the ugly "keyboard_double_arrow" icon and rely on clean layout */
     [data-testid="stSidebarCollapseButton"] { display: none !important; }
 
-    /* ── Metric Cards ──────────────────────────────────────────── */
+    /* ΓöÇΓöÇ Metric Cards ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */
     div[data-testid="stMetric"] {
         background: var(--bg-card);
         backdrop-filter: blur(20px) saturate(1.4);
@@ -165,7 +165,7 @@ def inject_css():
     div[data-testid="stMetric"]:nth-child(4){animation-delay:.2s}
     div[data-testid="stMetric"]:nth-child(5){animation-delay:.25s}
 
-    /* ── Typography ────────────────────────────────────────────── */
+    /* ΓöÇΓöÇ Typography ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */
     h1, h2, h3, h4, h5, h6 { color: var(--text-primary) !important; font-weight: 700 !important; }
     h1 {
         font-size: 2.8rem !important;
@@ -179,7 +179,7 @@ def inject_css():
         background-clip: text;
     }
 
-    /* ── Tabs ──────────────────────────────────────────────────── */
+    /* ΓöÇΓöÇ Tabs ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */
     .stTabs [data-baseweb="tab-list"] {
         gap: 4px;
         background: rgba(15,15,35,0.9);
@@ -210,7 +210,7 @@ def inject_css():
         box-shadow: 0 0 15px rgba(0,212,255,0.1);
     }
 
-    /* ── Buttons ───────────────────────────────────────────────── */
+    /* ΓöÇΓöÇ Buttons ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */
     .stButton > button {
         background: linear-gradient(135deg, #00d4ff 0%, #a855f7 100%) !important;
         color: #0a0a1a !important;
@@ -228,7 +228,7 @@ def inject_css():
         box-shadow: 0 8px 30px rgba(0,212,255,0.4) !important;
     }
 
-    /* ── Inputs ────────────────────────────────────────────────── */
+    /* ΓöÇΓöÇ Inputs ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */
     .stSelectbox > div > div, .stNumberInput > div > div > input, .stTextInput > div > div > input {
         border-color: var(--border) !important;
         background-color: rgba(15,15,35,0.9) !important;
@@ -250,7 +250,7 @@ def inject_css():
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: rgba(0,212,255,0.2); border-radius: 3px; }
 
-    /* ── Custom Components ─────────────────────────────────────── */
+    /* ΓöÇΓöÇ Custom Components ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */
     .fc-hero-badge {
         display: inline-flex;
         align-items: center;
@@ -336,7 +336,7 @@ def inject_css():
     .fc-tag-pink { background: rgba(236,72,153,0.1); color: #ec4899; border: 1px solid rgba(236,72,153,0.2); }
     .fc-tag-amber { background: rgba(251,191,36,0.1); color: #fbbf24; border: 1px solid rgba(251,191,36,0.2); }
 
-    /* ── Radio as Nav Pills ────────────────────────────────────── */
+    /* ΓöÇΓöÇ Radio as Nav Pills ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */
     .stRadio [role="radiogroup"] {
         display: flex;
         flex-wrap: wrap;
@@ -358,10 +358,10 @@ def inject_css():
         border-color: rgba(0,212,255,0.2) !important;
     }
 
-    /* ── Data Tables ───────────────────────────────────────────── */
+    /* ΓöÇΓöÇ Data Tables ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */
     .stDataFrame { border-radius: 12px; overflow: hidden; }
 
-    /* ── Form ──────────────────────────────────────────────────── */
+    /* ΓöÇΓöÇ Form ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */
     [data-testid="stForm"] {
         background: var(--bg-card);
         border: 1px solid var(--border);
@@ -373,9 +373,9 @@ def inject_css():
     """, unsafe_allow_html=True)
 
 
-# ══════════════════════════════════════════════════════════════════════
+# ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
 #                     CACHED DATA LOADERS
-# ══════════════════════════════════════════════════════════════════════
+# ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
 
 from app.utils.data_loaders import (
     load_hospital_stats, load_hospital_raw, load_combined_data, load_fedavg_rounds,
@@ -389,49 +389,49 @@ def _hex_to_rgb(hex_color: str) -> str:
     return f"{int(h[0:2],16)},{int(h[2:4],16)},{int(h[4:6],16)}"
 
 
-# ══════════════════════════════════════════════════════════════════════
+# ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
 #                          HEADER
-# ══════════════════════════════════════════════════════════════════════
+# ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
 
 
 
 
-# ══════════════════════════════════════════════════════════════════════
+# ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
 #                     PAGE: COMMAND CENTER
-# ══════════════════════════════════════════════════════════════════════
+# ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
 
 def render_command_center():
-    """Main dashboard — redesigned as a mission command center."""
+    """Main dashboard ΓÇö redesigned as a mission command center."""
     rounds_df = load_fedavg_rounds()
     attack_df = load_attack_defense_matrix()
     dp_df = load_dp_sweep()
     comm_df = load_comm_cost()
 
-    # ── Hero Stats Row ────────────────────────────────────────────
+    # ΓöÇΓöÇ Hero Stats Row ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
     cols = st.columns(5)
     if rounds_df is not None:
         last = rounds_df.iloc[-1]
-        with cols[0]: st.metric("🎯 Global AUC", f"{last['auc']:.4f}", delta="96.7% gap recovered")
-        with cols[1]: st.metric("📈 Accuracy", f"{last['accuracy']:.4f}")
-        with cols[2]: st.metric("🔄 Rounds", f"{int(last['round'])}", delta="6 hospitals")
+        with cols[0]: st.metric("≡ƒÄ» Global AUC", f"{last['auc']:.4f}", delta="96.7% gap recovered")
+        with cols[1]: st.metric("≡ƒôê Accuracy", f"{last['accuracy']:.4f}")
+        with cols[2]: st.metric("≡ƒöä Rounds", f"{int(last['round'])}", delta="6 hospitals")
     else:
-        with cols[0]: st.metric("🎯 Global AUC", "N/A")
-        with cols[1]: st.metric("📈 Accuracy", "N/A")
-        with cols[2]: st.metric("🔄 Rounds", "N/A")
+        with cols[0]: st.metric("≡ƒÄ» Global AUC", "N/A")
+        with cols[1]: st.metric("≡ƒôê Accuracy", "N/A")
+        with cols[2]: st.metric("≡ƒöä Rounds", "N/A")
     with cols[3]:
         n_exp = len(attack_df) if attack_df is not None else 0
-        st.metric("🛡️ Security Tests", str(n_exp), delta="3 attack types")
+        st.metric("≡ƒ¢í∩╕Å Security Tests", str(n_exp), delta="3 attack types")
     with cols[4]:
         if dp_df is not None and "Final_AUC" in dp_df.columns:
             best_eps = dp_df.loc[dp_df["Final_AUC"].idxmax(), "Epsilon"]
-            st.metric("🔐 Best ε", f"{best_eps:.1f}")
+            st.metric("≡ƒöÉ Best ╬╡", f"{best_eps:.1f}")
         else:
-            st.metric("🔐 Best ε", "N/A")
+            st.metric("≡ƒöÉ Best ╬╡", "N/A")
 
     st.markdown('<div class="fc-divider"></div>', unsafe_allow_html=True)
 
-    # ── Phase Progress Cards ──────────────────────────────────────
-    st.markdown("### 🗺️ Research Phase Progress")
+    # ΓöÇΓöÇ Phase Progress Cards ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    st.markdown("### ≡ƒù║∩╕Å Research Phase Progress")
     phase_cols = st.columns(5)
     phases = [
         ("Phase 1", "Baselines", "fc-tag-blue", "AUC: 0.848 centralized"),
@@ -452,10 +452,10 @@ def render_command_center():
 
     st.markdown('<div class="fc-divider"></div>', unsafe_allow_html=True)
 
-    # ── Charts Row ────────────────────────────────────────────────
+    # ΓöÇΓöÇ Charts Row ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
     col_left, col_right = st.columns(2)
     with col_left:
-        st.markdown("### 📈 Training Convergence")
+        st.markdown("### ≡ƒôê Training Convergence")
         if rounds_df is not None:
             fig = go.Figure()
             fig.add_trace(go.Scatter(
@@ -480,7 +480,7 @@ def render_command_center():
             st.info("Run training to see convergence charts.")
 
     with col_right:
-        st.markdown("### 🏥 Hospital Data Landscape")
+        st.markdown("### ≡ƒÅÑ Hospital Data Landscape")
         hospital_stats = load_hospital_stats()
         if not hospital_stats.empty:
             fig = go.Figure()
@@ -497,7 +497,7 @@ def render_command_center():
             fig.update_yaxes(title_text="Patient Count")
             st.plotly_chart(fig, use_container_width=True)
 
-    # ── Bottom Summary ────────────────────────────────────────────
+    # ΓöÇΓöÇ Bottom Summary ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
     if comm_df is not None:
         st.markdown('<div class="fc-divider"></div>', unsafe_allow_html=True)
         row = comm_df.iloc[0]
@@ -510,12 +510,12 @@ def render_command_center():
         with c4: st.metric("Message Size", f"{row['single_message_kb']:.1f} KB")
 
 
-# ══════════════════════════════════════════════════════════════════════
+# ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
 #                     PAGE: NETWORK TOPOLOGY
-# ══════════════════════════════════════════════════════════════════════
+# ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
 
 def render_network_topology():
-    st.markdown("### 🌐 Federated Network Architecture")
+    st.markdown("### ≡ƒîÉ Federated Network Architecture")
     hospital_stats = load_hospital_stats()
     if hospital_stats.empty:
         st.warning("No hospital data found.")
@@ -530,7 +530,7 @@ def render_network_topology():
         text=["FedCare<br>Server"], textposition="bottom center",
         textfont=dict(size=12, color=CHART_COLORS["primary"], family="Space Grotesk"),
         name="Central Server", hoverinfo="text",
-        hovertext="<b>Aggregation Server</b><br>FedAvg · FedProx · Krum · TrimmedMean · Median<br>+ Secret Sharing · Homomorphic Encryption",
+        hovertext="<b>Aggregation Server</b><br>FedAvg ┬╖ FedProx ┬╖ Krum ┬╖ TrimmedMean ┬╖ Median<br>+ Secret Sharing ┬╖ Homomorphic Encryption",
     ))
 
     n = len(hospital_stats)
@@ -559,7 +559,7 @@ def render_network_topology():
     fig.update_layout(height=520, showlegend=False)
     fig.update_xaxes(showgrid=False, zeroline=False, showticklabels=False, range=[-5.5, 5.5])
     fig.update_yaxes(showgrid=False, zeroline=False, showticklabels=False, range=[-5.5, 5.5])
-    fig.add_annotation(x=0, y=1.2, text="<b>🔒 Encrypted Parameters Only</b><br>Zero patient data transmitted",
+    fig.add_annotation(x=0, y=1.2, text="<b>≡ƒöÆ Encrypted Parameters Only</b><br>Zero patient data transmitted",
                        showarrow=False, font=dict(size=10, color="#5a5e73"))
     st.plotly_chart(fig, use_container_width=True)
 
@@ -571,12 +571,12 @@ def render_network_topology():
             st.metric(f"Hospital {row['ID']}", f"{row['Samples']:,}", delta=f"{prev_pct:.1f}% prevalence")
 
 
-# ══════════════════════════════════════════════════════════════════════
+# ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
 #                     PAGE: TRAINING CONSOLE
-# ══════════════════════════════════════════════════════════════════════
+# ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
 
 def render_training_console():
-    st.markdown("### ⚡ Training Convergence Console")
+    st.markdown("### ΓÜí Training Convergence Console")
     
     c1, c2, c3, c4 = st.columns(4)
     with c1: algo_choice = st.selectbox("Algorithm", ["FedAvg", "FedProx", "FedAdam", "FedYogi", "QFedAvg", "FedNova", "SCAFFOLD", "FedPer", "FedBN"], index=0, key="tc_algo")
@@ -661,12 +661,12 @@ def render_training_console():
     with mc4: st.metric("Total Rounds", f"{int(last['round'])}")
 
 
-# ══════════════════════════════════════════════════════════════════════
+# ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
 #                   PAGE: ATTACK VS. DEFENSE
-# ══════════════════════════════════════════════════════════════════════
+# ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
 
 def render_attack_defense():
-    st.markdown("### 🛡️ Adversarial Robustness Matrix")
+    st.markdown("### ≡ƒ¢í∩╕Å Adversarial Robustness Matrix")
     attack_df = load_attack_defense_matrix()
     if attack_df is None:
         st.warning("No attack-defense data. Run `run_phase4_experiments.py` first.")
@@ -694,7 +694,7 @@ def render_attack_defense():
     # Heatmap + Radar
     col_hm, col_radar = st.columns(2)
     with col_hm:
-        st.markdown("#### 🔥 AUC Heatmap")
+        st.markdown("#### ≡ƒöÑ AUC Heatmap")
         if "Final_AUC" in filtered.columns and len(filtered) > 0:
             pivot = filtered.pivot_table(index="Attack_Name", columns="Strategy_Name", values="Final_AUC", aggfunc="mean")
             fig_hm = go.Figure(data=go.Heatmap(
@@ -708,7 +708,7 @@ def render_attack_defense():
             st.plotly_chart(fig_hm, use_container_width=True)
 
     with col_radar:
-        st.markdown("#### 🕸️ Strategy Radar")
+        st.markdown("#### ≡ƒò╕∩╕Å Strategy Radar")
         if "Final_AUC" in filtered.columns and len(filtered) > 0:
             strategies = filtered["Strategy_Name"].unique()
             categories = ["AUC", "Accuracy", "Robustness", "Equity"]
@@ -735,7 +735,7 @@ def render_attack_defense():
     # Trajectories
     traj_df = load_attack_trajectories()
     if traj_df is not None and len(traj_df) > 0 and "round" in traj_df.columns and "auc" in traj_df.columns and "label" in traj_df.columns:
-        st.markdown("#### ⏱️ Attack Impact Over Rounds")
+        st.markdown("#### ΓÅ▒∩╕Å Attack Impact Over Rounds")
         fig_traj = px.line(traj_df, x="round", y="auc", color="label",
             color_discrete_sequence=[CHART_COLORS["primary"], CHART_COLORS["danger"], CHART_COLORS["success"], CHART_COLORS["warning"], HOSPITAL_COLORS[4]],
             labels={"round": "Communication Round", "auc": "Global AUC", "label": "Scenario"})
@@ -744,12 +744,12 @@ def render_attack_defense():
         st.plotly_chart(fig_traj, use_container_width=True)
 
 
-# ══════════════════════════════════════════════════════════════════════
+# ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
 #                   PAGE: PRIVACY-UTILITY TRADEOFF
-# ══════════════════════════════════════════════════════════════════════
+# ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
 
 def render_privacy_utility():
-    st.markdown("### 🔐 Privacy–Utility Tradeoff Explorer")
+    st.markdown("### ≡ƒöÉ PrivacyΓÇôUtility Tradeoff Explorer")
     dp_df = load_dp_sweep()
     if dp_df is None:
         st.warning("No DP sweep data. Run `run_phase4_experiments.py` first.")
@@ -773,7 +773,7 @@ def render_privacy_utility():
             fig.add_annotation(x=row["Epsilon"], y=row["Final_AUC"], text=regime,
                                showarrow=False, yshift=20, font=dict(size=9, color=color))
         fig.update_layout(**PLOTLY_THEME)
-        fig.update_layout(height=440, xaxis_title="Privacy Budget (ε)", yaxis_title="AUC")
+        fig.update_layout(height=440, xaxis_title="Privacy Budget (╬╡)", yaxis_title="AUC")
         fig.update_xaxes(type="log")
         st.plotly_chart(fig, use_container_width=True)
 
@@ -784,15 +784,15 @@ def render_privacy_utility():
                 "Noise_Multiplier": "{:.3f}", "Epsilon": "{:.2f}", "Final_AUC": "{:.4f}"}),
             use_container_width=True, hide_index=True)
         best_row = dp_df.loc[dp_df["Final_AUC"].idxmax()]
-        st.success(f"**Best**: AUC {best_row['Final_AUC']:.4f} at ε={best_row['Epsilon']:.2f}")
+        st.success(f"**Best**: AUC {best_row['Final_AUC']:.4f} at ╬╡={best_row['Epsilon']:.2f}")
 
 
-# ══════════════════════════════════════════════════════════════════════
+# ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
 #                   PAGE: NON-IID ANALYSIS
-# ══════════════════════════════════════════════════════════════════════
+# ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
 
 def render_non_iid_analysis():
-    st.markdown("### 📊 Non-IID Data Heterogeneity")
+    st.markdown("### ≡ƒôè Non-IID Data Heterogeneity")
     non_iid_df = load_non_iid_results()
     fedprox_df = load_fedprox_results()
 
@@ -844,12 +844,12 @@ def render_non_iid_analysis():
             st.warning("No FedProx data found.")
 
 
-# ══════════════════════════════════════════════════════════════════════
+# ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
 #                   PAGE: COMMUNICATION COST
-# ══════════════════════════════════════════════════════════════════════
+# ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
 
 def render_communication_cost():
-    st.markdown("### 📡 Communication Efficiency")
+    st.markdown("### ≡ƒôí Communication Efficiency")
     comm_df = load_comm_cost()
     if comm_df is None:
         st.warning("No communication cost data.")
@@ -877,12 +877,12 @@ def render_communication_cost():
     st.plotly_chart(fig, use_container_width=True)
 
 
-# ══════════════════════════════════════════════════════════════════════
+# ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
 #                   PAGE: RISK CALCULATOR (with SHAP)
-# ══════════════════════════════════════════════════════════════════════
+# ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
 
 def render_risk_calculator():
-    st.markdown("### 🩺 Patient Clinical Data")
+    st.markdown("### ≡ƒ⌐║ Patient Clinical Data")
     
     with st.spinner("Loading global model..."):
         model, scaler = load_global_model()
@@ -896,7 +896,7 @@ def render_risk_calculator():
             c1, c2 = st.columns(2)
             with c1:
                 age = st.number_input("Age (years)", 18, 100, 55, 1)
-                bmi = st.number_input("BMI (kg/m²)", 15.0, 55.0, 27.5, 0.1, format="%.1f")
+                bmi = st.number_input("BMI (kg/m┬▓)", 15.0, 55.0, 27.5, 0.1, format="%.1f")
             with c2:
                 resting_bp = st.number_input("Resting BP (mmHg)", 80, 220, 130, 1)
                 max_hr = st.number_input("Max Heart Rate (bpm)", 60, 220, 150, 1)
@@ -913,7 +913,7 @@ def render_risk_calculator():
                 family_history = st.selectbox("Family History", ["No", "Yes"])
                 chest_pain = st.selectbox("Chest Pain Type", ["Asymptomatic", "Atypical Angina", "Non-Anginal", "Typical Angina"])
                 
-            submitted = st.form_submit_button("⚡ Predict Risk + Explain", use_container_width=True)
+            submitted = st.form_submit_button("ΓÜí Predict Risk + Explain", use_container_width=True)
 
     with col_result:
         if submitted:
@@ -970,7 +970,7 @@ def render_risk_calculator():
 
             st.markdown('<div class="fc-divider" style="margin: 1.5rem 0;"></div>', unsafe_allow_html=True)
             
-            st.markdown("#### 🔍 SHAP Explanation")
+            st.markdown("#### ≡ƒöì SHAP Explanation")
             try:
                 from fedcare.explainability import explain_single_prediction
                 from fedcare.task import load_data
@@ -1013,12 +1013,12 @@ def render_risk_calculator():
     st.caption("**Disclaimer**: Research demonstration only. Not for clinical decision-making without professional medical review.")
 
 
-# ══════════════════════════════════════════════════════════════════════
+# ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
 #                   PAGE: RESEARCH FIGURES
-# ══════════════════════════════════════════════════════════════════════
+# ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
 
 def render_research_figures():
-    st.markdown("### 🎨 Publication Figures Gallery")
+    st.markdown("### ≡ƒÄ¿ Publication Figures Gallery")
     figures = {
         "Figure 1: FedAvg Convergence": RESULTS_DIR / "figure1_fedavg_convergence.png",
         "Figure 2: Non-IID Impact": RESULTS_DIR / "figure2_non_iid_impact.png",
@@ -1041,9 +1041,9 @@ def render_research_figures():
                     st.image(str(available[keys[idx]]), use_container_width=True)
 
 
-# ══════════════════════════════════════════════════════════════════════
+# ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
 #                   PAGE: PROJECT OVERVIEW
-# ══════════════════════════════════════════════════════════════════════
+# ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
 
 def render_project_overview():
     st.markdown("""
@@ -1059,14 +1059,14 @@ def render_project_overview():
         <strong style="color:#10b981">Zero patient data exposure.</strong>
     </p>
     <div style="text-align:center; display:flex; justify-content:center; gap:12px; flex-wrap:wrap; padding-bottom:20px;">
-        <span class="fc-tag fc-tag-blue">🧠 MLP + XGBoost + RF</span>
-        <span class="fc-tag fc-tag-purple">🔐 DP + Secure Aggregation</span>
-        <span class="fc-tag fc-tag-green">🔍 SHAP Explainability</span>
-        <span class="fc-tag fc-tag-pink">🛡️ Byzantine Defenses</span>
-        <span class="fc-tag fc-tag-amber">📊 18 Interactive Pages</span>
+        <span class="fc-tag fc-tag-blue">≡ƒºá MLP + XGBoost + RF</span>
+        <span class="fc-tag fc-tag-purple">≡ƒöÉ DP + Secure Aggregation</span>
+        <span class="fc-tag fc-tag-green">≡ƒöì SHAP Explainability</span>
+        <span class="fc-tag fc-tag-pink">≡ƒ¢í∩╕Å Byzantine Defenses</span>
+        <span class="fc-tag fc-tag-amber">≡ƒôè 18 Interactive Pages</span>
     </div>
     """, unsafe_allow_html=True)
-    st.markdown("### 📖 Architecture & Methodology")
+    st.markdown("### ≡ƒôû Architecture & Methodology")
     c1, c2 = st.columns(2)
     with c1:
         st.markdown("""
@@ -1114,26 +1114,26 @@ def render_project_overview():
         #### Model Architecture
         ```
         Input (13 features)
-          → Linear(64) → ReLU → Dropout(0.3)
-          → Linear(32) → ReLU → Dropout(0.3)
-          → Linear(2) (classification logits)
+          ΓåÆ Linear(64) ΓåÆ ReLU ΓåÆ Dropout(0.3)
+          ΓåÆ Linear(32) ΓåÆ ReLU ΓåÆ Dropout(0.3)
+          ΓåÆ Linear(2) (classification logits)
         ```
         """)
 
 
-# ══════════════════════════════════════════════════════════════════════
+# ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
 #              PAGE: DATA EXPLORER
-# ══════════════════════════════════════════════════════════════════════
+# ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
 
 def render_data_explorer():
-    st.markdown("### 🔬 Interactive Data Explorer")
+    st.markdown("### ≡ƒö¼ Interactive Data Explorer")
 
     hospital_stats = load_hospital_stats()
     if hospital_stats.empty:
         st.warning("No hospital data found.")
         return
 
-    tab1, tab2, tab3 = st.tabs(["📊 Distributions", "🔗 Correlations", "🏥 Hospital Comparison"])
+    tab1, tab2, tab3 = st.tabs(["≡ƒôè Distributions", "≡ƒöù Correlations", "≡ƒÅÑ Hospital Comparison"])
 
     with tab1:
         selected_hosp = st.selectbox("Select Hospital", ["All Hospitals"] + [f"Hospital {i}" for i in range(1, 7)], key="de_hosp")
@@ -1201,12 +1201,12 @@ def render_data_explorer():
         st.plotly_chart(fig2, use_container_width=True)
 
 
-# ══════════════════════════════════════════════════════════════════════
+# ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
 #              PAGE: HOSPITAL DEEP DIVE
-# ══════════════════════════════════════════════════════════════════════
+# ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
 
 def render_hospital_deep_dive():
-    st.markdown("### 🏥 Hospital Deep Dive")
+    st.markdown("### ≡ƒÅÑ Hospital Deep Dive")
     hospital_id = st.selectbox("Select Hospital", [f"Hospital {i}" for i in range(1, 7)], key="hdd_select")
     hid = int(hospital_id.split()[-1])
     color = HOSPITAL_COLORS[hid - 1]
@@ -1267,12 +1267,12 @@ def render_hospital_deep_dive():
             st.plotly_chart(fig, use_container_width=True)
 
 
-# ══════════════════════════════════════════════════════════════════════
+# ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
 #              PAGE: EXPERIMENT TIMELINE
-# ══════════════════════════════════════════════════════════════════════
+# ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
 
 def render_experiment_timeline():
-    st.markdown("### 🗺️ Research Phase Timeline")
+    st.markdown("### ≡ƒù║∩╕Å Research Phase Timeline")
 
     timeline_data = [
         {"phase": "Phase 1", "title": "Baselines & Foundations", "cls": "fc-tag-blue",
@@ -1285,7 +1285,7 @@ def render_experiment_timeline():
          "desc": "Analysis of heterogeneity, advanced optimizers (FedAdam, QFedAvg), and Personalized FL (FedPer, FedBN).",
          "metric": "Best Personalized AUC", "value": "0.8650"},
         {"phase": "Phase 4", "title": "Security & Differential Privacy", "cls": "fc-tag-pink",
-         "desc": "Label-flip + model poisoning. Trimmed Mean fully recovers. DP viable at ε=335.",
+         "desc": "Label-flip + model poisoning. Trimmed Mean fully recovers. DP viable at ╬╡=335.",
          "metric": "Recovered AUC", "value": "0.8508"},
         {"phase": "Phase 5", "title": "Dashboard + New Features", "cls": "fc-tag-amber",
          "desc": "18-page dashboard with SHAP explainability, Federated XGBoost/RF, Secure Aggregation.",
@@ -1314,19 +1314,19 @@ def render_experiment_timeline():
             st.markdown('<div style="border-left:2px dashed rgba(0,212,255,0.15); margin-left:60px; height:20px;"></div>', unsafe_allow_html=True)
 
 
-# ══════════════════════════════════════════════════════════════════════
+# ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
 #              PAGE: MODEL COMPARISON (MLP vs XGBoost vs RF)
-# ══════════════════════════════════════════════════════════════════════
+# ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
 
 def render_model_comparison():
-    st.markdown("### ⚖️ Multi-Model Comparison: MLP vs XGBoost vs Random Forest")
+    st.markdown("### ΓÜû∩╕Å Multi-Model Comparison: MLP vs XGBoost vs Random Forest")
     st.markdown('<p style="color:#8b8fa3;">Compare federated neural network against federated tree-based models.</p>', unsafe_allow_html=True)
 
     attack_df = load_attack_defense_matrix()
 
     # Strategy comparison from existing data
     if attack_df is not None:
-        st.markdown("#### 🏆 Aggregation Strategy Performance")
+        st.markdown("#### ≡ƒÅå Aggregation Strategy Performance")
         clean_df = attack_df[attack_df["Attack_Name"].str.contains("None|Clean|clean|none", case=False, na=False)]
         if clean_df.empty:
             clean_df = attack_df.groupby("Strategy_Name").first().reset_index()
@@ -1349,13 +1349,13 @@ def render_model_comparison():
 
     # Tree-based models comparison
     st.markdown('<div class="fc-divider"></div>', unsafe_allow_html=True)
-    st.markdown("#### 🌲 Federated Tree Models vs Neural Network")
+    st.markdown("#### ≡ƒî▓ Federated Tree Models vs Neural Network")
 
     algo_choice = st.selectbox("Select Federated MLP Algorithm for Comparison", 
                                ["FedAvg", "FedProx", "FedAdam", "FedYogi", "QFedAvg", "FedNova", "SCAFFOLD", "FedPer", "FedBN"], 
                                index=0, key="mc_algo")
 
-    if st.button("🚀 Run Model Comparison (XGBoost + Random Forest)", key="run_model_comp"):
+    if st.button("≡ƒÜÇ Run Model Comparison (XGBoost + Random Forest)", key="run_model_comp"):
         with st.spinner("Training Federated XGBoost and Random Forest..."):
             try:
                 from fedcare.federated_xgboost import FederatedXGBoost, FederatedRandomForest
@@ -1417,12 +1417,12 @@ def render_model_comparison():
         st.info("Click the button above to train and compare all three model architectures.")
 
 
-# ══════════════════════════════════════════════════════════════════════
+# ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
 #              NEW PAGE: SECURE AGGREGATION
-# ══════════════════════════════════════════════════════════════════════
+# ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
 
 def render_secure_aggregation():
-    st.markdown("### 🔒 Secure Aggregation & Cryptographic Privacy")
+    st.markdown("### ≡ƒöÆ Secure Aggregation & Cryptographic Privacy")
     st.markdown("""<p style="color:#8b8fa3; font-size:0.95rem;">
     Demonstrates how the server can aggregate model updates <strong style="color:#00d4ff">without
     ever seeing individual hospital weights</strong>, using Secret Sharing and Homomorphic Encryption.
@@ -1441,9 +1441,9 @@ def render_secure_aggregation():
             The server aggregates shares without reconstructing individual updates.
             </p>
             <ul style="color:#8b8fa3; font-size:0.82rem;">
-                <li>✅ Low computational overhead</li>
-                <li>✅ No key management needed</li>
-                <li>⚠️ Requires all parties online</li>
+                <li>Γ£à Low computational overhead</li>
+                <li>Γ£à No key management needed</li>
+                <li>ΓÜá∩╕Å Requires all parties online</li>
             </ul>
         </div>
         """, unsafe_allow_html=True)
@@ -1459,9 +1459,9 @@ def render_secure_aggregation():
             encrypt(a) + encrypt(b) = encrypt(a + b).
             </p>
             <ul style="color:#8b8fa3; font-size:0.82rem;">
-                <li>✅ Server never sees plaintext</li>
-                <li>✅ Supports partial parties</li>
-                <li>⚠️ High computational cost</li>
+                <li>Γ£à Server never sees plaintext</li>
+                <li>Γ£à Supports partial parties</li>
+                <li>ΓÜá∩╕Å High computational cost</li>
             </ul>
         </div>
         """, unsafe_allow_html=True)
@@ -1469,8 +1469,8 @@ def render_secure_aggregation():
     st.markdown('<div class="fc-divider"></div>', unsafe_allow_html=True)
 
     # Live demo
-    st.markdown("#### 🧪 Live Demonstration")
-    if st.button("🚀 Run Secure Aggregation Demo", key="run_secagg"):
+    st.markdown("#### ≡ƒº¬ Live Demonstration")
+    if st.button("≡ƒÜÇ Run Secure Aggregation Demo", key="run_secagg"):
         with st.spinner("Running secure aggregation with 6 hospitals..."):
             try:
                 from fedcare.secure_aggregation import SecureAggregator, SecretSharing
@@ -1511,11 +1511,11 @@ def render_secure_aggregation():
                 # Results
                 results = pd.DataFrame([
                     {"Protocol": "Standard FedAvg", "AUC": round(sum(local_aucs)/len(local_aucs), 4),
-                     "Accuracy": "N/A", "Server Sees Updates": "✅ Yes", "Encryption": "None"},
+                     "Accuracy": "N/A", "Server Sees Updates": "Γ£à Yes", "Encryption": "None"},
                     {"Protocol": "SecAgg (Secret Sharing)", "AUC": round(ss_metrics["auc"], 4),
-                     "Accuracy": f"{ss_metrics['accuracy']:.4f}", "Server Sees Updates": "❌ No", "Encryption": "Additive Shares"},
+                     "Accuracy": f"{ss_metrics['accuracy']:.4f}", "Server Sees Updates": "Γ¥î No", "Encryption": "Additive Shares"},
                     {"Protocol": "SecAgg (Homomorphic)", "AUC": round(he_metrics["auc"], 4),
-                     "Accuracy": f"{he_metrics['accuracy']:.4f}", "Server Sees Updates": "❌ No", "Encryption": "Paillier HE"},
+                     "Accuracy": f"{he_metrics['accuracy']:.4f}", "Server Sees Updates": "Γ¥î No", "Encryption": "Paillier HE"},
                 ])
 
                 st.dataframe(results, use_container_width=True, hide_index=True)
@@ -1532,7 +1532,7 @@ def render_secure_aggregation():
                     title="Secure Aggregation: AUC Preservation")
                 st.plotly_chart(fig, use_container_width=True)
 
-                st.success("✅ Secure aggregation preserves model utility while preventing the server from seeing individual hospital updates!")
+                st.success("Γ£à Secure aggregation preserves model utility while preventing the server from seeing individual hospital updates!")
 
             except Exception as e:
                 st.error(f"Error: {e}")
@@ -1540,18 +1540,18 @@ def render_secure_aggregation():
         st.info("Click the button to run a live secure aggregation demo with all 6 hospitals.")
 
 
-# ══════════════════════════════════════════════════════════════════════
+# ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
 #              NEW PAGE: GLOBAL FEATURE IMPORTANCE (SHAP)
-# ══════════════════════════════════════════════════════════════════════
+# ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
 
 def render_feature_importance():
-    st.markdown("### 🧠 Global Feature Importance (SHAP)")
+    st.markdown("### ≡ƒºá Global Feature Importance (SHAP)")
     st.markdown("""<p style="color:#8b8fa3; font-size:0.95rem;">
     Which clinical features matter most for heart disease prediction across all hospitals?
     Computed using <strong style="color:#00d4ff">SHAP (SHapley Additive exPlanations)</strong>.
     </p>""", unsafe_allow_html=True)
 
-    if st.button("🚀 Compute Global SHAP Importance", key="run_shap"):
+    if st.button("≡ƒÜÇ Compute Global SHAP Importance", key="run_shap"):
         with st.spinner("Computing SHAP values across 200 patient samples..."):
             try:
                 model, scaler = load_global_model()
@@ -1604,9 +1604,70 @@ def render_feature_importance():
         st.info("Click the button to compute SHAP-based global feature importance.")
 
 
-# ══════════════════════════════════════════════════════════════════════
+# ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+#                     PAGE: LIVE TRAINING STREAM
+# ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+
+def render_live_stream():
+    st.markdown("Monitor real-time training events as they occur on the Flower server.")
+    
+    import json
+    import os
+    import time
+    
+    live_events_path = RESULTS_DIR / "live_events.jsonl"
+    
+    # Check if file exists
+    if not live_events_path.exists():
+        st.info("Waiting for live training to start. No events recorded yet.")
+        st.code("python orchestrate.py --epochs 5 --num_clients 3", language="bash")
+        time.sleep(1)
+        st.rerun()
+        return
+
+    # Read events
+    events = []
+    with open(live_events_path, "r") as f:
+        for line in f:
+            if line.strip():
+                try:
+                    events.append(json.loads(line))
+                except:
+                    pass
+    
+    if not events:
+        st.info("No events found in live_events.jsonl")
+        time.sleep(1)
+        st.rerun()
+        return
+        
+    df = pd.DataFrame(events)
+    
+    # Auto-refresh logic using st.rerun
+    st.markdown("*Auto-refreshing every 2 seconds...*")
+    
+    col1, col2, col3 = st.columns(3)
+    last_event = df.iloc[-1]
+    with col1:
+        st.metric("Current Round", int(last_event["server_round"]))
+    with col2:
+        st.metric("Global Accuracy", f"{last_event['accuracy']:.4f}")
+    with col3:
+        st.metric("Global Loss", f"{last_event['loss']:.4f}")
+        
+    st.markdown("### Accuracy Trend")
+    st.line_chart(df.set_index("server_round")["accuracy"], color="#00d4ff")
+    
+    st.markdown("### Event Log")
+    st.dataframe(df.sort_values(by="timestamp", ascending=False), use_container_width=True)
+    
+    time.sleep(2)
+    st.rerun()
+
+
+# ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
 #                         MAIN APP
-# ══════════════════════════════════════════════════════════════════════
+# ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
 
 def main():
     inject_clinical_theme()
@@ -1615,7 +1676,7 @@ def main():
         st.session_state.active_page = "Dashboard Overview"
 
     with st.sidebar:
-        st.markdown("<h2 style='text-align:center; color:#3b82f6; font-size: 2.2rem; margin-bottom: 0px;'>🫀 FedCare</h2>", unsafe_allow_html=True)
+        st.markdown("<h2 style='text-align:center; color:#3b82f6; font-size: 2.2rem; margin-bottom: 0px;'>≡ƒ½Ç FedCare</h2>", unsafe_allow_html=True)
         st.markdown("<p style='text-align:center; color:#94a3b8; font-size:1.05rem; margin-top:-5px;'>Clinical Research Platform</p>", unsafe_allow_html=True)
         st.markdown('<hr style="margin: 10px 0;">', unsafe_allow_html=True)
         
@@ -1623,6 +1684,7 @@ def main():
         st.markdown('**Training & Network**')
         if st.button("Network Topology", use_container_width=True): st.session_state.active_page = "Network Topology"
         if st.button("Training Console", use_container_width=True): st.session_state.active_page = "Training Console"
+        if st.button("Live Training Stream", use_container_width=True): st.session_state.active_page = "Live Training Stream"
         if st.button("Communication Cost", use_container_width=True): st.session_state.active_page = "Communication Cost"
         
         st.markdown('**Security & Privacy**')
@@ -1661,6 +1723,9 @@ def main():
     elif page == "Training Console":
         render_page_header("Training Console", "Round-by-round convergence and inter-hospital equity.")
         render_training_console()
+    elif page == "Live Training Stream":
+        render_page_header("Live Training Stream", "Real-time metrics from the FL server.")
+        render_live_stream()
     elif page == "Communication Cost":
         render_page_header("Communication Cost", "Bandwidth analysis of federated vs centralized learning.")
         render_communication_cost()
