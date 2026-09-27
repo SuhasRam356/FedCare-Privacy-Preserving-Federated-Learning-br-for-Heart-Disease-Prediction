@@ -71,7 +71,7 @@ class TestFedProxMechanics:
         y = torch.randint(0, 2, (64,))
         loader = DataLoader(TensorDataset(X, y), batch_size=32)
 
-        loss = train(
+        loss, steps = train(
             model=model,
             train_loader=loader,
             epochs=1,

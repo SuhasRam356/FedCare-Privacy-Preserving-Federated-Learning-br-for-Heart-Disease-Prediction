@@ -92,10 +92,10 @@ class TestTrainAndTest:
     """Smoke tests for the training and evaluation loops."""
 
     def test_train_returns_loss(self):
-        """train() should return a finite float loss."""
+        """train() should return a finite float loss and steps."""
         train_loader, _, _ = load_data(partition_id=1)
         model = Net()
-        loss = train(model, train_loader, epochs=1)
+        loss, steps = train(model, train_loader, epochs=1)
         assert isinstance(loss, float)
         assert loss >= 0
 

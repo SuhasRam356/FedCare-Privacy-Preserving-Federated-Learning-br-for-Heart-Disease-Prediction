@@ -165,7 +165,7 @@ def ensure_checkpoint():
 
         # Train for 15 epochs
         for epoch in range(15):
-            loss = train(model, train_loader, epochs=1, lr=0.001)
+            loss, steps = train(model, train_loader, epochs=1, lr=0.001)
             if (epoch + 1) % 5 == 0:
                 print(f"     Epoch {epoch + 1}/15 - Loss: {loss:.4f}")
 

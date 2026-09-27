@@ -9,6 +9,10 @@ Usage:
     python baseline_centralized.py
 """
 
+import os
+import sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
 from fedcare.reproducibility import seed_everything
 from fedcare.task import Net, load_data, train, evaluate
 
@@ -37,7 +41,7 @@ def main() -> None:
     # Training loop
     print(f"\nTraining for {EPOCHS} epochs ...")
     for epoch in range(1, EPOCHS + 1):
-        loss = train(model, train_loader, epochs=1, lr=LEARNING_RATE, device=DEVICE)
+        loss, steps = train(model, train_loader, epochs=1, lr=LEARNING_RATE, device=DEVICE)
         if epoch % 5 == 0 or epoch == 1:
             metrics = evaluate(model, test_loader, device=DEVICE)
             print(
