@@ -167,3 +167,11 @@ cython_debug/
 .streamlit/
 .venv/
 app/dashboard_backup.py
+
+# Project specifics
+.agent/
+.agents/
+.temp_old_code/
+checkpoints/
+*.xlsx
+*.pdf
