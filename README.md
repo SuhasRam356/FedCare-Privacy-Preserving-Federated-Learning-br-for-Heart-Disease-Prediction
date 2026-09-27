@@ -1004,5 +1004,12 @@ A: Navigate to the **Privacy-Utility** page via the left sidebar. There you will
 **Q: The SHAP Global Feature Importance plot is taking a long time to load.**
 A: SHAP values are computationally expensive. We compute them on a 200-patient sample by default. Make sure `shap` is installed (`pip install shap`) and give it 5-10 seconds to render.
 
+---
 
+### Phase 7.1: UI Polish & Accessibility
+
+Following the Phase 7 consolidation, we applied critical accessibility and visibility fixes to the dashboard:
+- **Navigation Text Visibility**: Fixed an issue where sidebar navigation text was "submerged" in blue due to implicit DOM element color inheritance. Sidebar links now have perfect contrast (dark grey text on transparent backgrounds) and active buttons feature a crisp light-blue highlight with bold dark-blue text.
+- **Button Contrast**: Standard action buttons across all analytical pages are now guaranteed to display white text on the primary blue background, ensuring they are always visible and distinct.
+- **Dedicated Dashboard Button**: Added an explicit **Command Center** button under a new "Overview" category at the top of the sidebar. This allows users to easily navigate back to the main dashboard page at any time, fully separating it as its own distinct view in the UI.
 
