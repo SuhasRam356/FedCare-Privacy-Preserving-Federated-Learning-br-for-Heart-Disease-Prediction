@@ -285,8 +285,18 @@ def inject_clinical_theme(active_page_key: str = ""):
             margin-bottom: 3px !important;
             width: 100% !important;
         }}
+        [data-testid="stSidebar"] div[class*="st-key-nav_"] button p,
+        [data-testid="stSidebar"] div[class*="st-key-nav_"] button span,
+        [data-testid="stSidebar"] div[class*="st-key-nav_"] button div {{
+            color: var(--fc-text-secondary) !important;
+        }}
         [data-testid="stSidebar"] div[class*="st-key-nav_"] button:hover {{
             background: #F1F5F9 !important;
+            color: var(--fc-text) !important;
+        }}
+        [data-testid="stSidebar"] div[class*="st-key-nav_"] button:hover p,
+        [data-testid="stSidebar"] div[class*="st-key-nav_"] button:hover span,
+        [data-testid="stSidebar"] div[class*="st-key-nav_"] button:hover div {{
             color: var(--fc-text) !important;
         }}
 
@@ -689,6 +699,11 @@ def inject_clinical_theme(active_page_key: str = ""):
             font-size: 0.88rem !important;
             transition: all 120ms ease !important;
             box-shadow: 0 2px 4px rgba(15,91,182,0.2) !important;
+        }}
+        .stButton > button p,
+        .stButton > button span,
+        .stButton > button div {{
+            color: #FFFFFF !important;
         }}
         .stButton > button:hover {{
             background-color: var(--fc-primary-dark) !important;

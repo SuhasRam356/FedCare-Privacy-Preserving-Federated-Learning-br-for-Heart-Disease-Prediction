@@ -1609,10 +1609,29 @@ def render_feature_importance():
 # ══════════════════════════════════════════════════════════════════════
 
 def main():
-    inject_clinical_theme()
-
     if 'active_page' not in st.session_state:
         st.session_state.active_page = "Dashboard Overview"
+        
+    page_to_key = {
+        "Dashboard Overview": "nav_command_center",
+        "Network Topology": "nav_network_topology",
+        "Training Console": "nav_training_console",
+        "Communication Cost": "nav_communication_cost",
+        "Secure Aggregation": "nav_secure_aggregation",
+        "Attack vs. Defense": "nav_attack_defense",
+        "Privacy-Utility": "nav_privacy_utility",
+        "Non-IID Analysis": "nav_non_iid_analysis",
+        "Risk Calculator": "nav_risk_calculator",
+        "Feature Importance": "nav_feature_importance",
+        "Model Comparison": "nav_model_comparison",
+        "Data Explorer": "nav_data_explorer",
+        "Hospital Deep Dive": "nav_hospital_deep_dive",
+        "Experiment Timeline": "nav_experiment_timeline",
+        "Research Figures": "nav_research_figures"
+    }
+    active_key = page_to_key.get(st.session_state.active_page, "")
+    
+    inject_clinical_theme(active_page_key=active_key)
 
     with st.sidebar:
         st.markdown("<h2 style='text-align:center; color:#3b82f6; font-size: 2.2rem; margin-bottom: 0px;'>🫀 FedCare</h2>", unsafe_allow_html=True)
@@ -1620,25 +1639,28 @@ def main():
         st.markdown('<hr style="margin: 10px 0;">', unsafe_allow_html=True)
         
         
+        st.markdown('**Overview**')
+        if st.button("Command Center", key="nav_command_center", use_container_width=True): st.session_state.active_page = "Dashboard Overview"
+
         st.markdown('**Training & Network**')
-        if st.button("Network Topology", use_container_width=True): st.session_state.active_page = "Network Topology"
-        if st.button("Training Console", use_container_width=True): st.session_state.active_page = "Training Console"
-        if st.button("Communication Cost", use_container_width=True): st.session_state.active_page = "Communication Cost"
+        if st.button("Network Topology", key="nav_network_topology", use_container_width=True): st.session_state.active_page = "Network Topology"
+        if st.button("Training Console", key="nav_training_console", use_container_width=True): st.session_state.active_page = "Training Console"
+        if st.button("Communication Cost", key="nav_communication_cost", use_container_width=True): st.session_state.active_page = "Communication Cost"
         
         st.markdown('**Security & Privacy**')
-        if st.button("Secure Aggregation", use_container_width=True): st.session_state.active_page = "Secure Aggregation"
-        if st.button("Attack vs. Defense", use_container_width=True): st.session_state.active_page = "Attack vs. Defense"
-        if st.button("Privacy-Utility", use_container_width=True): st.session_state.active_page = "Privacy-Utility"
-        if st.button("Non-IID Analysis", use_container_width=True): st.session_state.active_page = "Non-IID Analysis"
+        if st.button("Secure Aggregation", key="nav_secure_aggregation", use_container_width=True): st.session_state.active_page = "Secure Aggregation"
+        if st.button("Attack vs. Defense", key="nav_attack_defense", use_container_width=True): st.session_state.active_page = "Attack vs. Defense"
+        if st.button("Privacy-Utility", key="nav_privacy_utility", use_container_width=True): st.session_state.active_page = "Privacy-Utility"
+        if st.button("Non-IID Analysis", key="nav_non_iid_analysis", use_container_width=True): st.session_state.active_page = "Non-IID Analysis"
         
         st.markdown('**Tools & Insights**')
-        if st.button("Risk Calculator", use_container_width=True): st.session_state.active_page = "Risk Calculator"
-        if st.button("Feature Importance", use_container_width=True): st.session_state.active_page = "Feature Importance"
-        if st.button("Model Comparison", use_container_width=True): st.session_state.active_page = "Model Comparison"
-        if st.button("Data Explorer", use_container_width=True): st.session_state.active_page = "Data Explorer"
-        if st.button("Hospital Deep Dive", use_container_width=True): st.session_state.active_page = "Hospital Deep Dive"
-        if st.button("Experiment Timeline", use_container_width=True): st.session_state.active_page = "Experiment Timeline"
-        if st.button("Research Figures", use_container_width=True): st.session_state.active_page = "Research Figures"
+        if st.button("Risk Calculator", key="nav_risk_calculator", use_container_width=True): st.session_state.active_page = "Risk Calculator"
+        if st.button("Feature Importance", key="nav_feature_importance", use_container_width=True): st.session_state.active_page = "Feature Importance"
+        if st.button("Model Comparison", key="nav_model_comparison", use_container_width=True): st.session_state.active_page = "Model Comparison"
+        if st.button("Data Explorer", key="nav_data_explorer", use_container_width=True): st.session_state.active_page = "Data Explorer"
+        if st.button("Hospital Deep Dive", key="nav_hospital_deep_dive", use_container_width=True): st.session_state.active_page = "Hospital Deep Dive"
+        if st.button("Experiment Timeline", key="nav_experiment_timeline", use_container_width=True): st.session_state.active_page = "Experiment Timeline"
+        if st.button("Research Figures", key="nav_research_figures", use_container_width=True): st.session_state.active_page = "Research Figures"
         
         st.markdown('<hr style="margin: 10px 0;">', unsafe_allow_html=True)
         with st.expander("Dataset Summary"):
