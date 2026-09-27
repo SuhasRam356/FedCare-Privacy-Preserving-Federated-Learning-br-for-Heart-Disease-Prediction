@@ -1,14 +1,14 @@
 """
-fedcare/secure_aggregation.py – Cryptographic Privacy for FedCare.
+fedcare/secure_aggregation.py – Cryptographic Privacy Simulation for FedCare.
 
-Implements Secure Aggregation simulation:
-    - Simulated Secure Multi-Party Computation (SMPC) via secret sharing
-    - Paillier Homomorphic Encryption (HE) simulation
-    - SecAgg protocol where the server never sees individual model updates
+⚠️ WARNING: DEMO-GRADE SIMULATION ONLY ⚠️
+This module implements a simulation of Secure Aggregation (SMPC and Paillier HE)
+for illustrative and dashboard purposes. It does NOT implement true cryptographic 
+SecureAgg. The secret-sharing path creates and reconstructs shares in the same 
+process, meaning weights exist in plaintext. There is no true finite-field 
+arithmetic or key agreement.
 
-This is a simulation-level implementation matching FedCare's sequential
-in-process design pattern, demonstrating the cryptographic concepts
-without requiring a full distributed cryptographic infrastructure.
+Do not use this code for actual secure multi-party computation.
 """
 
 from __future__ import annotations

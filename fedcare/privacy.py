@@ -89,7 +89,11 @@ def clip_and_add_noise(
 
 class PrivacyAccountant:
     """
-    Rényi / Advanced Composition Privacy Accountant for the Gaussian Mechanism.
+    Naive Gaussian Bound Privacy Accountant.
+
+    Note: This implements a basic Gaussian bound with sqrt(T) composition, NOT a true 
+    Rényi Differential Privacy (RDP) moments accountant. It is used here for 
+    illustrative simulation purposes.
 
     Computes epsilon given noise multiplier sigma, number of rounds T,
     and target delta.

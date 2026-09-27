@@ -1,7 +1,7 @@
 """
 fedcare/federated_xgboost.py – Federated Tree-Based Models for FedCare.
 
-Implements Federated XGBoost and Federated Random Forest via a
+Implements Federated Tree Ensembles (Soft Voting) and Federated Random Forest via a
 histogram-sharing simulation approach:
     - Each hospital trains a local XGBoost/RF model
     - Ensemble predictions are aggregated (soft voting)
@@ -51,9 +51,9 @@ def _get_global_test_set():
     return np.vstack(X_te_list), np.concatenate(y_te_list)
 
 
-class FederatedXGBoost:
+class FederatedTreeEnsemble:
     """
-    Federated XGBoost using ensemble aggregation.
+    Federated Tree Ensemble (Soft Voting).
 
     Each hospital trains a local XGBoost classifier.
     Global predictions are the weighted average of local prediction
@@ -256,18 +256,18 @@ def run_model_comparison() -> pd.DataFrame:
          "Global_Accuracy": round(mlp_metrics["accuracy"], 4)},
     ]
 
-    # 2. Federated XGBoost
+    # 2. Federated Tree Ensembles
     try:
-        fed_xgb = FederatedXGBoost()
+        fed_xgb = FederatedTreeEnsemble()
         fed_xgb.train()
         xgb_metrics = fed_xgb.evaluate_global()
         results.append({
-            "Model": "Federated XGBoost",
+            "Model": "Federated Tree Ensembles",
             "Global_AUC": xgb_metrics["global_auc"],
             "Global_Accuracy": xgb_metrics["global_accuracy"],
         })
     except ImportError:
-        results.append({"Model": "Federated XGBoost", "Global_AUC": 0.0, "Global_Accuracy": 0.0})
+        results.append({"Model": "Federated Tree Ensembles", "Global_AUC": 0.0, "Global_Accuracy": 0.0})
 
     # 3. Federated Random Forest
     fed_rf = FederatedRandomForest()

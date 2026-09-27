@@ -1059,7 +1059,7 @@ def render_project_overview():
         <strong style="color:#10b981">Zero patient data exposure.</strong>
     </p>
     <div style="text-align:center; display:flex; justify-content:center; gap:12px; flex-wrap:wrap; padding-bottom:20px;">
-        <span class="fc-tag fc-tag-blue">🧠 MLP + XGBoost + RF</span>
+        <span class="fc-tag fc-tag-blue">🧠 MLP + Tree Ensembles + RF</span>
         <span class="fc-tag fc-tag-purple">🔐 DP + Secure Aggregation</span>
         <span class="fc-tag fc-tag-green">🔍 SHAP Explainability</span>
         <span class="fc-tag fc-tag-pink">🛡️ Byzantine Defenses</span>
@@ -1288,7 +1288,7 @@ def render_experiment_timeline():
          "desc": "Label-flip + model poisoning. Trimmed Mean fully recovers. DP viable at ε=335.",
          "metric": "Recovered AUC", "value": "0.8508"},
         {"phase": "Phase 5", "title": "Dashboard + New Features", "cls": "fc-tag-amber",
-         "desc": "18-page dashboard with SHAP explainability, Federated XGBoost/RF, Secure Aggregation.",
+         "desc": "18-page dashboard with SHAP explainability, Federated Tree Ensembles/RF, Secure Aggregation.",
          "metric": "Pages", "value": "18"},
     ]
 
@@ -1315,11 +1315,11 @@ def render_experiment_timeline():
 
 
 # ══════════════════════════════════════════════════════════════════════
-#              PAGE: MODEL COMPARISON (MLP vs XGBoost vs RF)
+#              PAGE: MODEL COMPARISON (MLP vs Tree Ensembles vs RF)
 # ══════════════════════════════════════════════════════════════════════
 
 def render_model_comparison():
-    st.markdown("### ⚖️ Multi-Model Comparison: MLP vs XGBoost vs Random Forest")
+    st.markdown("### ⚖️ Multi-Model Comparison: MLP vs Tree Ensembles vs Random Forest")
     st.markdown('<p style="color:#8b8fa3;">Compare federated neural network against federated tree-based models.</p>', unsafe_allow_html=True)
 
     attack_df = load_attack_defense_matrix()
@@ -1355,13 +1355,13 @@ def render_model_comparison():
                                ["FedAvg", "FedProx", "FedAdam", "FedYogi", "QFedAvg", "FedNova", "SCAFFOLD", "FedPer", "FedBN"], 
                                index=0, key="mc_algo")
 
-    if st.button("🚀 Run Model Comparison (XGBoost + Random Forest)", key="run_model_comp"):
-        with st.spinner("Training Federated XGBoost and Random Forest..."):
+    if st.button("🚀 Run Model Comparison (Tree Ensembles + Random Forest)", key="run_model_comp"):
+        with st.spinner("Training Federated Tree Ensembles and Random Forest..."):
             try:
-                from fedcare.federated_xgboost import FederatedXGBoost, FederatedRandomForest
+                from fedcare.federated_xgboost import FederatedTreeEnsemble, FederatedRandomForest
 
-                # XGBoost
-                fed_xgb = FederatedXGBoost()
+                # Tree Ensembles
+                fed_xgb = FederatedTreeEnsemble()
                 xgb_result = fed_xgb.train()
                 xgb_global = fed_xgb.evaluate_global()
 
@@ -1383,7 +1383,7 @@ def render_model_comparison():
 
                 comparison = pd.DataFrame([
                     {"Model": f"Federated MLP ({algo_choice})", "Global AUC": mlp_auc, "Global Accuracy": mlp_acc},
-                    {"Model": "Federated XGBoost", "Global AUC": xgb_global["global_auc"], "Global Accuracy": xgb_global["global_accuracy"]},
+                    {"Model": "Federated Tree Ensembles", "Global AUC": xgb_global["global_auc"], "Global Accuracy": xgb_global["global_accuracy"]},
                     {"Model": "Federated Random Forest", "Global AUC": rf_global["global_auc"], "Global Accuracy": rf_global["global_accuracy"]},
                 ])
 
@@ -1404,7 +1404,7 @@ def render_model_comparison():
                 st.markdown("#### Per-Hospital Results")
                 col_xgb, col_rf = st.columns(2)
                 with col_xgb:
-                    st.markdown("##### XGBoost (Per-Hospital)")
+                    st.markdown("##### Tree Ensembles (Per-Hospital)")
                     st.dataframe(pd.DataFrame(xgb_result["local_results"]), use_container_width=True, hide_index=True)
                 with col_rf:
                     st.markdown("##### Random Forest (Per-Hospital)")
@@ -1705,7 +1705,7 @@ def main():
         render_page_header("Feature Importance", "Global feature influence explained by SHAP.")
         render_feature_importance()
     elif page == "Model Comparison":
-        render_page_header("Model Comparison", "MLP vs Federated XGBoost vs Federated Random Forest.")
+        render_page_header("Model Comparison", "MLP vs Federated Tree Ensembles vs Federated Random Forest.")
         render_model_comparison()
     elif page == "Data Explorer":
         render_page_header("Data Explorer", "Interactive feature distributions and correlation matrix.")
