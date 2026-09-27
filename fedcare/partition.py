@@ -66,7 +66,7 @@ def partition_iid(
     """
     combined_csv = DATA_DIR / "combined.csv"
     if not combined_csv.exists():
-        raise FileNotFoundError(f"Missing {combined_csv}. Run prepare_data.py first.")
+        raise FileNotFoundError(f"Missing {combined_csv}. The committed data CSVs are missing from data/heart.")
 
     df = pd.read_csv(combined_csv)
     rng = np.random.default_rng(seed)
@@ -137,7 +137,7 @@ def partition_dirichlet(
     """
     combined_csv = DATA_DIR / "combined.csv"
     if not combined_csv.exists():
-        raise FileNotFoundError(f"Missing {combined_csv}. Run prepare_data.py first.")
+        raise FileNotFoundError(f"Missing {combined_csv}. The committed data CSVs are missing from data/heart.")
 
     df = pd.read_csv(combined_csv)
     rng = np.random.default_rng(seed)

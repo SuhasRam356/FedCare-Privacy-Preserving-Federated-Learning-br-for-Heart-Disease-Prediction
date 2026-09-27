@@ -158,5 +158,11 @@ def load_global_model():
         train_loader, _, scaler = load_data(partition_id=None)
         train_fn(model, train_loader, epochs=15, lr=0.001)
         model.eval()
+        st.warning(
+            "⚠️ `checkpoints/final_fedavg_model.pt` not found — this prediction "
+            "uses an on-the-fly **centralized** model (15 epochs on pooled data), "
+            "not the federated global model. Run `python run_federated.py` to "
+            "generate the real federated checkpoint."
+        )
 
     return model, scaler
